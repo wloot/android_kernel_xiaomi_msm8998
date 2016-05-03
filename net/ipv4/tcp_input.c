@@ -3351,9 +3351,10 @@ static void tcp_snd_una_update(struct tcp_sock *tp, u32 ack)
 {
 	u32 delta = ack - tp->snd_una;
 
-	u64_stats_update_begin(&tp->syncp);
+	sock_owned_by_me((struct sock *)tp);
+	u64_stats_update_begin_raw(&tp->syncp);
 	tp->bytes_acked += delta;
-	u64_stats_update_end(&tp->syncp);
+	u64_stats_update_end_raw(&tp->syncp);
 	tp->snd_una = ack;
 }
 
@@ -3362,9 +3363,10 @@ static void tcp_rcv_nxt_update(struct tcp_sock *tp, u32 seq)
 {
 	u32 delta = seq - tp->rcv_nxt;
 
-	u64_stats_update_begin(&tp->syncp);
+	sock_owned_by_me((struct sock *)tp);
+	u64_stats_update_begin_raw(&tp->syncp);
 	tp->bytes_received += delta;
-	u64_stats_update_end(&tp->syncp);
+	u64_stats_update_end_raw(&tp->syncp);
 	tp->rcv_nxt = seq;
 }
 
