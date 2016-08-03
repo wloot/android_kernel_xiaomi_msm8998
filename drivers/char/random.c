@@ -249,6 +249,7 @@
 #include <linux/genhd.h>
 #include <linux/interrupt.h>
 #include <linux/mm.h>
+#include <linux/nodemask.h>
 #include <linux/spinlock.h>
 #include <linux/kthread.h>
 #include <linux/percpu.h>
@@ -432,7 +433,10 @@ static int crng_init = 0;
 #define crng_ready() (likely(crng_init > 0))
 static int crng_init_cnt = 0;
 #define CRNG_INIT_CNT_THRESH (2*CHACHA20_KEY_SIZE)
-static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE]);
+static void _extract_crng(struct crng_state *crng,
+			  __u8 out[CHACHA20_BLOCK_SIZE]);
+static void _crng_backtrack_protect(struct crng_state *crng,
+				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used);
 static void process_random_ready_list(void);
 
 /**********************************************************************
@@ -752,6 +756,16 @@ static int credit_entropy_bits_safe(struct entropy_store *r, int nbits)
 
 static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
 
+#ifdef CONFIG_NUMA
+/*
+ * Hack to deal with crazy userspace progams when they are all trying
+ * to access /dev/urandom in parallel.  The programs are almost
+ * certainly doing something terribly wrong, but we'll work around
+ * their brain damage.
+ */
+static struct crng_state **crng_node_pool __read_mostly;
+#endif
+
 static void crng_initialize(struct crng_state *crng)
 {
 	int		i;
@@ -810,8 +824,11 @@ static void crng_reseed(struct crng_state *crng, struct entropy_store *r)
 		num = extract_entropy(r, &buf, 32, 16, 0);
 		if (num == 0)
 			return;
-	} else
-		extract_crng(buf.block);
+	} else {
+		_extract_crng(&primary_crng, buf.block);
+		_crng_backtrack_protect(&primary_crng, buf.block,
+					CHACHA20_KEY_SIZE);
+	}
 	spin_lock_irqsave(&primary_crng.lock, flags);
 	for (i = 0; i < 8; i++) {
 		unsigned long	rv;
@@ -831,19 +848,26 @@ static void crng_reseed(struct crng_state *crng, struct entropy_store *r)
 	spin_unlock_irqrestore(&primary_crng.lock, flags);
 }
 
+static inline void maybe_reseed_primary_crng(void)
+{
+	if (crng_init > 2 &&
+	    time_after(jiffies, primary_crng.init_time + CRNG_RESEED_INTERVAL))
+		crng_reseed(&primary_crng, &input_pool);
+}
+
 static inline void crng_wait_ready(void)
 {
 	wait_event_interruptible(crng_init_wait, crng_ready());
 }
 
-static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+static void _extract_crng(struct crng_state *crng,
+			  __u8 out[CHACHA20_BLOCK_SIZE])
 {
 	unsigned long v, flags;
-	struct crng_state *crng = &primary_crng;
 
 	if (crng_init > 1 &&
 	    time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL))
-		crng_reseed(crng, &input_pool);
+		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
 	spin_lock_irqsave(&crng->lock, flags);
 	if (arch_get_random_long(&v))
 		crng->state[14] ^= v;
@@ -853,9 +877,59 @@ static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
 	spin_unlock_irqrestore(&crng->lock, flags);
 }
 
+static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+{
+	struct crng_state *crng = NULL;
+
+#ifdef CONFIG_NUMA
+	if (crng_node_pool)
+		crng = crng_node_pool[numa_node_id()];
+	if (crng == NULL)
+#endif
+		crng = &primary_crng;
+	_extract_crng(crng, out);
+}
+
+/*
+ * Use the leftover bytes from the CRNG block output (if there is
+ * enough) to mutate the CRNG key to provide backtracking protection.
+ */
+static void _crng_backtrack_protect(struct crng_state *crng,
+				    __u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+{
+	unsigned long	flags;
+	__u32		*s, *d;
+	int		i;
+
+	used = round_up(used, sizeof(__u32));
+	if (used + CHACHA20_KEY_SIZE > CHACHA20_BLOCK_SIZE) {
+		extract_crng(tmp);
+		used = 0;
+	}
+	spin_lock_irqsave(&crng->lock, flags);
+	s = (__u32 *) &tmp[used];
+	d = &crng->state[4];
+	for (i=0; i < 8; i++)
+		*d++ ^= *s++;
+	spin_unlock_irqrestore(&crng->lock, flags);
+}
+
+static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+{
+	struct crng_state *crng = NULL;
+
+#ifdef CONFIG_NUMA
+	if (crng_node_pool)
+		crng = crng_node_pool[numa_node_id()];
+	if (crng == NULL)
+#endif
+		crng = &primary_crng;
+	_crng_backtrack_protect(crng, tmp, used);
+}
+
 static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 {
-	ssize_t ret = 0, i;
+	ssize_t ret = 0, i = CHACHA20_BLOCK_SIZE;
 	__u8 tmp[CHACHA20_BLOCK_SIZE];
 	int large_request = (nbytes > 256);
 
@@ -880,6 +954,7 @@ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 		buf += i;
 		ret += i;
 	}
+	crng_backtrack_protect(tmp, i);
 
 	/* Wipe data just written to memory */
 	memzero_explicit(tmp, sizeof(tmp));
@@ -1428,8 +1503,10 @@ void get_random_bytes(void *buf, int nbytes)
 	if (nbytes > 0) {
 		extract_crng(tmp);
 		memcpy(buf, tmp, nbytes);
-		memzero_explicit(tmp, nbytes);
-	}
+		crng_backtrack_protect(tmp, nbytes);
+	} else
+		crng_backtrack_protect(tmp, CHACHA20_BLOCK_SIZE);
+	memzero_explicit(tmp, sizeof(tmp));
 }
 EXPORT_SYMBOL(get_random_bytes);
 
@@ -1512,7 +1589,7 @@ void get_random_bytes_arch(void *buf, int nbytes)
 
 		if (!arch_get_random_long(&v))
 			break;
-		
+
 		memcpy(p, &v, chunk);
 		p += chunk;
 		nbytes -= chunk;
@@ -1562,9 +1639,28 @@ static void init_std_data(struct entropy_store *r)
  */
 static int rand_initialize(void)
 {
+#ifdef CONFIG_NUMA
+	int i;
+	struct crng_state *crng;
+	struct crng_state **pool;
+#endif
+
 	init_std_data(&input_pool);
 	init_std_data(&blocking_pool);
 	crng_initialize(&primary_crng);
+
+#ifdef CONFIG_NUMA
+	pool = kcalloc(nr_node_ids, sizeof(*pool), GFP_KERNEL|__GFP_NOFAIL);
+	for_each_online_node(i) {
+		crng = kmalloc_node(sizeof(struct crng_state),
+				    GFP_KERNEL | __GFP_NOFAIL, i);
+		spin_lock_init(&crng->lock);
+		crng_initialize(crng);
+		pool[i] = crng;
+	}
+	mb();
+	crng_node_pool = pool;
+#endif
 	return 0;
 }
 early_initcall(rand_initialize);
