@@ -777,6 +777,7 @@ void do_exit(long code)
 	 */
 	perf_event_exit_task(tsk);
 
+	sched_autogroup_exit_task(tsk);
 	cgroup_exit(tsk);
 
 	/*
