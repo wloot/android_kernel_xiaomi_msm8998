@@ -1332,16 +1332,18 @@ static void smem_init_security_partition(struct smem_toc_entry *entry,
 		LOG_ERR("Smem partition %d hosts don't match TOC\n", num);
 		BUG();
 	}
-	if (hdr->host0 != remote_host && hdr->host1 != remote_host) {
+	if (!is_comm_partition && hdr->host0 != remote_host && hdr->host1 != remote_host) {
 		LOG_ERR("Smem partition %d hosts don't match TOC\n", num);
 		BUG();
 	}
 
-	partitions[remote_host].partition_num = num;
-	partitions[remote_host].offset = entry->offset;
-	partitions[remote_host].size_cacheline = entry->size_cacheline;
-	SMEM_INFO("Partition %d offset:%x remote:%d\n", num, entry->offset,
-								remote_host);
+	if (!is_comm_partition) {
+		partitions[remote_host].partition_num = num;
+		partitions[remote_host].offset = entry->offset;
+		partitions[remote_host].size_cacheline = entry->size_cacheline;
+		SMEM_INFO("Partition %d offset:%x remote:%d\n", num, entry->offset,
+			remote_host);
+	}
 }
 
 /**

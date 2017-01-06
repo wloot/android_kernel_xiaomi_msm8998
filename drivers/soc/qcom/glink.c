@@ -2094,6 +2094,7 @@ static struct glink_core_xprt_ctx *find_open_transport(const char *edge,
 	bool first = true;
 
 	ret = (struct glink_core_xprt_ctx *)ERR_PTR(-ENODEV);
+	best_xprt = (struct glink_core_xprt_ctx *)ERR_PTR(-ENODEV);
 	*best_id = USHRT_MAX;
 
 	mutex_lock(&transport_list_lock_lha0);
