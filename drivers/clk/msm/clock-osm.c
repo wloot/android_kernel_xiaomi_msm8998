@@ -1631,6 +1631,9 @@ static int clk_osm_setup_hw_table(struct clk_osm *c)
 	u32 freq_val = 0, volt_val = 0, override_val = 0, spare_val = 0;
 	u32 table_entry_offset = 0, last_spare = 0, last_virtual_corner = 0;
 
+	if (c->num_entries <= 0 ) {
+		return -EINVAL;
+	}
 	for (i = 0; i < OSM_TABLE_SIZE; i++) {
 		if (i < c->num_entries) {
 			freq_val = entry[i].freq_data;
@@ -2829,6 +2832,8 @@ static ssize_t debugfs_trace_method_get(struct file *file, char __user *buf,
 		len = snprintf(debug_buf, sizeof(debug_buf), "periodic\n");
 	else if (c->trace_method == XOR_PACKET)
 		len = snprintf(debug_buf, sizeof(debug_buf), "xor\n");
+	else
+		return -EINVAL;
 
 	rc = simple_read_from_buffer((void __user *) buf, count, ppos,
 				     (void *) debug_buf, len);

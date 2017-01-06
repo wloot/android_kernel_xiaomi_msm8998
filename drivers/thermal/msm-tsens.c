@@ -2174,7 +2174,7 @@ static int get_device_tree_data(struct platform_device *pdev,
 		return -ENODEV;
 	}
 
-	if (!tmdev->gain_offset_programmed) {
+	if (tsens_slope_data && !tmdev->gain_offset_programmed) {
 		for (i = 0; i < tsens_num_sensors; i++)
 			tmdev->sensor[i].slope_mul_tsens_factor =
 							tsens_slope_data[i];
