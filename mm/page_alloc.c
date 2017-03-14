@@ -62,6 +62,7 @@
 #include <linux/sched/rt.h>
 #include <linux/page_owner.h>
 #include <linux/kthread.h>
+#include <linux/random.h>
 
 #include <asm/sections.h>
 #include <asm/tlbflush.h>
@@ -1098,6 +1099,16 @@ static void __init __free_pages_boot_core(struct page *page, unsigned long pfn, 
 	}
 	__ClearPageReserved(p);
 	set_page_count(p, 0);
+
+	if (!PageHighMem(page) && page_to_pfn(page) < 0x100000) {
+		unsigned long hash = 0;
+		size_t index, end = PAGE_SIZE * nr_pages / sizeof hash;
+		const unsigned long *data = lowmem_page_address(page);
+
+		for (index = 0; index < end; index++)
+			hash ^= hash + data[index];
+		add_device_randomness((const void *)&hash, sizeof(hash));
+	}
 
 	page_zone(page)->managed_pages += nr_pages;
 	set_page_refcounted(page);
