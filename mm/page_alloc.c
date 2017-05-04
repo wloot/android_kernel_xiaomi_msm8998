@@ -1496,6 +1496,11 @@ static int prep_new_page(struct page *page, unsigned int order, gfp_t gfp_flags,
 
 	post_alloc_hook(page, order, gfp_flags);
 
+	if (IS_ENABLED(CONFIG_PAGE_SANITIZE_VERIFY)) {
+		for (i = 0; i < (1 << order); i++)
+			verify_zero_highpage(page + i);
+	}
+
 	if (!IS_ENABLED(CONFIG_PAGE_SANITIZE) &&
 		!free_pages_prezeroed() && (gfp_flags & __GFP_ZERO)) {
 		for (i = 0; i < (1 << order); i++)
