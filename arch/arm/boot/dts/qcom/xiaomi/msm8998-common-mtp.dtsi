@@ -39,3 +39,7 @@
 &green_led { /* Right button backlight */
 	linux,name = "button-backlight1";
 };
+
+&uartblsp2dm1 {
+	status = "disabled";
+};

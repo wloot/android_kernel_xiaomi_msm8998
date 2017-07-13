@@ -111,13 +111,6 @@
 	status = "ok";
 };
 
-&uartblsp2dm1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart_console_active>;
-
-	status = "ok";
-};
-
 &pm8998_gpios {
 	/* GPIO 6 for Vol+ Key */
 	gpio@c500 {
