@@ -22,7 +22,6 @@
 #include <linux/uaccess.h>
 #include <linux/time.h>
 #include <linux/kmemleak.h>
-#include <linux/wakelock.h>
 #include <linux/mutex.h>
 #include <sound/apr_audio.h>
 #include <linux/qdsp6v2/usf.h>

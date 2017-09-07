@@ -35,7 +35,6 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/rpm-smd-regulator.h>
 #include <linux/msm-sps.h>            /* BAM stuff */
-#include <linux/wakelock.h>      /* Locking functions */
 #include <linux/timer.h>         /* Timer services */
 #include <linux/jiffies.h>       /* Jiffies counter */
 #include <linux/qcom_tspp.h>
