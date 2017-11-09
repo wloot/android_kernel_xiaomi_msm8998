@@ -66,11 +66,11 @@ struct key_type cifs_spnego_key_type = {
 	.describe	= user_describe,
 };
 
-/* length of longest version string e.g.  strlen("ver=0xFF") */
+/* length of longest version string e.g.  DSTRLEN("ver=0xFF") */
 #define MAX_VER_STR_LEN		8
 
 /* length of longest security mechanism name, eg in future could have
- * strlen(";sec=ntlmsspi") */
+ * DSTRLEN(";sec=ntlmsspi") */
 #define MAX_MECH_STR_LEN	13
 
 /* strlen of "host=" */

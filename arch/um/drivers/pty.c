@@ -81,9 +81,9 @@ static int getmaster(char *line)
 	char *pty, *bank, *cp;
 	int master, err;
 
-	pty = &line[strlen("/dev/ptyp")];
+	pty = &line[DSTRLEN("/dev/ptyp")];
 	for (bank = "pqrs"; *bank; bank++) {
-		line[strlen("/dev/pty")] = *bank;
+		line[DSTRLEN("/dev/pty")] = *bank;
 		*pty = '0';
 		/* Did we hit the end ? */
 		if ((stat(line, &buf) < 0) && (errno == ENOENT))
@@ -93,7 +93,7 @@ static int getmaster(char *line)
 			*pty = *cp;
 			master = open(line, O_RDWR);
 			if (master >= 0) {
-				char *tp = &line[strlen("/dev/")];
+				char *tp = &line[DSTRLEN("/dev/")];
 
 				/* verify slave side is usable */
 				*tp = 't';

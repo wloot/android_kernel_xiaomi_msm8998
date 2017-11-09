@@ -214,7 +214,7 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		 * just point part way into the property name for the string.
 		 */
 		if (ret < 0) {
-			/* strlen("pinctrl-") == 8 */
+			/* DSTRLEN("pinctrl-") == 8 */
 			statename = prop->name + 8;
 		}
 

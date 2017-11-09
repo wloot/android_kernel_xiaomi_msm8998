@@ -183,7 +183,7 @@ static void ascii_ssetup_strings(char **pbcc_area, struct cifs_ses *ses,
 	/* BB check for overflow here */
 
 	strcpy(bcc_ptr, "Linux version ");
-	bcc_ptr += strlen("Linux version ");
+	bcc_ptr += DSTRLEN("Linux version ");
 	strcpy(bcc_ptr, init_utsname()->release);
 	bcc_ptr += strlen(init_utsname()->release) + 1;
 

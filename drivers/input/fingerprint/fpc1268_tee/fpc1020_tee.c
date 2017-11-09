@@ -362,7 +362,7 @@ static ssize_t hw_reset_set(struct device *dev,
 	int rc;
 	struct fpc1020_data *fpc1020 = dev_get_drvdata(dev);
 
-	if (!strncmp(buf, "reset", strlen("reset"))) {
+	if (!strncmp(buf, "reset", DSTRLEN("reset"))) {
 		mutex_lock(&fpc1020->lock);
 		rc = hw_reset(fpc1020);
 		mutex_unlock(&fpc1020->lock);
@@ -474,9 +474,9 @@ static ssize_t device_prepare_set(struct device *dev,
 	int rc;
 	struct fpc1020_data *fpc1020 = dev_get_drvdata(dev);
 
-	if (!strncmp(buf, "enable", strlen("enable")))
+	if (!strncmp(buf, "enable", DSTRLEN("enable")))
 		rc = device_prepare(fpc1020, true);
-	else if (!strncmp(buf, "disable", strlen("disable")))
+	else if (!strncmp(buf, "disable", DSTRLEN("disable")))
 		rc = device_prepare(fpc1020, false);
 	else
 		return -EINVAL;

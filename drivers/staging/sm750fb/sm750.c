@@ -952,21 +952,21 @@ static void sm750fb_setup(struct sm750_dev *sm750_dev, char *src)
 		pr_info("opt=%s\n", opt);
 		pr_info("src=%s\n", src);
 
-		if (!strncmp(opt, "swap", strlen("swap")))
+		if (!strncmp(opt, "swap", DSTRLEN("swap")))
 			swap = 1;
-		else if (!strncmp(opt, "nocrt", strlen("nocrt")))
+		else if (!strncmp(opt, "nocrt", DSTRLEN("nocrt")))
 			sm750_dev->nocrt = 1;
-		else if (!strncmp(opt, "36bit", strlen("36bit")))
+		else if (!strncmp(opt, "36bit", DSTRLEN("36bit")))
 			sm750_dev->pnltype = sm750_doubleTFT;
-		else if (!strncmp(opt, "18bit", strlen("18bit")))
+		else if (!strncmp(opt, "18bit", DSTRLEN("18bit")))
 			sm750_dev->pnltype = sm750_dualTFT;
-		else if (!strncmp(opt, "24bit", strlen("24bit")))
+		else if (!strncmp(opt, "24bit", DSTRLEN("24bit")))
 			sm750_dev->pnltype = sm750_24TFT;
-		else if (!strncmp(opt, "nohwc0", strlen("nohwc0")))
+		else if (!strncmp(opt, "nohwc0", DSTRLEN("nohwc0")))
 			g_hwcursor &= ~0x1;
-		else if (!strncmp(opt, "nohwc1", strlen("nohwc1")))
+		else if (!strncmp(opt, "nohwc1", DSTRLEN("nohwc1")))
 			g_hwcursor &= ~0x2;
-		else if (!strncmp(opt, "nohwc", strlen("nohwc")))
+		else if (!strncmp(opt, "nohwc", DSTRLEN("nohwc")))
 			g_hwcursor = 0;
 		else {
 			if (!g_fbmode[0]) {
@@ -1197,11 +1197,11 @@ static int __init lynxfb_setup(char *options)
 	 */
 	while ((opt = strsep(&options, ":")) != NULL) {
 		/* options that mean for any lynx chips are configured here */
-		if (!strncmp(opt, "noaccel", strlen("noaccel")))
+		if (!strncmp(opt, "noaccel", DSTRLEN("noaccel")))
 			g_noaccel = 1;
-		else if (!strncmp(opt, "nomtrr", strlen("nomtrr")))
+		else if (!strncmp(opt, "nomtrr", DSTRLEN("nomtrr")))
 			g_nomtrr = 1;
-		else if (!strncmp(opt, "dual", strlen("dual")))
+		else if (!strncmp(opt, "dual", DSTRLEN("dual")))
 			g_dualview = 1;
 		else {
 			strcat(tmp, opt);

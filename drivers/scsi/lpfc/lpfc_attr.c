@@ -3269,9 +3269,9 @@ lpfc_topology_store(struct device *dev, struct device_attribute *attr,
 	int err;
 	uint32_t prev_val;
 
-	if (!strncmp(buf, "nolip ", strlen("nolip "))) {
+	if (!strncmp(buf, "nolip ", DSTRLEN("nolip "))) {
 		nolip = 1;
-		val_buf = &buf[strlen("nolip ")];
+		val_buf = &buf[DSTRLEN("nolip ")];
 	}
 
 	if (!isdigit(val_buf[0]))
@@ -3390,7 +3390,7 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 	char *bucket_type_str, *base_str, *step_str;
 	unsigned long base, step, bucket_type;
 
-	if (!strncmp(buf, "setbucket", strlen("setbucket"))) {
+	if (!strncmp(buf, "setbucket", DSTRLEN("setbucket"))) {
 		if (strlen(buf) > (LPFC_MAX_DATA_CTRL_LEN - 1))
 			return -EINVAL;
 
@@ -3405,9 +3405,9 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 		if (!bucket_type_str)
 			return -EINVAL;
 
-		if (!strncmp(bucket_type_str, "linear", strlen("linear")))
+		if (!strncmp(bucket_type_str, "linear", DSTRLEN("linear")))
 			bucket_type = LPFC_LINEAR_BUCKET;
-		else if (!strncmp(bucket_type_str, "power2", strlen("power2")))
+		else if (!strncmp(bucket_type_str, "power2", DSTRLEN("power2")))
 			bucket_type = LPFC_POWER2_BUCKET;
 		else
 			return -EINVAL;
@@ -3456,7 +3456,7 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 		return strlen(buf);
 	}
 
-	if (!strncmp(buf, "destroybucket", strlen("destroybucket"))) {
+	if (!strncmp(buf, "destroybucket", DSTRLEN("destroybucket"))) {
 		vports = lpfc_create_vport_work_array(phba);
 		if (vports == NULL)
 			return -ENOMEM;
@@ -3477,7 +3477,7 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 		return strlen(buf);
 	}
 
-	if (!strncmp(buf, "start", strlen("start"))) {
+	if (!strncmp(buf, "start", DSTRLEN("start"))) {
 		/* If no buckets configured return error */
 		if (phba->bucket_type == LPFC_NO_BUCKET)
 			return -EINVAL;
@@ -3492,7 +3492,7 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 		return strlen(buf);
 	}
 
-	if (!strncmp(buf, "stop", strlen("stop"))) {
+	if (!strncmp(buf, "stop", DSTRLEN("stop"))) {
 		spin_lock_irq(shost->host_lock);
 		if (vport->stat_data_enabled == 0) {
 			spin_unlock_irq(shost->host_lock);
@@ -3504,7 +3504,7 @@ lpfc_stat_data_ctrl_store(struct device *dev, struct device_attribute *attr,
 		return strlen(buf);
 	}
 
-	if (!strncmp(buf, "reset", strlen("reset"))) {
+	if (!strncmp(buf, "reset", DSTRLEN("reset"))) {
 		if ((phba->bucket_type == LPFC_NO_BUCKET)
 			|| !vport->stat_data_enabled)
 			return strlen(buf);
@@ -3716,9 +3716,9 @@ lpfc_link_speed_store(struct device *dev, struct device_attribute *attr,
 	int err;
 	uint32_t prev_val;
 
-	if (!strncmp(buf, "nolip ", strlen("nolip "))) {
+	if (!strncmp(buf, "nolip ", DSTRLEN("nolip "))) {
 		nolip = 1;
-		val_buf = &buf[strlen("nolip ")];
+		val_buf = &buf[DSTRLEN("nolip ")];
 	}
 
 	if (!isdigit(val_buf[0]))

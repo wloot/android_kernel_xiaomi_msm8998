@@ -155,7 +155,7 @@ static unsigned int nf_nat_sip(struct sk_buff *skb, unsigned int protoff,
 	int request, in_header;
 
 	/* Basic rules: requests and responses. */
-	if (strncasecmp(*dptr, "SIP/2.0", strlen("SIP/2.0")) != 0) {
+	if (strncasecmp(*dptr, "SIP/2.0", DSTRLEN("SIP/2.0")) != 0) {
 		if (ct_sip_parse_request(ct, *dptr, *datalen,
 					 &matchoff, &matchlen,
 					 &addr, &port) > 0 &&
@@ -427,7 +427,7 @@ static int mangle_content_len(struct sk_buff *skb, unsigned int protoff,
 				  SDP_HDR_VERSION, SDP_HDR_UNSPEC,
 				  &matchoff, &matchlen) <= 0)
 		return 0;
-	c_len = *datalen - matchoff + strlen("v=");
+	c_len = *datalen - matchoff + DSTRLEN("v=");
 
 	/* Now, update SDP length */
 	if (ct_sip_get_header(ct, *dptr, 0, *datalen, SIP_HDR_CONTENT_LENGTH,

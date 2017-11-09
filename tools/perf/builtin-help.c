@@ -86,7 +86,7 @@ static int check_emacsclient_version(void)
 		return -1;
 	}
 
-	strbuf_remove(&buffer, 0, strlen("emacsclient"));
+	strbuf_remove(&buffer, 0, DSTRLEN("emacsclient"));
 	version = atoi(buffer.buf);
 
 	if (version < 22) {
@@ -134,7 +134,7 @@ static void exec_man_konqueror(const char *path, const char *page)
 				char *new = strdup(path);
 				char *dest = strrchr(new, '/');
 
-				/* strlen("konqueror") == strlen("kfmclient") */
+				/* DSTRLEN("konqueror") == DSTRLEN("kfmclient") */
 				strcpy(dest + 1, "kfmclient");
 				path = new;
 			}

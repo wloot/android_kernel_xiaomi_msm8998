@@ -1507,7 +1507,7 @@ out_pop:
 		sptlrpc_conf_log_update_end(cld->cld_logname);
 		class_notify_sptlrpc_conf(cld->cld_logname,
 					  strlen(cld->cld_logname) -
-					  strlen("-sptlrpc"));
+					  DSTRLEN("-sptlrpc"));
 	}
 
 	lu_env_fini(env);

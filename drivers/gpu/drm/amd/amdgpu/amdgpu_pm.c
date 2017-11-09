@@ -68,11 +68,11 @@ static ssize_t amdgpu_set_dpm_state(struct device *dev,
 	struct amdgpu_device *adev = ddev->dev_private;
 
 	mutex_lock(&adev->pm.mutex);
-	if (strncmp("battery", buf, strlen("battery")) == 0)
+	if (strncmp("battery", buf, DSTRLEN("battery")) == 0)
 		adev->pm.dpm.user_state = POWER_STATE_TYPE_BATTERY;
-	else if (strncmp("balanced", buf, strlen("balanced")) == 0)
+	else if (strncmp("balanced", buf, DSTRLEN("balanced")) == 0)
 		adev->pm.dpm.user_state = POWER_STATE_TYPE_BALANCED;
-	else if (strncmp("performance", buf, strlen("performance")) == 0)
+	else if (strncmp("performance", buf, DSTRLEN("performance")) == 0)
 		adev->pm.dpm.user_state = POWER_STATE_TYPE_PERFORMANCE;
 	else {
 		mutex_unlock(&adev->pm.mutex);
@@ -113,11 +113,11 @@ static ssize_t amdgpu_set_dpm_forced_performance_level(struct device *dev,
 	int ret = 0;
 
 	mutex_lock(&adev->pm.mutex);
-	if (strncmp("low", buf, strlen("low")) == 0) {
+	if (strncmp("low", buf, DSTRLEN("low")) == 0) {
 		level = AMDGPU_DPM_FORCED_LEVEL_LOW;
-	} else if (strncmp("high", buf, strlen("high")) == 0) {
+	} else if (strncmp("high", buf, DSTRLEN("high")) == 0) {
 		level = AMDGPU_DPM_FORCED_LEVEL_HIGH;
-	} else if (strncmp("auto", buf, strlen("auto")) == 0) {
+	} else if (strncmp("auto", buf, DSTRLEN("auto")) == 0) {
 		level = AMDGPU_DPM_FORCED_LEVEL_AUTO;
 	} else {
 		count = -EINVAL;

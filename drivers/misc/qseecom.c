@@ -2555,7 +2555,7 @@ static int qseecom_unload_app(struct qseecom_dev_handle *data,
 		return -EINVAL;
 	}
 
-	if (!memcmp(data->client.app_name, "keymaste", strlen("keymaste"))) {
+	if (!memcmp(data->client.app_name, "keymaste", DSTRLEN("keymaste"))) {
 		pr_debug("Do not unload keymaster app from tz\n");
 		goto unload_exit;
 	}

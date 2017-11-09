@@ -72,7 +72,7 @@ static int blkback_name(struct xen_blkif *blkif, char *buf)
 
 	devname = strstr(devpath, "/dev/");
 	if (devname != NULL)
-		devname += strlen("/dev/");
+		devname += DSTRLEN("/dev/");
 	else
 		devname  = devpath;
 

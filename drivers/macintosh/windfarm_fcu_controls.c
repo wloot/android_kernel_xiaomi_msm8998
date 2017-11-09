@@ -376,7 +376,7 @@ static void wf_fcu_add_fan(struct wf_fcu_priv *pv, const char *name,
 	 * therm_pm72 which seems to work so ...
 	 */
 	if (type == FCU_FAN_RPM) {
-		if (!strncmp(name, "cpu-pump", strlen("cpu-pump")))
+		if (!strncmp(name, "cpu-pump", DSTRLEN("cpu-pump")))
 			wf_fcu_get_pump_minmax(fan);
 		else
 			wf_fcu_get_rpmfan_minmax(fan);

@@ -240,7 +240,7 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
 	default:
 		DBG_88E("Unknown PRIVATE command %s - ignored\n", command);
 		snprintf(command, 3, "OK");
-		bytes_written = strlen("OK");
+		bytes_written = DSTRLEN("OK");
 	}
 
 response:

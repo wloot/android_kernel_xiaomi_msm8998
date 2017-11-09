@@ -1728,7 +1728,7 @@ qla2x00_fdmiv2_rhba(scsi_qla_host_t *vha)
 	eiter->type = cpu_to_be16(FDMI_HBA_MANUFACTURER);
 	snprintf(eiter->a.manufacturer, sizeof(eiter->a.manufacturer),
 	    "%s", "QLogic Corporation");
-	eiter->a.manufacturer[strlen("QLogic Corporation")] = '\0';
+	eiter->a.manufacturer[DSTRLEN("QLogic Corporation")] = '\0';
 	alen = strlen(eiter->a.manufacturer);
 	alen += 4 - (alen & 3);
 	eiter->len = cpu_to_be16(4 + alen);

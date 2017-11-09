@@ -1820,7 +1820,7 @@ check_setup_args(char *key, int *flags, int *val, char *buf)
 			continue;
 		if (!strncmp(setup_args[x], key, strlen(key)))
 			break;
-		if (!strncmp(setup_args[x], "next", strlen("next")))
+		if (!strncmp(setup_args[x], "next", DSTRLEN("next")))
 			return 0;
 	}
 	if (x == MAX_SETUP_ARGS)

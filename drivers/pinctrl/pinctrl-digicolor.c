@@ -279,7 +279,7 @@ static int dc_pinctrl_probe(struct platform_device *pdev)
 	struct pinctrl_pin_desc *pins;
 	struct pinctrl_desc *pctl_desc;
 	char *pin_names;
-	int name_len = strlen("GP_xx") + 1;
+	int name_len = DSTRLEN("GP_xx") + 1;
 	int i, j, ret;
 
 	pmap = devm_kzalloc(&pdev->dev, sizeof(*pmap), GFP_KERNEL);

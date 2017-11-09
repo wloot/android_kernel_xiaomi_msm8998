@@ -117,7 +117,7 @@ static const char		*pre_cmd			= NULL;
 static const char		*post_cmd			= NULL;
 static bool			sync_run			= false;
 static unsigned int		initial_delay			= 0;
-static unsigned int		unit_width			= 4; /* strlen("unit") */
+static unsigned int		unit_width			= 4; /* DSTRLEN("unit") */
 static bool			forever				= false;
 static struct timespec		ref_time;
 static struct cpu_map		*aggr_map;

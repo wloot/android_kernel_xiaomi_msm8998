@@ -872,7 +872,7 @@ static int pfk_kc_find_storage_type(char **device)
 				"androidboot.bootdevice=",
 				strlen(saved_command_line));
 	if (match) {
-		memcpy(boot, (match + strlen("androidboot.bootdevice=")),
+		memcpy(boot, (match + DSTRLEN("androidboot.bootdevice=")),
 			sizeof(boot) - 1);
 		if (strnstr(boot, PFK_UFS, strlen(boot)))
 			*device = PFK_UFS;

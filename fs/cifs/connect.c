@@ -2400,7 +2400,7 @@ cifs_put_smb_ses(struct cifs_ses *ses)
 
 #ifdef CONFIG_KEYS
 
-/* strlen("cifs:a:") + CIFS_MAX_DOMAINNAME_LEN + 1 */
+/* DSTRLEN("cifs:a:") + CIFS_MAX_DOMAINNAME_LEN + 1 */
 #define CIFSCREDS_DESC_SIZE (7 + CIFS_MAX_DOMAINNAME_LEN + 1)
 
 /* Populate username and pw fields from keyring if possible */
@@ -3923,7 +3923,7 @@ CIFSTCon(const unsigned int xid, struct cifs_ses *ses,
 		bcc_ptr += strlen(tree) + 1;
 	}
 	strcpy(bcc_ptr, "?????");
-	bcc_ptr += strlen("?????");
+	bcc_ptr += DSTRLEN("?????");
 	bcc_ptr += 1;
 	count = bcc_ptr - &pSMB->Password[0];
 	pSMB->hdr.smb_buf_length = cpu_to_be32(be32_to_cpu(

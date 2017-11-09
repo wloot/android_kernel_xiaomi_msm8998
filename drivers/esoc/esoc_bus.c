@@ -182,7 +182,7 @@ int esoc_clink_register_ssr(struct esoc_clink *esoc_clink)
 	int len;
 	char *subsys_name;
 
-	len = strlen("esoc") + sizeof(esoc_clink->id);
+	len = DSTRLEN("esoc") + sizeof(esoc_clink->id);
 	subsys_name = kzalloc(len, GFP_KERNEL);
 	if (IS_ERR_OR_NULL(subsys_name))
 		return PTR_ERR(subsys_name);

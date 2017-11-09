@@ -72,7 +72,7 @@ static void parse_earlyprintk(void)
 			static const int bases[] = { 0x3f8, 0x2f8 };
 			int idx = 0;
 
-			/* += strlen("ttyS"); */
+			/* += DSTRLEN("ttyS"); */
 			pos += 4;
 
 			if (arg[pos++] == '1')

@@ -148,8 +148,8 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 	data = ib_ptr;
 	data_limit = ib_ptr + skb->len - dataoff;
 
-	/* strlen("\1DCC SENT t AAAAAAAA P\1\n")=24
-	 * 5+MINMATCHLEN+strlen("t AAAAAAAA P\1\n")=14 */
+	/* DSTRLEN("\1DCC SENT t AAAAAAAA P\1\n")=24
+	 * 5+MINMATCHLEN+DSTRLEN("t AAAAAAAA P\1\n")=14 */
 	while (data < data_limit - (19 + MINMATCHLEN)) {
 		if (memcmp(data, "\1DCC ", 5)) {
 			data++;

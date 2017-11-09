@@ -1262,7 +1262,7 @@ static void nfc_llcp_recv_snl(struct nfc_llcp_local *local,
 
 			pr_debug("Looking for %.16s\n", service_name);
 
-			if (service_name_len == strlen("urn:nfc:sn:sdp") &&
+			if (service_name_len == DSTRLEN("urn:nfc:sn:sdp") &&
 			    !strncmp(service_name, "urn:nfc:sn:sdp",
 				     service_name_len)) {
 				sap = 1;

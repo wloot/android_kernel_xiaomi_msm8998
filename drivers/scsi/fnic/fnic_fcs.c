@@ -71,7 +71,7 @@ void fnic_handle_link(struct work_struct *work)
 			spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 			fnic_fc_trace_set_data(fnic->lport->host->host_no,
 				FNIC_FC_LE, "Link Status: DOWN->DOWN",
-				strlen("Link Status: DOWN->DOWN"));
+				DSTRLEN("Link Status: DOWN->DOWN"));
 		} else {
 			if (old_link_down_cnt != fnic->link_down_cnt) {
 				/* UP -> DOWN -> UP */
@@ -81,7 +81,7 @@ void fnic_handle_link(struct work_struct *work)
 					fnic->lport->host->host_no,
 					FNIC_FC_LE,
 					"Link Status:UP_DOWN_UP",
-					strlen("Link_Status:UP_DOWN_UP")
+					DSTRLEN("Link_Status:UP_DOWN_UP")
 					);
 				FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
 					     "link down\n");
@@ -107,7 +107,7 @@ void fnic_handle_link(struct work_struct *work)
 				fnic_fc_trace_set_data(
 					fnic->lport->host->host_no, FNIC_FC_LE,
 					"Link Status: UP_UP",
-					strlen("Link Status: UP_UP"));
+					DSTRLEN("Link Status: UP_UP"));
 			}
 		}
 	} else if (fnic->link_status) {
@@ -118,13 +118,13 @@ void fnic_handle_link(struct work_struct *work)
 				fnic_fc_trace_set_data(
 				fnic->lport->host->host_no,
 				FNIC_FC_LE, "Link Status: DOWN_UP_VLAN",
-				strlen("Link Status: DOWN_UP_VLAN"));
+				DSTRLEN("Link Status: DOWN_UP_VLAN"));
 			fnic_fcoe_send_vlan_req(fnic);
 			return;
 		}
 		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, "link up\n");
 		fnic_fc_trace_set_data(fnic->lport->host->host_no, FNIC_FC_LE,
-			"Link Status: DOWN_UP", strlen("Link Status: DOWN_UP"));
+			"Link Status: DOWN_UP", DSTRLEN("Link Status: DOWN_UP"));
 		fcoe_ctlr_link_up(&fnic->ctlr);
 	} else {
 		/* UP -> DOWN */
@@ -134,7 +134,7 @@ void fnic_handle_link(struct work_struct *work)
 		fnic_fc_trace_set_data(
 			fnic->lport->host->host_no, FNIC_FC_LE,
 			"Link Status: UP_DOWN",
-			strlen("Link Status: UP_DOWN"));
+			DSTRLEN("Link Status: UP_DOWN"));
 		if (fnic->config.flags & VFCF_FIP_CAPABLE) {
 			FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host,
 				"deleting fip-timer during link-down\n");

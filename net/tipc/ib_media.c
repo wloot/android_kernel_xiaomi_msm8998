@@ -46,7 +46,7 @@
 static int tipc_ib_addr2str(struct tipc_media_addr *a, char *str_buf,
 			    int str_size)
 {
-	if (str_size < 60)	/* 60 = 19 * strlen("xx:") + strlen("xx\0") */
+	if (str_size < 60)	/* 60 = 19 * DSTRLEN("xx:") + DSTRLEN("xx\0") */
 		return 1;
 
 	sprintf(str_buf, "%20phC", a->value);

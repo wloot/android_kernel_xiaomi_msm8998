@@ -791,7 +791,7 @@ static ssize_t mdss_dsi_cmd_state_write(struct file *file,
 	}
 	input[count-1] = '\0';
 
-	if (strnstr(input, "dsi_hs_mode", strlen("dsi_hs_mode")))
+	if (strnstr(input, "dsi_hs_mode", DSTRLEN("dsi_hs_mode")))
 		*link_state = DSI_HS_MODE;
 	else
 		*link_state = DSI_LP_MODE;

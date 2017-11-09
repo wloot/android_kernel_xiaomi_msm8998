@@ -116,7 +116,7 @@ int __init prom_get_ethernet_addr(char *ethernet_addr)
 		if (!ethaddr_str)
 			return -1;
 
-		ethaddr_str += strlen("ethaddr=");
+		ethaddr_str += DSTRLEN("ethaddr=");
 	}
 
 	str2eaddr(ethernet_addr, ethaddr_str);

@@ -756,7 +756,7 @@ char *add_xterm_umid(char *base)
 	if (*umid == '\0')
 		return base;
 
-	len = strlen(base) + strlen(" ()") + strlen(umid) + 1;
+	len = strlen(base) + DSTRLEN(" ()") + strlen(umid) + 1;
 	title = kmalloc(len, GFP_KERNEL);
 	if (title == NULL) {
 		printk(KERN_ERR "Failed to allocate buffer for xterm title\n");

@@ -1330,11 +1330,11 @@ static void btmrvl_sdio_dump_firmware(struct btmrvl_private *priv)
 			goto done;
 		}
 
-		fw_dump_len += (strlen("========Start dump ") +
+		fw_dump_len += (DSTRLEN("========Start dump ") +
 				strlen(entry->mem_name) +
-				strlen("========\n") +
+				DSTRLEN("========\n") +
 				(memory_size + 1) +
-				strlen("\n========End dump========\n"));
+				DSTRLEN("\n========End dump========\n"));
 
 		dbg_ptr = entry->mem_ptr;
 		end_ptr = dbg_ptr + memory_size;
@@ -1396,19 +1396,19 @@ done:
 
 		if (entry->mem_ptr) {
 			strcpy(fw_dump_ptr, "========Start dump ");
-			fw_dump_ptr += strlen("========Start dump ");
+			fw_dump_ptr += DSTRLEN("========Start dump ");
 
 			strcpy(fw_dump_ptr, entry->mem_name);
 			fw_dump_ptr += strlen(entry->mem_name);
 
 			strcpy(fw_dump_ptr, "========\n");
-			fw_dump_ptr += strlen("========\n");
+			fw_dump_ptr += DSTRLEN("========\n");
 
 			memcpy(fw_dump_ptr, entry->mem_ptr, entry->mem_size);
 			fw_dump_ptr += entry->mem_size;
 
 			strcpy(fw_dump_ptr, "\n========End dump========\n");
-			fw_dump_ptr += strlen("\n========End dump========\n");
+			fw_dump_ptr += DSTRLEN("\n========End dump========\n");
 
 			vfree(mem_type_mapping_tbl[idx].mem_ptr);
 			mem_type_mapping_tbl[idx].mem_ptr = NULL;

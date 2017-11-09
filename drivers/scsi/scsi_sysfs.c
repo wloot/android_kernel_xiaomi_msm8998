@@ -288,7 +288,7 @@ show_shost_eh_deadline(struct device *dev,
 	struct Scsi_Host *shost = class_to_shost(dev);
 
 	if (shost->eh_deadline == -1)
-		return snprintf(buf, strlen("off") + 2, "off\n");
+		return snprintf(buf, DSTRLEN("off") + 2, "off\n");
 	return sprintf(buf, "%u\n", shost->eh_deadline / HZ);
 }
 
@@ -305,7 +305,7 @@ store_shost_eh_deadline(struct device *dev, struct device_attribute *attr,
 	     !shost->hostt->eh_host_reset_handler))
 		return ret;
 
-	if (!strncmp(buf, "off", strlen("off")))
+	if (!strncmp(buf, "off", DSTRLEN("off")))
 		deadline = -1;
 	else {
 		ret = kstrtoul(buf, 10, &deadline);

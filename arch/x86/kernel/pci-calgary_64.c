@@ -1507,11 +1507,11 @@ static int __init calgary_parse_options(char *p)
 		else if (!strncmp(p, "8M", 2))
 			specified_table_size = TCE_TABLE_SIZE_8M;
 
-		len = strlen("translate_empty_slots");
+		len = DSTRLEN("translate_empty_slots");
 		if (!strncmp(p, "translate_empty_slots", len))
 			translate_empty_slots = 1;
 
-		len = strlen("disable");
+		len = DSTRLEN("disable");
 		if (!strncmp(p, "disable", len)) {
 			p += len;
 			if (*p == '=')

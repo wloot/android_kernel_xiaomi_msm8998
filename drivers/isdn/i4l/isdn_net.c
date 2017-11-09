@@ -640,7 +640,7 @@ isdn_net_dial(void)
 				isdn_net_hangup(p->dev);
 				break;
 			}
-			if (!strncmp(lp->dial->num, "LEASED", strlen("LEASED"))) {
+			if (!strncmp(lp->dial->num, "LEASED", DSTRLEN("LEASED"))) {
 				lp->dialstate = 4;
 				printk(KERN_INFO "%s: Open leased line ...\n", p->dev->name);
 			} else {

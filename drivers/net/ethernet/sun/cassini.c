@@ -3247,7 +3247,7 @@ static int cas_get_vpd_info(struct cas *cp, unsigned char *dev_addr,
 			/* look for the following things:
 			 * -- correct length == 29
 			 * 3 (type) + 2 (size) +
-			 * 18 (strlen("local-mac-address") + 1) +
+			 * 18 (DSTRLEN("local-mac-address") + 1) +
 			 * 6 (mac addr)
 			 * -- VPD Instance 'I'
 			 * -- VPD Type Bytes 'B'
@@ -3256,8 +3256,8 @@ static int cas_get_vpd_info(struct cas *cp, unsigned char *dev_addr,
 			 *
 			 * -- correct length == 24
 			 * 3 (type) + 2 (size) +
-			 * 12 (strlen("entropy-dev") + 1) +
-			 * 7 (strlen("vms110") + 1)
+			 * 12 (DSTRLEN("entropy-dev") + 1) +
+			 * 7 (DSTRLEN("vms110") + 1)
 			 * -- VPD Instance 'I'
 			 * -- VPD Type String 'B'
 			 * -- VPD data length == 7
@@ -3265,8 +3265,8 @@ static int cas_get_vpd_info(struct cas *cp, unsigned char *dev_addr,
 			 *
 			 * -- correct length == 18
 			 * 3 (type) + 2 (size) +
-			 * 9 (strlen("phy-type") + 1) +
-			 * 4 (strlen("pcs") + 1)
+			 * 9 (DSTRLEN("phy-type") + 1) +
+			 * 4 (DSTRLEN("pcs") + 1)
 			 * -- VPD Instance 'I'
 			 * -- VPD Type String 'S'
 			 * -- VPD data length == 4
@@ -3274,8 +3274,8 @@ static int cas_get_vpd_info(struct cas *cp, unsigned char *dev_addr,
 			 *
 			 * -- correct length == 23
 			 * 3 (type) + 2 (size) +
-			 * 14 (strlen("phy-interface") + 1) +
-			 * 4 (strlen("pcs") + 1)
+			 * 14 (DSTRLEN("phy-interface") + 1) +
+			 * 4 (DSTRLEN("pcs") + 1)
 			 * -- VPD Instance 'I'
 			 * -- VPD Type String 'S'
 			 * -- VPD data length == 4

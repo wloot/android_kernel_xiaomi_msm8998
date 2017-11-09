@@ -52,7 +52,7 @@ machvec_init_from_cmdline(const char *cmdline)
 	if (! (start = strstr(cmdline, "machvec=")) )
 		return machvec_init(NULL);
 
-	strlcpy(str, start + strlen("machvec="), sizeof(str));
+	strlcpy(str, start + DSTRLEN("machvec="), sizeof(str));
 	if ( (end = strchr(str, ' ')) )
 		*end = '\0';
 

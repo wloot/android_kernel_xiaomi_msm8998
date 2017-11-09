@@ -114,7 +114,7 @@ void mconsole_log(struct mc_request *req)
 	int len;
 	char *ptr = req->request.data;
 
-	ptr += strlen("log ");
+	ptr += DSTRLEN("log ");
 
 	len = req->len - (ptr - req->request.data);
 	printk(KERN_WARNING "%.*s", len, ptr);
@@ -130,7 +130,7 @@ void mconsole_proc(struct mc_request *req)
 	int first_chunk = 1;
 	char *ptr = req->request.data;
 
-	ptr += strlen("proc");
+	ptr += DSTRLEN("proc");
 	ptr = skip_spaces(ptr);
 
 	file = file_open_root(mnt->mnt_root, mnt, ptr, O_RDONLY, 0);
@@ -473,7 +473,7 @@ void mconsole_config(struct mc_request *req)
 	char *ptr = req->request.data, *name, *error_string = "";
 	int err;
 
-	ptr += strlen("config");
+	ptr += DSTRLEN("config");
 	ptr = skip_spaces(ptr);
 	dev = mconsole_find_dev(ptr);
 	if (dev == NULL) {
@@ -500,7 +500,7 @@ void mconsole_remove(struct mc_request *req)
 	char error[256];
 	int err, start, end, n;
 
-	ptr += strlen("remove");
+	ptr += DSTRLEN("remove");
 	ptr = skip_spaces(ptr);
 	dev = mconsole_find_dev(ptr);
 	if (dev == NULL) {
@@ -624,7 +624,7 @@ void mconsole_sysrq(struct mc_request *req)
 {
 	char *ptr = req->request.data;
 
-	ptr += strlen("sysrq");
+	ptr += DSTRLEN("sysrq");
 	ptr = skip_spaces(ptr);
 
 	/*
@@ -668,7 +668,7 @@ void mconsole_stack(struct mc_request *req)
 	 * 2) Add a way to stack dump all pids.
 	 */
 
-	ptr += strlen("stack");
+	ptr += DSTRLEN("stack");
 	ptr = skip_spaces(ptr);
 
 	/*

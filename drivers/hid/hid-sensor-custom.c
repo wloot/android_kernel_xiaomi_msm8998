@@ -303,7 +303,7 @@ static ssize_t show_value(struct device *dev, struct device_attribute *attr,
 	} else
 		return -EINVAL;
 
-	if (!strncmp(name, "value", strlen("value"))) {
+	if (!strncmp(name, "value", DSTRLEN("value"))) {
 		u32 report_id;
 		int ret;
 
@@ -359,19 +359,19 @@ static ssize_t show_value(struct device *dev, struct device_attribute *attr,
 						sensor_inst->hsdev->usage,
 						usage, report_id,
 						SENSOR_HUB_SYNC);
-	} else if (!strncmp(name, "units", strlen("units")))
+	} else if (!strncmp(name, "units", DSTRLEN("units")))
 		value = sensor_inst->fields[field_index].attribute.units;
-	else if (!strncmp(name, "unit-expo", strlen("unit-expo")))
+	else if (!strncmp(name, "unit-expo", DSTRLEN("unit-expo")))
 		value = sensor_inst->fields[field_index].attribute.unit_expo;
-	else if (!strncmp(name, "size", strlen("size")))
+	else if (!strncmp(name, "size", DSTRLEN("size")))
 		value = sensor_inst->fields[field_index].attribute.size;
-	else if (!strncmp(name, "minimum", strlen("minimum")))
+	else if (!strncmp(name, "minimum", DSTRLEN("minimum")))
 		value = sensor_inst->fields[field_index].attribute.
 							logical_minimum;
-	else if (!strncmp(name, "maximum", strlen("maximum")))
+	else if (!strncmp(name, "maximum", DSTRLEN("maximum")))
 		value = sensor_inst->fields[field_index].attribute.
 							logical_maximum;
-	else if (!strncmp(name, "name", strlen("name"))) {
+	else if (!strncmp(name, "name", DSTRLEN("name"))) {
 		struct hid_custom_usage_desc *usage_desc;
 
 		usage_desc = bsearch(&usage, hid_custom_usage_desc_table,
@@ -404,7 +404,7 @@ static ssize_t store_value(struct device *dev, struct device_attribute *attr,
 	} else
 		return -EINVAL;
 
-	if (!strncmp(name, "value", strlen("value"))) {
+	if (!strncmp(name, "value", DSTRLEN("value"))) {
 		u32 report_id;
 		int ret;
 

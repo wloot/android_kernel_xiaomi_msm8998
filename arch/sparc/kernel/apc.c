@@ -45,7 +45,7 @@ static int apc_no_idle = 0;
  */
 static int __init apc_setup(char *str) 
 {
-	if(!strncmp(str, "noidle", strlen("noidle"))) {
+	if(!strncmp(str, "noidle", DSTRLEN("noidle"))) {
 		apc_no_idle = 1;
 		return 1;
 	}

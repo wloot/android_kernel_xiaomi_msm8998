@@ -84,7 +84,7 @@ static void __init xen_parse_512gb(void)
 	arg = strstr(xen_start_info->cmd_line, "xen_512gb_limit=");
 	if (!arg)
 		val = true;
-	else if (strtobool(arg + strlen("xen_512gb_limit="), &val))
+	else if (strtobool(arg + DSTRLEN("xen_512gb_limit="), &val))
 		return;
 
 	xen_512gb_limit = val;

@@ -65,11 +65,11 @@ static unsigned int help(struct sk_buff *skb,
 		return NF_DROP;
 	}
 
-	/* strlen("\1DCC CHAT chat AAAAAAAA P\1\n")=27
-	 * strlen("\1DCC SCHAT chat AAAAAAAA P\1\n")=28
-	 * strlen("\1DCC SEND F AAAAAAAA P S\1\n")=26
-	 * strlen("\1DCC MOVE F AAAAAAAA P S\1\n")=26
-	 * strlen("\1DCC TSEND F AAAAAAAA P S\1\n")=27
+	/* DSTRLEN("\1DCC CHAT chat AAAAAAAA P\1\n")=27
+	 * DSTRLEN("\1DCC SCHAT chat AAAAAAAA P\1\n")=28
+	 * DSTRLEN("\1DCC SEND F AAAAAAAA P S\1\n")=26
+	 * DSTRLEN("\1DCC MOVE F AAAAAAAA P S\1\n")=26
+	 * DSTRLEN("\1DCC TSEND F AAAAAAAA P S\1\n")=27
 	 *
 	 * AAAAAAAAA: bound addr (1.0.0.0==16777216, min 8 digits,
 	 *                        255.255.255.255==4294967296, 10 digits)

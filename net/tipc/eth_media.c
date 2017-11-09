@@ -41,7 +41,7 @@
 static int tipc_eth_addr2str(struct tipc_media_addr *addr,
 			     char *strbuf, int bufsz)
 {
-	if (bufsz < 18)	/* 18 = strlen("aa:bb:cc:dd:ee:ff\0") */
+	if (bufsz < 18)	/* 18 = DSTRLEN("aa:bb:cc:dd:ee:ff\0") */
 		return 1;
 
 	sprintf(strbuf, "%pM", addr->value);

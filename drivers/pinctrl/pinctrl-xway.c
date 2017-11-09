@@ -769,7 +769,7 @@ static int pinmux_xway_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 	for (i = 0; i < xway_chip.ngpio; i++) {
-		/* strlen("ioXY") + 1 = 5 */
+		/* DSTRLEN("ioXY") + 1 = 5 */
 		char *name = devm_kzalloc(&pdev->dev, 5, GFP_KERNEL);
 
 		if (!name) {

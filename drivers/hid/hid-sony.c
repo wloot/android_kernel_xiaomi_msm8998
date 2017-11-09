@@ -1698,7 +1698,7 @@ static int sony_leds_init(struct sony_sc *sc)
 	if (sc->quirks & BUZZ_CONTROLLER) {
 		sc->led_count = 4;
 		use_ds4_names = 0;
-		name_len = strlen("::buzz#");
+		name_len = DSTRLEN("::buzz#");
 		name_fmt = "%s::buzz%d";
 		/* Validate expected report characteristics. */
 		if (!hid_validate_values(hdev, HID_OUTPUT_REPORT, 0, 0, 7))
@@ -1725,14 +1725,14 @@ static int sony_leds_init(struct sony_sc *sc)
 		sc->led_count = 1;
 		memset(use_hw_blink, 1, 4);
 		use_ds4_names = 0;
-		name_len = strlen("::sony#");
+		name_len = DSTRLEN("::sony#");
 		name_fmt = "%s::sony%d";
 	} else {
 		sixaxis_set_leds_from_id(sc);
 		sc->led_count = 4;
 		memset(use_hw_blink, 1, 4);
 		use_ds4_names = 0;
-		name_len = strlen("::sony#");
+		name_len = DSTRLEN("::sony#");
 		name_fmt = "%s::sony%d";
 	}
 

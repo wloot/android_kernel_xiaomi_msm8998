@@ -1090,20 +1090,20 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
 	u8 idx, *dump_data, *fw_dump_ptr;
 	u32 dump_len;
 
-	dump_len = (strlen("========Start dump driverinfo========\n") +
+	dump_len = (DSTRLEN("========Start dump driverinfo========\n") +
 		       adapter->drv_info_size +
-		       strlen("\n========End dump========\n"));
+		       DSTRLEN("\n========End dump========\n"));
 
 	for (idx = 0; idx < adapter->num_mem_types; idx++) {
 		struct memory_type_mapping *entry =
 				&adapter->mem_type_mapping_tbl[idx];
 
 		if (entry->mem_ptr) {
-			dump_len += (strlen("========Start dump ") +
+			dump_len += (DSTRLEN("========Start dump ") +
 					strlen(entry->mem_name) +
-					strlen("========\n") +
+					DSTRLEN("========\n") +
 					(entry->mem_size + 1) +
-					strlen("\n========End dump========\n"));
+					DSTRLEN("\n========End dump========\n"));
 		}
 	}
 
@@ -1120,11 +1120,11 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
 		    "== mwifiex dump information to /sys/class/devcoredump start");
 
 	strcpy(fw_dump_ptr, "========Start dump driverinfo========\n");
-	fw_dump_ptr += strlen("========Start dump driverinfo========\n");
+	fw_dump_ptr += DSTRLEN("========Start dump driverinfo========\n");
 	memcpy(fw_dump_ptr, adapter->drv_info_dump, adapter->drv_info_size);
 	fw_dump_ptr += adapter->drv_info_size;
 	strcpy(fw_dump_ptr, "\n========End dump========\n");
-	fw_dump_ptr += strlen("\n========End dump========\n");
+	fw_dump_ptr += DSTRLEN("\n========End dump========\n");
 
 	for (idx = 0; idx < adapter->num_mem_types; idx++) {
 		struct memory_type_mapping *entry =
@@ -1132,19 +1132,19 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
 
 		if (entry->mem_ptr) {
 			strcpy(fw_dump_ptr, "========Start dump ");
-			fw_dump_ptr += strlen("========Start dump ");
+			fw_dump_ptr += DSTRLEN("========Start dump ");
 
 			strcpy(fw_dump_ptr, entry->mem_name);
 			fw_dump_ptr += strlen(entry->mem_name);
 
 			strcpy(fw_dump_ptr, "========\n");
-			fw_dump_ptr += strlen("========\n");
+			fw_dump_ptr += DSTRLEN("========\n");
 
 			memcpy(fw_dump_ptr, entry->mem_ptr, entry->mem_size);
 			fw_dump_ptr += entry->mem_size;
 
 			strcpy(fw_dump_ptr, "\n========End dump========\n");
-			fw_dump_ptr += strlen("\n========End dump========\n");
+			fw_dump_ptr += DSTRLEN("\n========End dump========\n");
 		}
 	}
 

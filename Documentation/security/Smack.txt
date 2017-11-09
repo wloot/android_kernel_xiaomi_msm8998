@@ -676,7 +676,7 @@ using getxattr(2).
 will put the Smack label of the root directory into value. A privileged
 process can set the Smack label of a file system object with setxattr(2).
 
-	len = strlen("Rubble");
+	len = DSTRLEN("Rubble");
 	rc = setxattr("/foo", "security.SMACK64", "Rubble", len, 0);
 
 will set the Smack label of /foo to "Rubble" if the program has appropriate
@@ -689,13 +689,13 @@ The socket attributes can be read using fgetxattr(2).
 A privileged process can set the Smack label of outgoing packets with
 fsetxattr(2).
 
-	len = strlen("Rubble");
+	len = DSTRLEN("Rubble");
 	rc = fsetxattr(fd, "security.SMACK64IPOUT", "Rubble", len, 0);
 
 will set the Smack label "Rubble" on packets going out from the socket if the
 program has appropriate privilege.
 
-	rc = fsetxattr(fd, "security.SMACK64IPIN, "*", strlen("*"), 0);
+	rc = fsetxattr(fd, "security.SMACK64IPIN, "*", DSTRLEN("*"), 0);
 
 will set the Smack label "*" as the object label against which incoming
 packets will be checked if the program has appropriate privilege.

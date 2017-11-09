@@ -68,7 +68,7 @@ module_param(verbose, int, 0644);
 /* Return the path relative to source root */
 static inline const char *trim_prefix(const char *path)
 {
-	int skip = strlen(__FILE__) - strlen("lib/dynamic_debug.c");
+	int skip = strlen(__FILE__) - DSTRLEN("lib/dynamic_debug.c");
 
 	if (strncmp(path, __FILE__, skip))
 		skip = 0; /* prefix mismatch, don't skip */

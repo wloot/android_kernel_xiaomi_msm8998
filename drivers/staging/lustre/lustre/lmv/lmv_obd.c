@@ -2298,7 +2298,7 @@ static int lmv_get_info(const struct lu_env *env, struct obd_export *exp,
 	}
 
 	lmv = &obd->u.lmv;
-	if (keylen >= strlen("remote_flag") && !strcmp(key, "remote_flag")) {
+	if (keylen >= DSTRLEN("remote_flag") && !strcmp(key, "remote_flag")) {
 		struct lmv_tgt_desc *tgt;
 		int i;
 

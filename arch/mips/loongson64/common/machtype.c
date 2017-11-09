@@ -52,7 +52,7 @@ void __init prom_init_machtype(void)
 		mach_prom_init_machtype();
 		return;
 	}
-	p += strlen("machtype=");
+	p += DSTRLEN("machtype=");
 	strncpy(str, p, MACHTYPE_LEN);
 	str[MACHTYPE_LEN] = '\0';
 	p = strstr(str, " ");

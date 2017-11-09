@@ -2251,7 +2251,7 @@ static int _bnx2fc_create(struct net_device *netdev,
 	if (phys_dev->ethtool_ops && phys_dev->ethtool_ops->get_drvinfo) {
 		memset(&drvinfo, 0, sizeof(drvinfo));
 		phys_dev->ethtool_ops->get_drvinfo(phys_dev, &drvinfo);
-		if (strncmp(drvinfo.driver, "bnx2x", strlen("bnx2x"))) {
+		if (strncmp(drvinfo.driver, "bnx2x", DSTRLEN("bnx2x"))) {
 			printk(KERN_ERR PFX "Not a netxtreme2 device\n");
 			rc = -EINVAL;
 			goto netdev_err;

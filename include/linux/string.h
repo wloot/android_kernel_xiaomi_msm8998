@@ -167,4 +167,15 @@ static inline const char *kbasename(const char *path)
 	return tail ? tail + 1 : path;
 }
 
+/**
+ * Macro to get length of definite strings
+ *
+ * strlen is often used incorectly to get the
+ * length of strings defined at compile time.
+ * DSTRLEN can be used in place of strlen in
+ * these situations. - Joe Maples
+ */
+#define DSTRLEN(X) \
+  sizeof(X) - 1
+
 #endif /* _LINUX_STRING_H_ */

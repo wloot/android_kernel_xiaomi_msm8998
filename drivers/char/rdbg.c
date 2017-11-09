@@ -1026,7 +1026,7 @@ static int __init rdbg_init(void)
 	int minor_nodes_created = 0;
 
 	char *rdbg_compatible_string = "qcom,smp2pgpio_client_rdbg_";
-	int max_len = strlen(rdbg_compatible_string) + strlen("xx_out");
+	int max_len = strlen(rdbg_compatible_string) + DSTRLEN("xx_out");
 
 	char *node_name = kcalloc(max_len, sizeof(char), GFP_KERNEL);
 

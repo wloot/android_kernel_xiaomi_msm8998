@@ -126,7 +126,7 @@ static void __init xes_mpc85xx_setup_arch(void)
 	model = of_get_property(root, "model", NULL);
 
 	printk(KERN_INFO "X-ES MPC85xx-based single-board computer: %s\n",
-	       model + strlen("xes,"));
+	       model + DSTRLEN("xes,"));
 
 	xes_mpc85xx_fixups();
 

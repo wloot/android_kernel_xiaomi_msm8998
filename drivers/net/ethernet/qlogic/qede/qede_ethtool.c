@@ -288,7 +288,7 @@ static void qede_get_drvinfo(struct net_device *ndev,
 		 (edev->dev_info.common.mfw_rev >> 8) & 0xFF,
 		 edev->dev_info.common.mfw_rev & 0xFF);
 
-	if ((strlen(storm) + strlen(mfw) + strlen("mfw storm  ")) <
+	if ((strlen(storm) + strlen(mfw) + DSTRLEN("mfw storm  ")) <
 	    sizeof(info->fw_version)) {
 		snprintf(info->fw_version, sizeof(info->fw_version),
 			 "mfw %s storm %s", mfw, storm);

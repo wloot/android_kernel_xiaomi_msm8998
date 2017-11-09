@@ -386,7 +386,7 @@ static int get_derived_key(u8 *derived_key, enum derived_key_type key_type,
 	unsigned int derived_buf_len;
 	int ret;
 
-	derived_buf_len = strlen("AUTH_KEY") + 1 + master_keylen;
+	derived_buf_len = DSTRLEN("AUTH_KEY") + 1 + master_keylen;
 	if (derived_buf_len < HASH_SIZE)
 		derived_buf_len = HASH_SIZE;
 

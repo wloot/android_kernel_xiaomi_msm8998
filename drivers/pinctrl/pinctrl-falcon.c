@@ -99,7 +99,7 @@ static void lantiq_load_pin_desc(struct pinctrl_pin_desc *d, int bank, int len)
 	int i;
 
 	for (i = 0; i < len; i++) {
-		/* strlen("ioXYZ") + 1 = 6 */
+		/* DSTRLEN("ioXYZ") + 1 = 6 */
 		char *name = kzalloc(6, GFP_KERNEL);
 
 		snprintf(name, 6, "io%d", base + i);

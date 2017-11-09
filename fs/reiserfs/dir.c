@@ -293,7 +293,7 @@ void make_empty_dir_item_v1(char *body, __le32 dirid, __le32 objid,
 	dot->deh_dir_id = dirid;
 	dot->deh_objectid = objid;
 	dot->deh_state = 0;	/* Endian safe if 0 */
-	put_deh_location(dot, EMPTY_DIR_SIZE_V1 - strlen("."));
+	put_deh_location(dot, EMPTY_DIR_SIZE_V1 - DSTRLEN("."));
 	mark_de_visible(dot);
 
 	/* direntry header of ".." */
@@ -303,7 +303,7 @@ void make_empty_dir_item_v1(char *body, __le32 dirid, __le32 objid,
 	dotdot->deh_dir_id = par_dirid;
 	dotdot->deh_objectid = par_objid;
 	dotdot->deh_state = 0;	/* Endian safe if 0 */
-	put_deh_location(dotdot, deh_location(dot) - strlen(".."));
+	put_deh_location(dotdot, deh_location(dot) - DSTRLEN(".."));
 	mark_de_visible(dotdot);
 
 	/* copy ".." and "." */
@@ -327,7 +327,7 @@ void make_empty_dir_item(char *body, __le32 dirid, __le32 objid,
 	dot->deh_dir_id = dirid;
 	dot->deh_objectid = objid;
 	dot->deh_state = 0;	/* Endian safe if 0 */
-	put_deh_location(dot, EMPTY_DIR_SIZE - ROUND_UP(strlen(".")));
+	put_deh_location(dot, EMPTY_DIR_SIZE - ROUND_UP(DSTRLEN(".")));
 	mark_de_visible(dot);
 
 	/* direntry header of ".." */
@@ -337,7 +337,7 @@ void make_empty_dir_item(char *body, __le32 dirid, __le32 objid,
 	dotdot->deh_dir_id = par_dirid;
 	dotdot->deh_objectid = par_objid;
 	dotdot->deh_state = 0;	/* Endian safe if 0 */
-	put_deh_location(dotdot, deh_location(dot) - ROUND_UP(strlen("..")));
+	put_deh_location(dotdot, deh_location(dot) - ROUND_UP(DSTRLEN("..")));
 	mark_de_visible(dotdot);
 
 	/* copy ".." and "." */
