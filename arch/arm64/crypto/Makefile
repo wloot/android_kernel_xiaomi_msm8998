@@ -21,7 +21,7 @@ obj-$(CONFIG_CRYPTO_POLY_HASH_ARM64_CE) += poly-hash-ce.o
 poly-hash-ce-y := poly-hash-ce-glue.o poly-hash-ce-core.o
 
 obj-$(CONFIG_CRYPTO_AES_ARM64_CE) += aes-ce-cipher.o
-CFLAGS_aes-ce-cipher.o += -march=armv8-a+crypto
+CFLAGS_aes-ce-cipher.o += -march=armv8-a+crypto $(DISABLE_LTO)
 ifeq ($(cc-name),clang)
 CFLAGS_aes-ce-cipher.o += -mcpu=cortex-a53+crypto
 endif
