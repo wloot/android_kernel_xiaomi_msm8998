@@ -9,7 +9,6 @@
 
 #include <linux/types.h>
 #include <linux/notifier.h>
-#include <linux/wakelock.h>
 
 #define GF_KEY_INPUT_HOME		KEY_HOME
 
@@ -46,7 +45,7 @@ struct gf_device {
 	struct notifier_block notifier;
 	struct workqueue_struct *event_workqueue;
 	struct work_struct event_work;
-	struct wake_lock fp_wakelock;
+	struct wakeup_source fp_wakelock;
 	bool display_on;
 	int event;
 
