@@ -53,22 +53,18 @@ static int convert_prio(int prio)
 }
 
 /**
- * drop_nopreempt_cpus - remove a cpu from the mask if it is likely
- *			 non-preemptible
+ * cpupri_find - remove a cpu from the mask if it is likely non-preemptible
  * @lowest_mask: mask with selected CPUs (non-NULL)
  */
 static void
 drop_nopreempt_cpus(struct cpumask *lowest_mask)
 {
-	unsigned int cpu = cpumask_first(lowest_mask);
-
+	unsigned cpu = cpumask_first(lowest_mask);
 	while (cpu < nr_cpu_ids) {
 		/* unlocked access */
 		struct task_struct *task = READ_ONCE(cpu_rq(cpu)->curr);
-
 		if (task_may_not_preempt(task, cpu))
 			cpumask_clear_cpu(cpu, lowest_mask);
-
 		cpu = cpumask_next(cpu, lowest_mask);
 	}
 }
@@ -133,8 +129,9 @@ retry:
 
 		if (lowest_mask) {
 			cpumask_and(lowest_mask, &p->cpus_allowed, vec->mask);
-			if (drop_nopreempts)
+			if (drop_nopreempts) {
 				drop_nopreempt_cpus(lowest_mask);
+			}
 			/*
 			 * We have to ensure that we have at least one bit
 			 * still set in the array, since the map could have
@@ -286,7 +283,7 @@ void cpupri_cleanup(struct cpupri *cp)
  */
 bool cpupri_check_rt(void)
 {
-	int cpu = raw_smp_processor_id();
+    int cpu = raw_smp_processor_id();
 
-	return cpu_rq(cpu)->rd->cpupri.cpu_to_pri[cpu] > CPUPRI_NORMAL;
+    return cpu_rq(cpu)->rd->cpupri.cpu_to_pri[cpu] > CPUPRI_NORMAL;
 }
