@@ -584,7 +584,7 @@ __SC_COMP(__NR_readahead, sys_readahead, compat_sys_readahead)
 
 /* mm/nommu.c, also with MMU */
 #define __NR_brk 214
-__SYSCALL(__NR_brk, sys_brk)
+__SYSCALL(__NR_brk, sys_ni_syscall)
 #define __NR_munmap 215
 __SYSCALL(__NR_munmap, sys_munmap)
 #define __NR_mremap 216

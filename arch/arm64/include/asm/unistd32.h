@@ -112,7 +112,7 @@ __SYSCALL(__NR_times, compat_sys_times)
 			/* 44 was sys_prof */
 __SYSCALL(44, sys_ni_syscall)
 #define __NR_brk 45
-__SYSCALL(__NR_brk, sys_brk)
+__SYSCALL(__NR_brk, sys_ni_syscall)
 #define __NR_setgid 46
 __SYSCALL(__NR_setgid, sys_setgid16)
 #define __NR_getgid 47
