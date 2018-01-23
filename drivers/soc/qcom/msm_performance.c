@@ -116,8 +116,9 @@ static int init_events_group(void);
 static int register_input_handler(void);
 static void unregister_input_handler(void);
 
-
+#ifdef CONFIG_SCHED_HMP
 static DEFINE_PER_CPU(unsigned int, cpu_power_cost);
+#endif // CONFIG_SCHED_HMP
 
 struct load_stats {
 	u64 last_wallclock;
@@ -2311,6 +2312,7 @@ static struct notifier_block perf_cputransitions_nb = {
  */
 static int __ref rm_high_pwr_cost_cpus(struct cluster *cl)
 {
+#ifdef CONFIG_SCHED_HMP
 	unsigned int cpu, i;
 	struct cpu_pwr_stats *per_cpu_info = get_cpu_pwr_stats();
 	struct cpu_pstate_pwr *costs;
@@ -2376,6 +2378,9 @@ end:
 		return -EAGAIN;
 	else
 		return 0;
+#else
+	return -ENOSYS;
+#endif // CONFIG_SCHED_HMP
 }
 
 /*
