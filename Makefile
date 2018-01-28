@@ -640,7 +640,7 @@ ARCH_CFLAGS :=
 include arch/$(SRCARCH)/Makefile
 
 ifeq ($(cc-name),clang)
-KBUILD_CFLAGS	+= -O3
+KBUILD_CFLAGS	+= -O3 $(call cc-option, -fsanitize=local-init)
 else
 KBUILD_CFLAGS	+= -O2
 endif
