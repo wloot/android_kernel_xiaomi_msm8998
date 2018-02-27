@@ -10,6 +10,7 @@
 #include <linux/irq_work.h>
 
 #include "walt.h"
+#include "tune.h" 
 
 int sched_rr_timeslice = RR_TIMESLICE;
 
