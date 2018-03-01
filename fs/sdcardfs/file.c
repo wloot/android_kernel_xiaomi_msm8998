@@ -279,8 +279,10 @@ static int sdcardfs_open(struct inode *inode, struct file *file)
 
 	if (err)
 		kfree(SDCARDFS_F(file));
-	else
+	else {
 		sdcardfs_copy_and_fix_attrs(inode, sdcardfs_lower_inode(inode));
+		fsstack_copy_inode_size(inode, sdcardfs_lower_inode(inode));
+	}
 
 out_revert_cred:
 	revert_fsids(saved_cred);
