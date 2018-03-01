@@ -50,7 +50,11 @@ ifdef CONFIG_MSM_SUBSYSTEM_RESTART
 	obj-$(CONFIG_MSM_GVM_QUIN) += subsystem_notif_virt.o
 endif
 
-obj-$(CONFIG_QPNP_HAPTIC) += qpnp-haptic.o
+ifdef CONFIG_MACH_XIAOMI
+	obj-$(CONFIG_QPNP_HAPTIC) += qpnp-haptic-xiaomi.o
+else
+	obj-$(CONFIG_QPNP_HAPTIC) += qpnp-haptic.o
+endif
 obj-$(CONFIG_QCOM_GSBI)	+=	qcom_gsbi.o
 obj-$(CONFIG_QCOM_CPUSS_DUMP) += cpuss_dump.o
 obj-$(CONFIG_QPNP_PBS) += qpnp-pbs.o

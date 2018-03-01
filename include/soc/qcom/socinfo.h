@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2009-2018, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -84,12 +85,14 @@
 	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msmtellurium")
 #define early_machine_is_msm8996()	\
 	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msm8996")
+#define early_machine_is_msm8996_auto()	\
+	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msm8996-cdp")
 #define early_machine_is_msm8929()	\
 	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msm8929")
 #define early_machine_is_msm8998()	\
 	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msm8998")
-#define early_machine_is_apq8098()	\
-	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,apq8098")
+#define early_machine_is_apq8998()	\
+	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,apq8998")
 #define early_machine_is_msmhamster()	\
 	of_flat_dt_is_compatible(of_get_flat_dt_root(), "qcom,msmhamster")
 #define early_machine_is_sdm660()	\
@@ -144,7 +147,7 @@
 #define early_machine_is_msm8976() 0
 #define early_machine_is_msm8929()	0
 #define early_machine_is_msm8998()	0
-#define early_machine_is_apq8098()	0
+#define early_machine_is_apq8998()	0
 #define early_machine_is_msmhamster()	0
 #define early_machine_is_sdm660()	0
 #define early_machine_is_sda660()	0
