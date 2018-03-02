@@ -3060,7 +3060,10 @@ static void binder_transaction(struct binder_proc *proc,
 	if (target_thread)
 		e->to_thread = target_thread->pid;
 	e->to_proc = target_proc->pid;
-
+#ifdef CONFIG_FROZEN_APP
+	/* Wakeup frozen application cgroup */
+	cgroup_thawed_by_pid(target_proc->pid);
+#endif
 	/* TODO: reuse incoming transaction for reply */
 	t = kzalloc(sizeof(*t), GFP_KERNEL);
 	if (t == NULL) {

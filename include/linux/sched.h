@@ -439,6 +439,7 @@ static inline void set_cpu_sd_state_idle(void) { }
  * Only dump TASK_* tasks. (0 for all tasks)
  */
 extern void show_state_filter(unsigned long state_filter);
+extern void show_state_filter_single(unsigned long state_filter);
 
 static inline void show_state(void)
 {
@@ -1496,6 +1497,7 @@ struct ravg {
 	u32 sum, demand;
 	u32 sum_history[RAVG_HIST_SIZE_MAX];
 	u32 *curr_window_cpu, *prev_window_cpu;
+	u64 proc_load;
 	u32 curr_window, prev_window;
 	u64 curr_burst, avg_burst, avg_sleep_time;
 	u16 active_windows;
@@ -1709,6 +1711,10 @@ struct task_struct {
 	unsigned int policy;
 	int nr_cpus_allowed;
 	cpumask_t cpus_allowed;
+#ifdef CONFIG_CPUSET_EXCLUSIVE_IND
+	int exclusive_flag;
+	cpumask_t cpus_allowed_bak;
+#endif
 
 #ifdef CONFIG_PREEMPT_RCU
 	int rcu_read_lock_nesting;
@@ -2481,9 +2487,9 @@ static inline void memalloc_noio_restore(unsigned int flags)
 #define PFA_NO_NEW_PRIVS 0	/* May not gain new privileges. */
 #define PFA_SPREAD_PAGE  1      /* Spread page cache over cpuset */
 #define PFA_SPREAD_SLAB  2      /* Spread some slab caches over cpuset */
+#define PFA_LMK_WAITING  3      /* Lowmemorykiller is waiting */
 #define PFA_SPEC_SSB_DISABLE		4	/* Speculative Store Bypass disabled */
 #define PFA_SPEC_SSB_FORCE_DISABLE	5	/* Speculative Store Bypass force disabled*/
-
 
 #define TASK_PFA_TEST(name, func)					\
 	static inline bool task_##func(struct task_struct *p)		\
@@ -2505,6 +2511,9 @@ TASK_PFA_CLEAR(SPREAD_PAGE, spread_page)
 TASK_PFA_TEST(SPREAD_SLAB, spread_slab)
 TASK_PFA_SET(SPREAD_SLAB, spread_slab)
 TASK_PFA_CLEAR(SPREAD_SLAB, spread_slab)
+
+TASK_PFA_TEST(LMK_WAITING, lmk_waiting)
+TASK_PFA_SET(LMK_WAITING, lmk_waiting)
 
 TASK_PFA_TEST(SPEC_SSB_DISABLE, spec_ssb_disable)
 TASK_PFA_SET(SPEC_SSB_DISABLE, spec_ssb_disable)
