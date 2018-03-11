@@ -372,7 +372,7 @@ static int __init do_copy(void)
 	if (byte_count >= body_len) {
 		if (xwrite(wfd, victim, body_len) != body_len)
 			error("write error");
-		sys_close(wfd);
+		ksys_close(wfd);
 		do_utime(vcollected, mtime);
 		kfree(vcollected);
 		eat(body_len);
@@ -573,7 +573,7 @@ static void __init clean_rootfs(void)
 	buf = kzalloc(BUF_SIZE, GFP_KERNEL);
 	WARN_ON(!buf);
 	if (!buf) {
-		sys_close(fd);
+		ksys_close(fd);
 		return;
 	}
 
@@ -601,7 +601,7 @@ static void __init clean_rootfs(void)
 		num = sys_getdents64(fd, dirp, BUF_SIZE);
 	}
 
-	sys_close(fd);
+	ksys_close(fd);
 	kfree(buf);
 }
 #endif
@@ -655,7 +655,7 @@ static int __init populate_rootfs(void)
 				pr_err("/initrd.image: incomplete write (%zd != %ld)\n",
 				       written, initrd_end - initrd_start);
 
-			sys_close(fd);
+			ksys_close(fd);
 			free_initrd();
 		}
 	done:
