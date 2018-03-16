@@ -580,6 +580,7 @@ static int32_t msm_ois_control(struct msm_ois_ctrl_t *o_ctrl,
 	struct msm_ois_set_info_t *set_info)
 {
 	struct reg_settings_ois_t *settings = NULL;
+	struct reg_settings_ois_t *temp_settings = NULL;
 	int32_t rc = 0, i = 0;
 	struct msm_camera_cci_client *cci_client = NULL;
 	CDBG("Enter\n");
@@ -606,7 +607,15 @@ static int32_t msm_ois_control(struct msm_ois_ctrl_t *o_ctrl,
 			sizeof(struct reg_settings_ois_t) *
 			(set_info->ois_params.setting_size),
 			GFP_KERNEL);
+		temp_settings = kmalloc(
+			sizeof(struct reg_settings_ois_t) *
+			(set_info->ois_params.setting_size),
+			GFP_KERNEL);
 		if (settings == NULL) {
+			pr_err("Error allocating memory\n");
+			return -EFAULT;
+		}
+		if (temp_settings == NULL) {
 			pr_err("Error allocating memory\n");
 			return -EFAULT;
 		}
@@ -618,23 +627,38 @@ static int32_t msm_ois_control(struct msm_ois_ctrl_t *o_ctrl,
 			pr_err("Error copying\n");
 			return -EFAULT;
 		}
+		if (copy_from_user(temp_settings,
+			(void *)set_info->ois_params.settings,
+			set_info->ois_params.setting_size *
+			sizeof(struct reg_settings_ois_t))) {
+			kfree(temp_settings);
+			pr_err("copy_from_user failed\n");
+			return -EFAULT;
+		}
 
 		rc = msm_ois_write_settings(o_ctrl,
 			set_info->ois_params.setting_size,
 			settings);
 
 		for (i = 0; i < set_info->ois_params.setting_size; i++) {
-			if (set_info->ois_params.settings[i].i2c_operation
-				== MSM_OIS_READ) {
-				set_info->ois_params.settings[i].reg_data =
-					settings[i].reg_data;
+			if (temp_settings[i].i2c_operation == MSM_OIS_READ) {
+				temp_settings[i].reg_data = settings[i].reg_data;
 				CDBG("ois_data at addr 0x%x is 0x%x",
-				set_info->ois_params.settings[i].reg_addr,
-				set_info->ois_params.settings[i].reg_data);
+				temp_settings[i].reg_addr,
+				temp_settings[i].reg_data);
 			}
 		}
 
+		if (copy_to_user((void *)set_info->ois_params.settings,
+			temp_settings, set_info->ois_params.setting_size *
+			sizeof(struct reg_settings_ois_t))) {
+			kfree(temp_settings);
+			pr_err("copy_to_user failed\n");
+			return -EFAULT;
+		}
+
 		kfree(settings);
+		kfree(temp_settings);
 		if (rc < 0) {
 			pr_err("Error\n");
 			return -EFAULT;
