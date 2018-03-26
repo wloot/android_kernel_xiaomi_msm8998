@@ -550,6 +550,10 @@ int smblib_set_prop_pr_swap_in_progress(struct smb_charger *chg,
 				const union power_supply_propval *val);
 void smblib_usb_typec_change(struct smb_charger *chg);
 
+#ifndef CONFIG_QPNP_FG_GEN3_LEGACY_CYCLE_COUNT
+int smblib_get_cycle_count(struct smb_charger *chg,
+			   union power_supply_propval *val);
+#endif
 int smblib_init(struct smb_charger *chg);
 int smblib_deinit(struct smb_charger *chg);
 #endif /* __SMB2_CHARGER_H */
