@@ -1609,9 +1609,7 @@ static int pcxhr_probe(struct pci_dev *pci,
 	/* init setup mutex*/
 	mutex_init(&mgr->setup_mutex);
 
-	mgr->prmh = kmalloc(sizeof(*mgr->prmh) + 
-			    sizeof(u32) * (PCXHR_SIZE_MAX_LONG_STATUS -
-					   PCXHR_SIZE_MAX_STATUS),
+	mgr->prmh = kmalloc(CHECKME_struct_size(&*mgr->prmh, u32, (PCXHR_SIZE_MAX_LONG_STATUS - PCXHR_SIZE_MAX_STATUS)),
 			    GFP_KERNEL);
 	if (! mgr->prmh) {
 		pcxhr_free(mgr);

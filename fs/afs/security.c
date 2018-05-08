@@ -184,7 +184,7 @@ void afs_cache_permit(struct afs_vnode *vnode, struct key *key, long acl_order)
 		}
 	}
 
-	permits = kmalloc(sizeof(*permits) + sizeof(*permit) * (count + 1),
+	permits = kmalloc(CHECKME_struct_size(&*permits, *permit, (count + 1)),
 			  GFP_NOFS);
 	if (!permits)
 		goto out_unlock;
