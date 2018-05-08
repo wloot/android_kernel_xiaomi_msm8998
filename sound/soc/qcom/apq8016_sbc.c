@@ -82,7 +82,8 @@ static struct apq8016_sbc_data *apq8016_sbc_parse_of(struct snd_soc_card *card)
 	num_links = of_get_child_count(node);
 
 	/* Allocate the private data and the DAI link array */
-	data = devm_kzalloc(dev, sizeof(*data) + sizeof(*link) * num_links,
+	data = devm_kzalloc(dev,
+			    CHECKME_struct_size(&*data, *link, num_links),
 			    GFP_KERNEL);
 	if (!data)
 		return ERR_PTR(-ENOMEM);

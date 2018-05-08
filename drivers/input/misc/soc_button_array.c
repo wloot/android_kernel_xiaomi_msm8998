@@ -79,8 +79,7 @@ soc_button_device_create(struct platform_device *pdev,
 	int error;
 
 	gpio_keys_pdata = devm_kzalloc(&pdev->dev,
-				       sizeof(*gpio_keys_pdata) +
-					sizeof(*gpio_keys) * MAX_NBUTTONS,
+				       CHECKME_struct_size(&*gpio_keys_pdata, *gpio_keys, MAX_NBUTTONS),
 				       GFP_KERNEL);
 	if (!gpio_keys_pdata)
 		return ERR_PTR(-ENOMEM);

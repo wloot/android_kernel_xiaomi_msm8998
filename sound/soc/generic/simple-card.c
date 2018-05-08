@@ -551,8 +551,8 @@ static int asoc_simple_card_probe(struct platform_device *pdev)
 
 	/* Allocate the private data and the DAI link array */
 	priv = devm_kzalloc(dev,
-			sizeof(*priv) + sizeof(*dai_link) * num_links,
-			GFP_KERNEL);
+			    CHECKME_struct_size(&*priv, *dai_link, num_links),
+			    GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 

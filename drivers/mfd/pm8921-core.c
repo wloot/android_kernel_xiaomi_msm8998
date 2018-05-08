@@ -352,9 +352,8 @@ static int pm8921_probe(struct platform_device *pdev)
 	pr_info("PMIC revision 2: %02X\n", val);
 	rev |= val << BITS_PER_BYTE;
 
-	chip = devm_kzalloc(&pdev->dev, sizeof(*chip) +
-					sizeof(chip->config[0]) * nirqs,
-					GFP_KERNEL);
+	chip = devm_kzalloc(&pdev->dev, struct_size(chip, config, nirqs),
+			    GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
