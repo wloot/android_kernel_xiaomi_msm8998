@@ -557,7 +557,7 @@ static int axmclk_probe(struct platform_device *pdev)
 
 	num_clks = ARRAY_SIZE(axmclk_clocks);
 	pr_info("axmclk: supporting %zu clocks\n", num_clks);
-	priv = devm_kzalloc(dev, sizeof(*priv) + sizeof(*priv->clks) * num_clks,
+	priv = devm_kzalloc(dev, struct_size(priv, clks, num_clks),
 			    GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;

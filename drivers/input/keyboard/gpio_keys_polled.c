@@ -154,7 +154,8 @@ static struct gpio_keys_platform_data *gpio_keys_polled_get_devtree_pdata(struct
 	if (nbuttons == 0)
 		return NULL;
 
-	pdata = devm_kzalloc(dev, sizeof(*pdata) + nbuttons * sizeof(*button),
+	pdata = devm_kzalloc(dev,
+			     CHECKME_struct_size(&*pdata, *button, nbuttons),
 			     GFP_KERNEL);
 	if (!pdata)
 		return ERR_PTR(-ENOMEM);

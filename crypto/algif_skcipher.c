@@ -134,8 +134,8 @@ static int skcipher_alloc_sgl(struct sock *sk)
 		sg = sgl->sg;
 
 	if (!sg || sgl->cur >= MAX_SGL_ENTS) {
-		sgl = sock_kmalloc(sk, sizeof(*sgl) +
-				       sizeof(sgl->sg[0]) * (MAX_SGL_ENTS + 1),
+		sgl = sock_kmalloc(sk,
+				   struct_size(sgl, sg, (MAX_SGL_ENTS + 1)),
 				   GFP_KERNEL);
 		if (!sgl)
 			return -ENOMEM;

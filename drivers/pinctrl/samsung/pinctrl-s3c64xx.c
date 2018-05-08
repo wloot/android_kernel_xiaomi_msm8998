@@ -488,8 +488,8 @@ static int s3c64xx_eint_gpio_init(struct samsung_pinctrl_drv_data *d)
 		++nr_domains;
 	}
 
-	data = devm_kzalloc(dev, sizeof(*data)
-			+ nr_domains * sizeof(*data->domains), GFP_KERNEL);
+	data = devm_kzalloc(dev, struct_size(data, domains, nr_domains),
+			    GFP_KERNEL);
 	if (!data) {
 		dev_err(dev, "failed to allocate handler data\n");
 		return -ENOMEM;
