@@ -815,6 +815,7 @@
 	qcom,usb-icl-ua = <3000000>;
 	qcom,fcc-max-ua = <3200000>;
 	qcom,auto-recharge-soc;
+	qcom,low-batt-threshold = <2>;
 
 	qcom,thermal-mitigation
 				= <1800000 1600000 1400000 1200000 1000000 1000000 1000000>;
