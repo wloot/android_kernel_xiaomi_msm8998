@@ -167,7 +167,3 @@ obj-$(CONFIG_SENSORS_QPNP_ADC_CURRENT)	+= qpnp-adc-current.o qpnp-adc-common.o
 obj-$(CONFIG_PMBUS)		+= pmbus/
 
 ccflags-$(CONFIG_HWMON_DEBUG_CHIP) := -DDEBUG
-
-#TODO: remove me b/62058353
-subdir-ccflags-y += \
-	-Wno-enum-conversion
