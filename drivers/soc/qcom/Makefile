@@ -114,5 +114,4 @@ obj-$(CONFIG_QCOM_QDSS_BRIDGE) += qdss_bridge.o
 
 # TODO: remove me b/62058353
 subdir-ccflags-y += \
-	-Wno-ignored-attributes \
 	-Wno-gcc-compat
