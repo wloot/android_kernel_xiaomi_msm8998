@@ -5587,8 +5587,6 @@ static int synaptics_rmi4_fb_notifier_cb(struct notifier_block *self,
 				if (rmi4_data->wakeup_en) {
 					mdss_panel_reset_skip_enable(false);
 					mdss_regulator_ctrl(rmi4_data, DISP_REG_ALL, false);
-					mdss_dsi_ulps_suspend_enable(false);
-					mdss_dsi_ulps_enable(false);
 					rmi4_data->wakeup_en = false;
 				}
 
@@ -5610,10 +5608,6 @@ static int synaptics_rmi4_fb_notifier_cb(struct notifier_block *self,
 					rmi4_data->wakeup_en = true;
 					mdss_regulator_ctrl(rmi4_data, DISP_REG_ALL, true);
 					mdss_panel_reset_skip_enable(true);
-					pr_debug("Enable suspend ulps\n");
-					mdss_dsi_ulps_enable(true);
-					mdss_dsi_ulps_suspend_enable(true);
-
 				}
 			} else if ((*transition == FB_BLANK_UNBLANK) || (*transition == FB_BLANK_NORMAL)) {
 				if (bdata->reset_gpio >= 0 && rmi4_data->suspend) {
