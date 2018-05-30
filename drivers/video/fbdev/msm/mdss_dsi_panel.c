@@ -49,18 +49,6 @@ void mdss_panel_reset_skip_enable(bool enable)
 {
 	mdss_panel_reset_skip = enable;
 }
-
-void mdss_dsi_ulps_enable(bool enable)
-{
-	if (mdss_pinfo)
-		mdss_pinfo->ulps_feature_enabled = enable;
-}
-
-void mdss_dsi_ulps_suspend_enable(bool enable)
-{
-	if (mdss_pinfo)
-		mdss_pinfo->ulps_suspend_enabled = enable;
-}
 #endif
 
 void mdss_dsi_panel_pwm_cfg(struct mdss_dsi_ctrl_pdata *ctrl)
