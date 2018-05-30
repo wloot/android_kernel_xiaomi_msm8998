@@ -163,7 +163,7 @@ static int gf_open(struct inode *inode, struct file *filp)
 	 */
 	gf_dev->irq_enabled = true;
 	rc = request_threaded_irq(gf_dev->irq, NULL, gf_irq,
-			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+			IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 			GF_IRQ_NAME, gf_dev);
 	if (rc) {
 		pr_err("%s: failed to request threaded irq, rc = %d\n", __func__, rc);
