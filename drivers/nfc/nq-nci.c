@@ -39,7 +39,9 @@ struct nqx_platform_data {
 	unsigned int clkreq_gpio;
 	unsigned int firm_gpio;
 	unsigned int ese_gpio;
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 	const char *clk_src_name;
+#endif
 };
 
 static const struct of_device_id msm_match_table[] = {
@@ -79,9 +81,11 @@ struct nqx_dev {
 	unsigned int		count_irq;
 	/* Initial CORE RESET notification */
 	unsigned int		core_reset_ntf;
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 	/* CLK control */
 	bool			clk_run;
 	struct	clk		*s_clk;
+#endif
 	/* read buffer*/
 	size_t kbuflen;
 	u8 *kbuf;
@@ -90,10 +94,12 @@ struct nqx_dev {
 
 static int nfcc_reboot(struct notifier_block *notifier, unsigned long val,
 			void *v);
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 /*clock enable function*/
 static int nqx_clock_select(struct nqx_dev *nqx_dev);
 /*clock disable function*/
 static int nqx_clock_deselect(struct nqx_dev *nqx_dev);
+#endif
 static struct notifier_block nfcc_notifier = {
 	.notifier_call	= nfcc_reboot,
 	.next			= NULL,
@@ -501,9 +507,11 @@ int nfc_ioctl_power_states(struct file *filp, unsigned long arg)
 			gpio_set_value(nqx_dev->en_gpio, 0);
 			usleep_range(10000, 10100);
 		}
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 		r = nqx_clock_deselect(nqx_dev);
 		if (r < 0)
 			dev_err(&nqx_dev->client->dev, "unable to disable clock\n");
+#endif
 		nqx_dev->nfc_ven_enabled = false;
 	} else if (arg == 1) {
 		nqx_enable_irq(nqx_dev);
@@ -516,9 +524,11 @@ int nfc_ioctl_power_states(struct file *filp, unsigned long arg)
 		}
 		gpio_set_value(nqx_dev->en_gpio, 1);
 		usleep_range(10000, 10100);
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 		r = nqx_clock_select(nqx_dev);
 		if (r < 0)
 			dev_err(&nqx_dev->client->dev, "unable to enable clock\n");
+#endif
 		nqx_dev->nfc_ven_enabled = true;
 	} else if (arg == 2) {
 		/*
@@ -781,6 +791,7 @@ done:
 }
 #endif
 
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 /*
 	* Routine to enable clock.
 	* this routine can be extended to select from multiple
@@ -824,6 +835,7 @@ static int nqx_clock_deselect(struct nqx_dev *nqx_dev)
 	}
 	return r;
 }
+#endif
 
 static int nfc_parse_dt(struct device *dev, struct nqx_platform_data *pdata)
 {
@@ -853,7 +865,9 @@ static int nfc_parse_dt(struct device *dev, struct nqx_platform_data *pdata)
 		pdata->ese_gpio = -EINVAL;
 	}
 
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 	r = of_property_read_string(np, "qcom,clk-src", &pdata->clk_src_name);
+#endif
 
 	pdata->clkreq_gpio = of_get_named_gpio(np, "qcom,nq-clkreq", 0);
 
@@ -1116,12 +1130,14 @@ static int nqx_probe(struct i2c_client *client,
 	}
 
 #ifdef NFC_KERNEL_BU
+#ifndef CONFIG_MACH_XIAOMI_MSM8998
 	r = nqx_clock_select(nqx_dev);
 	if (r < 0) {
 		dev_err(&client->dev,
 			"%s: nqx_clock_select failed\n", __func__);
 		goto err_clock_en_failed;
 	}
+#endif
 	gpio_set_value(platform_data->en_gpio, 1);
 #endif
 	device_init_wakeup(&client->dev, true);
