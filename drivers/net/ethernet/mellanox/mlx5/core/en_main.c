@@ -328,7 +328,7 @@ static int mlx5e_create_rq(struct mlx5e_channel *c,
 	rq->wq.db = &rq->wq.db[MLX5_RCV_DBR];
 
 	wq_sz = mlx5_wq_ll_get_size(&rq->wq);
-	rq->skb = kzalloc_node(wq_sz * sizeof(*rq->skb), GFP_KERNEL,
+	rq->skb = kcalloc_node(wq_sz, sizeof(*rq->skb), GFP_KERNEL,
 			       cpu_to_node(c->cpu));
 	if (!rq->skb) {
 		err = -ENOMEM;
@@ -515,8 +515,8 @@ static int mlx5e_alloc_sq_db(struct mlx5e_sq *sq, int numa)
 	int wq_sz = mlx5_wq_cyc_get_size(&sq->wq);
 	int df_sz = wq_sz * MLX5_SEND_WQEBB_NUM_DS;
 
-	sq->skb = kzalloc_node(wq_sz * sizeof(*sq->skb), GFP_KERNEL, numa);
-	sq->dma_fifo = kzalloc_node(df_sz * sizeof(*sq->dma_fifo), GFP_KERNEL,
+	sq->skb = kcalloc_node(wq_sz, sizeof(*sq->skb), GFP_KERNEL, numa);
+	sq->dma_fifo = kcalloc_node(df_sz, sizeof(*sq->dma_fifo), GFP_KERNEL,
 				    numa);
 
 	if (!sq->skb || !sq->dma_fifo) {

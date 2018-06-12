@@ -1264,7 +1264,7 @@ static int setup_ctxt(struct file *fp)
 			dd->rcv_entries.group_size;
 		uctxt->tidmapcnt = uctxt->numtidgroups / BITS_PER_LONG +
 			!!(uctxt->numtidgroups % BITS_PER_LONG);
-		uctxt->tidusemap = kzalloc_node(uctxt->tidmapcnt *
+		uctxt->tidusemap = kcalloc_node(uctxt->tidmapcnt,
 						sizeof(*uctxt->tidusemap),
 						GFP_KERNEL, uctxt->numa_id);
 		if (!uctxt->tidusemap) {
