@@ -488,7 +488,7 @@ ptlrpc_service_part_init(struct ptlrpc_service *svc,
 
 	/* allocate memory for scp_at_array (ptlrpc_at_array) */
 	array->paa_reqs_array =
-		kzalloc_node(sizeof(struct list_head) * size, GFP_NOFS,
+		kcalloc_node(size, sizeof(struct list_head), GFP_NOFS,
 			     cfs_cpt_spread_node(svc->srv_cptable, cpt));
 	if (array->paa_reqs_array == NULL)
 		return -ENOMEM;
@@ -497,7 +497,7 @@ ptlrpc_service_part_init(struct ptlrpc_service *svc,
 		INIT_LIST_HEAD(&array->paa_reqs_array[index]);
 
 	array->paa_reqs_count =
-		kzalloc_node(sizeof(__u32) * size, GFP_NOFS,
+		kcalloc_node(size, sizeof(__u32), GFP_NOFS,
 			     cfs_cpt_spread_node(svc->srv_cptable, cpt));
 	if (array->paa_reqs_count == NULL)
 		goto free_reqs_array;
@@ -2501,9 +2501,9 @@ int ptlrpc_hr_init(void)
 
 		LASSERT(hrp->hrp_nthrs > 0);
 		hrp->hrp_thrs =
-			kzalloc_node(hrp->hrp_nthrs * sizeof(*hrt), GFP_NOFS,
-				cfs_cpt_spread_node(ptlrpc_hr.hr_cpt_table,
-						    i));
+			kcalloc_node(hrp->hrp_nthrs, sizeof(*hrt), GFP_NOFS,
+				     cfs_cpt_spread_node(ptlrpc_hr.hr_cpt_table,
+							 i));
 		if (hrp->hrp_thrs == NULL) {
 			rc = -ENOMEM;
 			goto out;

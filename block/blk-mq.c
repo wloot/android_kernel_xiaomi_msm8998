@@ -1469,7 +1469,7 @@ static struct blk_mq_tags *blk_mq_init_rq_map(struct blk_mq_tag_set *set,
 
 	INIT_LIST_HEAD(&tags->page_list);
 
-	tags->rqs = kzalloc_node(set->queue_depth * sizeof(struct request *),
+	tags->rqs = kcalloc_node(set->queue_depth, sizeof(struct request *),
 				 GFP_NOIO | __GFP_NOWARN | __GFP_NORETRY,
 				 set->numa_node);
 	if (!tags->rqs) {
@@ -1555,7 +1555,7 @@ static int blk_mq_alloc_bitmap(struct blk_mq_ctxmap *bitmap, int node)
 	bitmap->bits_per_word = bpw;
 
 	num_maps = ALIGN(nr_cpu_ids, bpw) / bpw;
-	bitmap->map = kzalloc_node(num_maps * sizeof(struct blk_align_bitmap),
+	bitmap->map = kcalloc_node(num_maps, sizeof(struct blk_align_bitmap),
 					GFP_KERNEL, node);
 	if (!bitmap->map)
 		return -ENOMEM;

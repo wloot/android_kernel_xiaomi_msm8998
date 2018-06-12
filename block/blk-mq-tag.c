@@ -565,7 +565,7 @@ static int bt_alloc(struct blk_mq_bitmap_tags *bt, unsigned int depth,
 		}
 
 		nr = ALIGN(depth, tags_per_word) / tags_per_word;
-		bt->map = kzalloc_node(nr * sizeof(struct blk_align_bitmap),
+		bt->map = kcalloc_node(nr, sizeof(struct blk_align_bitmap),
 						GFP_KERNEL, node);
 		if (!bt->map)
 			return -ENOMEM;
