@@ -742,7 +742,7 @@ static int omap_mbox_probe(struct platform_device *pdev)
 		num_fifos = pdata->num_fifos;
 	}
 
-	finfoblk = devm_kzalloc(&pdev->dev, info_count * sizeof(*finfoblk),
+	finfoblk = devm_kcalloc(&pdev->dev, info_count, sizeof(*finfoblk),
 				GFP_KERNEL);
 	if (!finfoblk)
 		return -ENOMEM;
@@ -797,17 +797,17 @@ static int omap_mbox_probe(struct platform_device *pdev)
 		return PTR_ERR(mdev->mbox_base);
 
 	/* allocate one extra for marking end of list */
-	list = devm_kzalloc(&pdev->dev, (info_count + 1) * sizeof(*list),
+	list = devm_kcalloc(&pdev->dev, info_count + 1, sizeof(*list),
 			    GFP_KERNEL);
 	if (!list)
 		return -ENOMEM;
 
-	chnls = devm_kzalloc(&pdev->dev, (info_count + 1) * sizeof(*chnls),
+	chnls = devm_kcalloc(&pdev->dev, info_count + 1, sizeof(*chnls),
 			     GFP_KERNEL);
 	if (!chnls)
 		return -ENOMEM;
 
-	mboxblk = devm_kzalloc(&pdev->dev, info_count * sizeof(*mbox),
+	mboxblk = devm_kcalloc(&pdev->dev, info_count, sizeof(*mbox),
 			       GFP_KERNEL);
 	if (!mboxblk)
 		return -ENOMEM;

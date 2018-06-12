@@ -127,8 +127,9 @@ static int spi_clps711x_probe(struct platform_device *pdev)
 	if (!master)
 		return -ENOMEM;
 
-	master->cs_gpios = devm_kzalloc(&pdev->dev, sizeof(int) *
-					pdata->num_chipselect, GFP_KERNEL);
+	master->cs_gpios = devm_kcalloc(&pdev->dev,
+					pdata->num_chipselect, sizeof(int),
+					GFP_KERNEL);
 	if (!master->cs_gpios) {
 		ret = -ENOMEM;
 		goto err_out;

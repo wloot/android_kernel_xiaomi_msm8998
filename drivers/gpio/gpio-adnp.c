@@ -435,7 +435,7 @@ static int adnp_irq_setup(struct adnp *adnp)
 	 * is chosen to match the register layout of the hardware in that
 	 * each segment contains the corresponding bits for all interrupts.
 	 */
-	adnp->irq_enable = devm_kzalloc(chip->dev, num_regs * 6, GFP_KERNEL);
+	adnp->irq_enable = devm_kcalloc(chip->dev, num_regs, 6, GFP_KERNEL);
 	if (!adnp->irq_enable)
 		return -ENOMEM;
 

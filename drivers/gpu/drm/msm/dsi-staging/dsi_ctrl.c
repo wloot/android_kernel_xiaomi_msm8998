@@ -905,7 +905,7 @@ static int dsi_ctrl_copy_and_pad_cmd(struct dsi_ctrl *dsi_ctrl,
 	len = packet->size;
 	len += 0x3; len &= ~0x03; /* Align to 32 bits */
 
-	buf = devm_kzalloc(&dsi_ctrl->pdev->dev, len * sizeof(u8), GFP_KERNEL);
+	buf = devm_kzalloc(&dsi_ctrl->pdev->dev, len, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 

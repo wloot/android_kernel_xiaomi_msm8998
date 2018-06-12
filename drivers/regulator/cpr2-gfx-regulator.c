@@ -1098,14 +1098,14 @@ static int cpr2_gfx_allocate_memory(struct cpr2_gfx_regulator *cpr_vreg)
 	 */
 	len = cpr_vreg->num_corners + 1;
 
-	cpr_vreg->open_loop_volt = devm_kzalloc(dev,
-			len * sizeof(*cpr_vreg->open_loop_volt), GFP_KERNEL);
-	cpr_vreg->cpr_target_quot = devm_kzalloc(dev,
-			len  * sizeof(int *), GFP_KERNEL);
-	cpr_vreg->ceiling_volt = devm_kzalloc(dev,
-		len * (sizeof(*cpr_vreg->ceiling_volt)), GFP_KERNEL);
-	cpr_vreg->floor_volt = devm_kzalloc(dev,
-		len * (sizeof(*cpr_vreg->floor_volt)), GFP_KERNEL);
+	cpr_vreg->open_loop_volt = devm_kcalloc(dev,
+			len, sizeof(*cpr_vreg->open_loop_volt), GFP_KERNEL);
+	cpr_vreg->cpr_target_quot = devm_kcalloc(dev,
+			len, sizeof(int *), GFP_KERNEL);
+	cpr_vreg->ceiling_volt = devm_kcalloc(dev,
+		len, sizeof(*cpr_vreg->ceiling_volt), GFP_KERNEL);
+	cpr_vreg->floor_volt = devm_kcalloc(dev,
+		len, sizeof(*cpr_vreg->floor_volt), GFP_KERNEL);
 
 	if (cpr_vreg->open_loop_volt == NULL
 		|| cpr_vreg->cpr_target_quot == NULL
@@ -1116,8 +1116,9 @@ static int cpr2_gfx_allocate_memory(struct cpr2_gfx_regulator *cpr_vreg)
 	}
 
 	for (i = CPR_CORNER_MIN; i <= cpr_vreg->num_corners; i++) {
-		cpr_vreg->cpr_target_quot[i] = devm_kzalloc(dev,
-			cpr_vreg->ro_count * sizeof(*cpr_vreg->cpr_target_quot),
+		cpr_vreg->cpr_target_quot[i] = devm_kcalloc(dev,
+			cpr_vreg->ro_count,
+			sizeof(*cpr_vreg->cpr_target_quot),
 			GFP_KERNEL);
 		if (!cpr_vreg->cpr_target_quot[i]) {
 			cpr_err(cpr_vreg, "Could not allocate memory\n");
@@ -1554,9 +1555,9 @@ static int cpr_parse_vdd_mx_parameters(struct cpr2_gfx_regulator *cpr_vreg)
 		return -EINVAL;
 	}
 
-	cpr_vreg->vdd_mx_corner_map = devm_kzalloc(cpr_vreg->dev,
-		(size + 1) * sizeof(*cpr_vreg->vdd_mx_corner_map),
-			GFP_KERNEL);
+	cpr_vreg->vdd_mx_corner_map = devm_kcalloc(cpr_vreg->dev,
+		size + 1, sizeof(*cpr_vreg->vdd_mx_corner_map),
+		GFP_KERNEL);
 	if (!cpr_vreg->vdd_mx_corner_map) {
 		cpr_err(cpr_vreg,
 			"Can't allocate memory for cpr_vreg->vdd_mx_corner_map\n");
@@ -1753,8 +1754,8 @@ static int cpr_init_cpr_voltages(struct cpr2_gfx_regulator *cpr_vreg)
 	int i;
 	int size = cpr_vreg->num_corners + 1;
 
-	cpr_vreg->last_volt = devm_kzalloc(cpr_vreg->dev, sizeof(int) * size,
-					 GFP_KERNEL);
+	cpr_vreg->last_volt = devm_kcalloc(cpr_vreg->dev, size, sizeof(int),
+					   GFP_KERNEL);
 	if (!cpr_vreg->last_volt)
 		return -EINVAL;
 
@@ -1912,9 +1913,9 @@ static int cpr_config(struct cpr2_gfx_regulator *cpr_vreg)
 		cpr_vreg->flags |= FLAGS_IGNORE_1ST_IRQ_STATUS;
 
 	size = cpr_vreg->num_corners + 1;
-	cpr_vreg->save_ctl = devm_kzalloc(cpr_vreg->dev, sizeof(int) * size,
+	cpr_vreg->save_ctl = devm_kcalloc(cpr_vreg->dev, size, sizeof(int),
 						GFP_KERNEL);
-	cpr_vreg->save_irq = devm_kzalloc(cpr_vreg->dev, sizeof(int) * size,
+	cpr_vreg->save_irq = devm_kcalloc(cpr_vreg->dev, size, sizeof(int),
 						GFP_KERNEL);
 	if (!cpr_vreg->save_ctl || !cpr_vreg->save_irq) {
 		rc = -ENOMEM;

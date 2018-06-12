@@ -3488,8 +3488,8 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 			lut_max_size = PWM_LUT_MAX_SIZE;
 
 		pwm_cfg->duty_cycles->duty_pcts =
-			devm_kzalloc(&pdev->dev,
-			sizeof(int) * lut_max_size,
+			devm_kcalloc(&pdev->dev,
+			lut_max_size, sizeof(int),
 			GFP_KERNEL);
 		if (!pwm_cfg->duty_cycles->duty_pcts) {
 			dev_err(&pdev->dev, "Unable to allocate memory\n");
@@ -3498,8 +3498,8 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 		}
 
 		pwm_cfg->old_duty_pcts =
-			devm_kzalloc(&pdev->dev,
-			sizeof(int) * lut_max_size,
+			devm_kcalloc(&pdev->dev,
+			lut_max_size, sizeof(int),
 			GFP_KERNEL);
 		if (!pwm_cfg->old_duty_pcts) {
 			dev_err(&pdev->dev, "Unable to allocate memory\n");
@@ -3508,8 +3508,8 @@ static int qpnp_get_config_pwm(struct pwm_config_data *pwm_cfg,
 		}
 
 		temp_cfg = devm_kzalloc(&pdev->dev,
-				pwm_cfg->duty_cycles->num_duty_pcts *
-				sizeof(u8), GFP_KERNEL);
+				pwm_cfg->duty_cycles->num_duty_pcts,
+				GFP_KERNEL);
 		if (!temp_cfg) {
 			dev_err(&pdev->dev, "Failed to allocate memory for duty pcts\n");
 			rc = -ENOMEM;

@@ -273,8 +273,10 @@ static int mdss_dp_init_clk_power_data(struct device *dev,
 	}
 
 	core_power_data->num_clk = core_clk_count;
-	core_power_data->clk_config = devm_kzalloc(dev, sizeof(struct dss_clk) *
-			core_power_data->num_clk, GFP_KERNEL);
+	core_power_data->clk_config = devm_kcalloc(dev,
+						   core_power_data->num_clk,
+						   sizeof(struct dss_clk),
+						   GFP_KERNEL);
 	if (!core_power_data->clk_config) {
 		rc = -EINVAL;
 		goto exit;
@@ -288,8 +290,10 @@ static int mdss_dp_init_clk_power_data(struct device *dev,
 	}
 
 	ctrl_power_data->num_clk = ctrl_clk_count;
-	ctrl_power_data->clk_config = devm_kzalloc(dev, sizeof(struct dss_clk) *
-			ctrl_power_data->num_clk, GFP_KERNEL);
+	ctrl_power_data->clk_config = devm_kcalloc(dev,
+						   ctrl_power_data->num_clk,
+						   sizeof(struct dss_clk),
+						   GFP_KERNEL);
 	if (!ctrl_power_data->clk_config) {
 		ctrl_power_data->num_clk = 0;
 		rc = -EINVAL;
@@ -651,8 +655,9 @@ static int mdss_dp_get_dt_vreg_data(struct device *dev,
 		pr_debug("vreg found. count=%d\n", mp->num_vreg);
 	}
 
-	mp->vreg_config = devm_kzalloc(dev, sizeof(struct dss_vreg) *
-		mp->num_vreg, GFP_KERNEL);
+	mp->vreg_config = devm_kcalloc(dev,
+				       mp->num_vreg, sizeof(struct dss_vreg),
+				       GFP_KERNEL);
 	if (!mp->vreg_config) {
 		rc = -ENOMEM;
 		goto error;

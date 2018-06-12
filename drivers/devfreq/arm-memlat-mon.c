@@ -320,8 +320,10 @@ static int arm_memlat_mon_driver_probe(struct platform_device *pdev)
 	}
 
 	hw->num_cores = cpumask_weight(&cpu_grp->cpus);
-	hw->core_stats = devm_kzalloc(dev, hw->num_cores *
-				sizeof(*(hw->core_stats)), GFP_KERNEL);
+	hw->core_stats = devm_kcalloc(dev,
+				      hw->num_cores,
+				      sizeof(*(hw->core_stats)),
+				      GFP_KERNEL);
 	if (!hw->core_stats)
 		return -ENOMEM;
 

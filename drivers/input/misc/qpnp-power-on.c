@@ -2060,9 +2060,10 @@ static int qpnp_pon_probe(struct platform_device *pdev)
 		/* No PON config., do not register the driver */
 		dev_info(&pdev->dev, "No PON config. specified\n");
 	else
-		pon->pon_cfg = devm_kzalloc(&pdev->dev,
-				sizeof(struct qpnp_pon_config) *
-				pon->num_pon_config, GFP_KERNEL);
+		pon->pon_cfg = devm_kcalloc(&pdev->dev,
+				pon->num_pon_config,
+				sizeof(struct qpnp_pon_config),
+				GFP_KERNEL);
 
 	/* Read PON_PERPH_SUBTYPE register to get PON type */
 	rc = regmap_read(pon->regmap,

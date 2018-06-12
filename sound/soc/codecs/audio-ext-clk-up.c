@@ -515,8 +515,8 @@ static int audio_ref_clk_probe(struct platform_device *pdev)
 		goto err_gpio;
 
 	clk_data->clk_num = ARRAY_SIZE(audio_msm_hws);
-	clk_data->clks = devm_kzalloc(&pdev->dev,
-				clk_data->clk_num * sizeof(struct clk *),
+	clk_data->clks = devm_kcalloc(&pdev->dev,
+				clk_data->clk_num, sizeof(struct clk *),
 				GFP_KERNEL);
 	if (!clk_data->clks)
 		goto err_clk;

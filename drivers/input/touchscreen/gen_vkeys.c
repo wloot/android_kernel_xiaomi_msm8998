@@ -96,8 +96,8 @@ static int vkey_parse_dt(struct device *dev,
 	prop = of_find_property(np, "qcom,key-codes", NULL);
 	if (prop) {
 		pdata->num_keys = prop->length / sizeof(u32);
-		pdata->keycodes = devm_kzalloc(dev,
-			sizeof(u32) * pdata->num_keys, GFP_KERNEL);
+		pdata->keycodes = devm_kcalloc(dev,
+			pdata->num_keys, sizeof(u32), GFP_KERNEL);
 		if (!pdata->keycodes)
 			return -ENOMEM;
 		rc = of_property_read_u32_array(np, "qcom,key-codes",
@@ -175,7 +175,7 @@ static int vkeys_probe(struct platform_device *pdev)
 
 	vkey_buf[c] = '\0';
 
-	name = devm_kzalloc(&pdev->dev, sizeof(*name) * MAX_BUF_SIZE,
+	name = devm_kcalloc(&pdev->dev, MAX_BUF_SIZE, sizeof(*name),
 					GFP_KERNEL);
 	if (!name)
 		return -ENOMEM;

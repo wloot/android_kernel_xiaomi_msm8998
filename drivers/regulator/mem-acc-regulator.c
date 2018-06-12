@@ -331,8 +331,8 @@ static int __mem_acc_sel_init(struct mem_acc_regulator *mem_acc_vreg,
 	int i;
 	u32 bit, mask;
 
-	mem_acc_vreg->acc_sel_mask[mem_type] = devm_kzalloc(mem_acc_vreg->dev,
-		mem_acc_vreg->num_acc_sel[mem_type] * sizeof(u32), GFP_KERNEL);
+	mem_acc_vreg->acc_sel_mask[mem_type] = devm_kcalloc(mem_acc_vreg->dev,
+		mem_acc_vreg->num_acc_sel[mem_type], sizeof(u32), GFP_KERNEL);
 	if (!mem_acc_vreg->acc_sel_mask[mem_type])
 		return -ENOMEM;
 
@@ -393,7 +393,7 @@ static int populate_acc_data(struct mem_acc_regulator *mem_acc_vreg,
 		return -EINVAL;
 	}
 
-	*value = devm_kzalloc(mem_acc_vreg->dev, (*len) * sizeof(u32),
+	*value = devm_kcalloc(mem_acc_vreg->dev, *len, sizeof(u32),
 							GFP_KERNEL);
 	if (!(*value)) {
 		pr_err("Unable to allocate memory for %s\n", prop_name);
@@ -1255,9 +1255,11 @@ static int mem_acc_init(struct platform_device *pdev,
 	}
 
 	if (acc_type_present) {
-		mem_acc_vreg->mem_acc_type_data = devm_kzalloc(
-			mem_acc_vreg->dev, mem_acc_vreg->num_corners *
-			MEM_ACC_TYPE_MAX * sizeof(u32), GFP_KERNEL);
+		mem_acc_vreg->mem_acc_type_data = devm_kcalloc(
+			mem_acc_vreg->dev,
+			mem_acc_vreg->num_corners * MEM_ACC_TYPE_MAX,
+			sizeof(u32),
+			GFP_KERNEL);
 
 		if (!mem_acc_vreg->mem_acc_type_data) {
 			pr_err("Unable to allocate memory for mem_acc_type\n");

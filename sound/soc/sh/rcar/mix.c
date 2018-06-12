@@ -123,8 +123,8 @@ static void rsnd_of_parse_mix(struct platform_device *pdev,
 	if (!nr)
 		goto rsnd_of_parse_mix_end;
 
-	mix_info = devm_kzalloc(dev,
-				sizeof(struct rsnd_mix_platform_info) * nr,
+	mix_info = devm_kcalloc(dev,
+				nr, sizeof(struct rsnd_mix_platform_info),
 				GFP_KERNEL);
 	if (!mix_info) {
 		dev_err(dev, "mix info allocation error\n");
@@ -160,7 +160,7 @@ int rsnd_mix_probe(struct platform_device *pdev,
 	if (!nr)
 		return 0;
 
-	mix	= devm_kzalloc(dev, sizeof(*mix) * nr, GFP_KERNEL);
+	mix	= devm_kcalloc(dev, nr, sizeof(*mix), GFP_KERNEL);
 	if (!mix)
 		return -ENOMEM;
 

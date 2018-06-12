@@ -80,8 +80,8 @@ static int s5pv210_audss_clk_probe(struct platform_device *pdev)
 		return PTR_ERR(reg_base);
 	}
 
-	clk_table = devm_kzalloc(&pdev->dev,
-				sizeof(struct clk *) * AUDSS_MAX_CLKS,
+	clk_table = devm_kcalloc(&pdev->dev,
+				AUDSS_MAX_CLKS, sizeof(struct clk *),
 				GFP_KERNEL);
 	if (!clk_table)
 		return -ENOMEM;

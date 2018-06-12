@@ -507,8 +507,8 @@ static int tegra_gpio_probe(struct platform_device *pdev)
 
 	tegra_gpio_chip.ngpio = tegra_gpio_bank_count * 32;
 
-	tegra_gpio_banks = devm_kzalloc(&pdev->dev,
-			tegra_gpio_bank_count * sizeof(*tegra_gpio_banks),
+	tegra_gpio_banks = devm_kcalloc(&pdev->dev,
+			tegra_gpio_bank_count, sizeof(*tegra_gpio_banks),
 			GFP_KERNEL);
 	if (!tegra_gpio_banks)
 		return -ENODEV;

@@ -108,8 +108,8 @@ static int sun4i_mdio_probe(struct platform_device *pdev)
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&pdev->dev));
 	bus->parent = &pdev->dev;
 
-	bus->irq = devm_kzalloc(&pdev->dev, sizeof(int) * PHY_MAX_ADDR,
-			GFP_KERNEL);
+	bus->irq = devm_kcalloc(&pdev->dev, PHY_MAX_ADDR, sizeof(int),
+				GFP_KERNEL);
 	if (!bus->irq) {
 		ret = -ENOMEM;
 		goto err_out_free_mdiobus;

@@ -90,8 +90,8 @@ static void rsnd_of_parse_ctu(struct platform_device *pdev,
 	if (!nr)
 		goto rsnd_of_parse_ctu_end;
 
-	ctu_info = devm_kzalloc(dev,
-				sizeof(struct rsnd_ctu_platform_info) * nr,
+	ctu_info = devm_kcalloc(dev,
+				nr, sizeof(struct rsnd_ctu_platform_info),
 				GFP_KERNEL);
 	if (!ctu_info) {
 		dev_err(dev, "ctu info allocation error\n");
@@ -127,7 +127,7 @@ int rsnd_ctu_probe(struct platform_device *pdev,
 	if (!nr)
 		return 0;
 
-	ctu = devm_kzalloc(dev, sizeof(*ctu) * nr, GFP_KERNEL);
+	ctu = devm_kcalloc(dev, nr, sizeof(*ctu), GFP_KERNEL);
 	if (!ctu)
 		return -ENOMEM;
 

@@ -1854,7 +1854,8 @@ static int bcm_enet_probe(struct platform_device *pdev)
 		 * if a slave is not present on hw */
 		bus->phy_mask = ~(1 << priv->phy_id);
 
-		bus->irq = devm_kzalloc(&pdev->dev, sizeof(int) * PHY_MAX_ADDR,
+		bus->irq = devm_kcalloc(&pdev->dev,
+					PHY_MAX_ADDR, sizeof(int),
 					GFP_KERNEL);
 		if (!bus->irq) {
 			ret = -ENOMEM;

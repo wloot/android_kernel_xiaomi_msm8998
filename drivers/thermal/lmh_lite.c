@@ -792,8 +792,9 @@ static int lmh_get_dev_info(void)
 		uint32_t list_start;
 	} cmd_buf;
 
-	payload = devm_kzalloc(lmh_data->dev, sizeof(uint32_t) *
-		LMH_GET_PROFILE_SIZE, GFP_KERNEL);
+	payload = devm_kcalloc(lmh_data->dev,
+			       LMH_GET_PROFILE_SIZE, sizeof(uint32_t),
+			       GFP_KERNEL);
 	if (!payload) {
 		pr_err("No payload\n");
 		ret = -ENOMEM;
@@ -1028,8 +1029,9 @@ static int lmh_debug_get_types(struct lmh_debug_ops *ops, bool is_read,
 			lmh_data->debug_info.config_type_count);
 		return lmh_data->debug_info.config_type_count;
 	}
-	payload = devm_kzalloc(lmh_data->dev, sizeof(uint32_t) *
-		LMH_SCM_PAYLOAD_SIZE, GFP_KERNEL);
+	payload = devm_kcalloc(lmh_data->dev,
+			       LMH_SCM_PAYLOAD_SIZE, sizeof(uint32_t),
+			       GFP_KERNEL);
 	if (!payload) {
 		ret = -ENOMEM;
 		goto get_type_exit;

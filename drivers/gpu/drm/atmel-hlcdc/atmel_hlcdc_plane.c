@@ -1001,8 +1001,8 @@ atmel_hlcdc_create_planes(struct drm_device *dev)
 	}
 
 	if (planes->noverlays) {
-		planes->overlays = devm_kzalloc(dev->dev,
-						planes->noverlays *
+		planes->overlays = devm_kcalloc(dev->dev,
+						planes->noverlays,
 						sizeof(*planes->overlays),
 						GFP_KERNEL);
 		if (!planes->overlays)

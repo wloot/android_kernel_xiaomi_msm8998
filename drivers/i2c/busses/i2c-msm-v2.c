@@ -1588,14 +1588,14 @@ static int i2c_msm_clk_path_init_structs(struct i2c_msm_ctrl *ctrl)
 
 	i2c_msm_dbg(ctrl, MSM_PROF, "initializes path clock voting structs");
 
-	paths = devm_kzalloc(ctrl->dev, sizeof(*paths) * 2, GFP_KERNEL);
+	paths = devm_kcalloc(ctrl->dev, 2, sizeof(*paths), GFP_KERNEL);
 	if (!paths) {
 		dev_err(ctrl->dev,
 			"error msm_bus_paths.paths memory allocation failed\n");
 		return -ENOMEM;
 	}
 
-	usecases = devm_kzalloc(ctrl->dev, sizeof(*usecases) * 2, GFP_KERNEL);
+	usecases = devm_kcalloc(ctrl->dev, 2, sizeof(*usecases), GFP_KERNEL);
 	if (!usecases) {
 		dev_err(ctrl->dev,
 		"error  msm_bus_scale_pdata.usecases memory allocation failed\n");

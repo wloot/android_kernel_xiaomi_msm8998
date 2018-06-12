@@ -357,9 +357,10 @@ static int act8865_pdata_from_dt(struct device *dev,
 	if (matched <= 0)
 		return matched;
 
-	pdata->regulators = devm_kzalloc(dev,
-					 sizeof(struct act8865_regulator_data) *
-					 num_matches, GFP_KERNEL);
+	pdata->regulators = devm_kcalloc(dev,
+					 num_matches,
+					 sizeof(struct act8865_regulator_data),
+					 GFP_KERNEL);
 	if (!pdata->regulators)
 		return -ENOMEM;
 
@@ -472,8 +473,9 @@ static int act8865_pmic_probe(struct i2c_client *client,
 		return -EINVAL;
 	}
 
-	of_node = devm_kzalloc(dev, sizeof(struct device_node *) *
-			       num_regulators, GFP_KERNEL);
+	of_node = devm_kcalloc(dev,
+			       num_regulators, sizeof(struct device_node *),
+			       GFP_KERNEL);
 	if (!of_node)
 		return -ENOMEM;
 

@@ -254,8 +254,8 @@ static int s3c24xx_dclk_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, s3c24xx_dclk);
 	spin_lock_init(&s3c24xx_dclk->dclk_lock);
 
-	clk_table = devm_kzalloc(&pdev->dev,
-				 sizeof(struct clk *) * DCLK_MAX_CLKS,
+	clk_table = devm_kcalloc(&pdev->dev,
+				 DCLK_MAX_CLKS, sizeof(struct clk *),
 				 GFP_KERNEL);
 	if (!clk_table)
 		return -ENOMEM;

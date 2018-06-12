@@ -118,12 +118,14 @@ int max_gen_clk_probe(struct platform_device *pdev, struct regmap *regmap,
 	const char *clk_name;
 	struct clk_init_data *init;
 
-	clocks = devm_kzalloc(dev, sizeof(struct clk *) * num_init, GFP_KERNEL);
+	clocks = devm_kcalloc(dev, num_init, sizeof(struct clk *),
+			      GFP_KERNEL);
 	if (!clocks)
 		return -ENOMEM;
 
-	max_gen_clks = devm_kzalloc(dev, sizeof(struct max_gen_clk)
-				    * num_init, GFP_KERNEL);
+	max_gen_clks = devm_kcalloc(dev,
+				    num_init, sizeof(struct max_gen_clk),
+				    GFP_KERNEL);
 	if (!max_gen_clks)
 		return -ENOMEM;
 

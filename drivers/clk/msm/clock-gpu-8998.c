@@ -344,23 +344,24 @@ static int of_get_fmax_vdd_class(struct platform_device *pdev, struct clk *c,
 	}
 
 	prop_len /= num;
-	vdd->level_votes = devm_kzalloc(&pdev->dev, prop_len * sizeof(int),
+	vdd->level_votes = devm_kcalloc(&pdev->dev, prop_len, sizeof(int),
 					GFP_KERNEL);
 	if (!vdd->level_votes)
 		return -ENOMEM;
 
 	vdd->vdd_uv = devm_kzalloc(&pdev->dev,
-			prop_len * sizeof(int) * (num - 1), GFP_KERNEL);
+			array3_size(prop_len, sizeof(int), (num - 1)),
+			GFP_KERNEL);
 	if (!vdd->vdd_uv)
 		return -ENOMEM;
 
-	c->fmax = devm_kzalloc(&pdev->dev, prop_len * sizeof(unsigned long),
+	c->fmax = devm_kcalloc(&pdev->dev, prop_len, sizeof(unsigned long),
 					GFP_KERNEL);
 	if (!c->fmax)
 		return -ENOMEM;
 
 	array = devm_kzalloc(&pdev->dev,
-			prop_len * sizeof(u32) * num, GFP_KERNEL);
+			array3_size(prop_len, num, sizeof(u32)), GFP_KERNEL);
 	if (!array)
 		return -ENOMEM;
 

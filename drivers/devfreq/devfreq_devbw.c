@@ -188,12 +188,12 @@ int devfreq_add_devbw(struct device *dev)
 
 	if (of_find_property(dev->of_node, PROP_TBL, &len)) {
 		len /= sizeof(*data);
-		data = devm_kzalloc(dev, len * sizeof(*data), GFP_KERNEL);
+		data = devm_kcalloc(dev, len, sizeof(*data), GFP_KERNEL);
 		if (!data)
 			return -ENOMEM;
 
-		p->freq_table = devm_kzalloc(dev,
-					     len * sizeof(*p->freq_table),
+		p->freq_table = devm_kcalloc(dev,
+					     len, sizeof(*p->freq_table),
 					     GFP_KERNEL);
 		if (!p->freq_table)
 			return -ENOMEM;

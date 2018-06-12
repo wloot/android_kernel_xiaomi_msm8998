@@ -577,9 +577,9 @@ static int atmel_hlcdc_layer_update_init(struct drm_device *dev,
 				    BITS_PER_BYTE *
 				    sizeof(unsigned long));
 
-	buffer = devm_kzalloc(dev->dev,
-			      ((desc->nconfigs * sizeof(u32)) +
-				(updated_size * sizeof(unsigned long))) * 2,
+	buffer = devm_kcalloc(dev->dev,
+			      (desc->nconfigs * sizeof(u32)) + (updated_size * sizeof(unsigned long)),
+			      2,
 			      GFP_KERNEL);
 	if (!buffer)
 		return -ENOMEM;

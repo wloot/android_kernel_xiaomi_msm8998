@@ -730,8 +730,8 @@ static void rsnd_of_parse_ssi(struct platform_device *pdev,
 	if (!nr)
 		goto rsnd_of_parse_ssi_end;
 
-	ssi_info = devm_kzalloc(dev,
-				sizeof(struct rsnd_ssi_platform_info) * nr,
+	ssi_info = devm_kcalloc(dev,
+				nr, sizeof(struct rsnd_ssi_platform_info),
 				GFP_KERNEL);
 	if (!ssi_info) {
 		dev_err(dev, "ssi info allocation error\n");
@@ -791,7 +791,7 @@ int rsnd_ssi_probe(struct platform_device *pdev,
 	 *	init SSI
 	 */
 	nr	= info->ssi_info_nr;
-	ssi	= devm_kzalloc(dev, sizeof(*ssi) * nr, GFP_KERNEL);
+	ssi	= devm_kcalloc(dev, nr, sizeof(*ssi), GFP_KERNEL);
 	if (!ssi)
 		return -ENOMEM;
 

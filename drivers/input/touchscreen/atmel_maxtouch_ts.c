@@ -3106,8 +3106,8 @@ static int mxt_parse_dt(struct device *dev, struct mxt_platform_data *pdata)
 	/* keycodes for keyarray object */
 	prop = of_find_property(np, "atmel,key-codes", NULL);
 	if (prop) {
-		pdata->key_codes = devm_kzalloc(dev,
-				sizeof(int) * MXT_KEYARRAY_MAX_KEYS,
+		pdata->key_codes = devm_kcalloc(dev,
+				MXT_KEYARRAY_MAX_KEYS, sizeof(int),
 				GFP_KERNEL);
 		if (!pdata->key_codes)
 			return -ENOMEM;

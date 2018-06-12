@@ -910,8 +910,8 @@ static int exynos4_busfreq_probe(struct platform_device *pdev)
 
 	ppmu_data = &data->ppmu_data;
 	ppmu_data->ppmu_end = PPMU_END;
-	ppmu_data->ppmu = devm_kzalloc(dev,
-				       sizeof(struct exynos_ppmu) * PPMU_END,
+	ppmu_data->ppmu = devm_kcalloc(dev,
+				       PPMU_END, sizeof(struct exynos_ppmu),
 				       GFP_KERNEL);
 	if (!ppmu_data->ppmu) {
 		dev_err(dev, "Failed to allocate memory for exynos_ppmu\n");

@@ -2024,7 +2024,7 @@ static int mdp3_alloc_lut_buffer(struct platform_device *pdev, void **cmap)
 	}
 	memset(map, 0, sizeof(struct fb_cmap));
 
-	map->red = devm_kzalloc(&pdev->dev, MDP_LUT_SIZE * sizeof(u16),
+	map->red = devm_kcalloc(&pdev->dev, MDP_LUT_SIZE, sizeof(u16),
 				GFP_KERNEL);
 	if (map->red == NULL) {
 		pr_err("Failed cmap allocation for red\n");
@@ -2032,16 +2032,16 @@ static int mdp3_alloc_lut_buffer(struct platform_device *pdev, void **cmap)
 	}
 	memset(map->red, 0, sizeof(u16) * MDP_LUT_SIZE);
 
-	map->green = devm_kzalloc(&pdev->dev, MDP_LUT_SIZE * sizeof(u16),
-				GFP_KERNEL);
+	map->green = devm_kcalloc(&pdev->dev, MDP_LUT_SIZE, sizeof(u16),
+				  GFP_KERNEL);
 	if (map->green == NULL) {
 		pr_err("Failed cmap allocation for green\n");
 		goto exit_green;
 	}
 	memset(map->green, 0, sizeof(u16) * MDP_LUT_SIZE);
 
-	map->blue = devm_kzalloc(&pdev->dev, MDP_LUT_SIZE * sizeof(u16),
-				GFP_KERNEL);
+	map->blue = devm_kcalloc(&pdev->dev, MDP_LUT_SIZE, sizeof(u16),
+				 GFP_KERNEL);
 	if (map->blue == NULL) {
 		pr_err("Failed cmap allocation for blue\n");
 		goto exit_blue;

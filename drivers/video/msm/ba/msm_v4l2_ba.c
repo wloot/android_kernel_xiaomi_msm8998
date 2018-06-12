@@ -300,8 +300,8 @@ static int parse_ba_dt(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	dev_ctxt->msm_ba_inp_cfg = devm_kzalloc(&pdev->dev,
-			sizeof(struct msm_ba_input_config) * profile_count,
+	dev_ctxt->msm_ba_inp_cfg = devm_kcalloc(&pdev->dev,
+			profile_count, sizeof(struct msm_ba_input_config),
 			GFP_KERNEL);
 	if (!dev_ctxt->msm_ba_inp_cfg)
 		return -ENOMEM;

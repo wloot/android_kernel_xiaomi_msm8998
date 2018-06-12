@@ -132,8 +132,8 @@ static int i2c_mux_reg_probe_dt(struct regmux *mux,
 	else
 		mux->data.write_only = false;
 
-	values = devm_kzalloc(&pdev->dev,
-			      sizeof(*mux->data.values) * mux->data.n_values,
+	values = devm_kcalloc(&pdev->dev,
+			      mux->data.n_values, sizeof(*mux->data.values),
 			      GFP_KERNEL);
 	if (!values) {
 		dev_err(&pdev->dev, "Cannot allocate values array");
@@ -215,8 +215,8 @@ static int i2c_mux_reg_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	mux->adap = devm_kzalloc(&pdev->dev,
-				 sizeof(*mux->adap) * mux->data.n_values,
+	mux->adap = devm_kcalloc(&pdev->dev,
+				 mux->data.n_values, sizeof(*mux->adap),
 				 GFP_KERNEL);
 	if (!mux->adap) {
 		dev_err(&pdev->dev, "Cannot allocate i2c_adapter structure");

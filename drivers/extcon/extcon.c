@@ -938,8 +938,8 @@ int extcon_dev_register(struct extcon_dev *edev)
 
 	spin_lock_init(&edev->lock);
 
-	edev->nh = devm_kzalloc(&edev->dev,
-			sizeof(*edev->nh) * edev->max_supported, GFP_KERNEL);
+	edev->nh = devm_kcalloc(&edev->dev,
+			edev->max_supported, sizeof(*edev->nh), GFP_KERNEL);
 	if (!edev->nh) {
 		ret = -ENOMEM;
 		goto err_dev;

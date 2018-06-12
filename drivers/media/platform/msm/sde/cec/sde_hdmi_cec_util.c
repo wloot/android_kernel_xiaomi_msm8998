@@ -349,8 +349,8 @@ static int sde_hdmi_cec_get_dt_clock(struct platform_device *pdev,
 	}
 
 	hw->num_clk = num_clk;
-	hw->clk_config = devm_kzalloc(&pdev->dev,
-			sizeof(struct cec_clk) * num_clk, GFP_KERNEL);
+	hw->clk_config = devm_kcalloc(&pdev->dev,
+			num_clk, sizeof(struct cec_clk), GFP_KERNEL);
 	if (!hw->clk_config) {
 		hw->num_clk = 0;
 		return -ENOMEM;
@@ -404,8 +404,9 @@ static int sde_hdmi_cec_get_dt_supply(struct platform_device *pdev,
 	}
 
 	pr_debug("vreg found. count=%d\n", hw->num_vreg);
-	hw->vreg_config = devm_kzalloc(&pdev->dev, sizeof(struct cec_vreg) *
-						hw->num_vreg, GFP_KERNEL);
+	hw->vreg_config = devm_kcalloc(&pdev->dev,
+				       hw->num_vreg, sizeof(struct cec_vreg),
+				       GFP_KERNEL);
 	if (!hw->vreg_config) {
 		rc = -ENOMEM;
 		return rc;

@@ -353,8 +353,8 @@ static int rsrc_card_parse_of(struct device_node *node,
 		return -EINVAL;
 
 	num = of_get_child_count(node);
-	props = devm_kzalloc(dev, sizeof(*props) * num, GFP_KERNEL);
-	links = devm_kzalloc(dev, sizeof(*links) * num, GFP_KERNEL);
+	props = devm_kcalloc(dev, num, sizeof(*props), GFP_KERNEL);
+	links = devm_kcalloc(dev, num, sizeof(*links), GFP_KERNEL);
 	if (!props || !links)
 		return -ENOMEM;
 
