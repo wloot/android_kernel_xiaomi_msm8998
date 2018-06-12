@@ -671,7 +671,7 @@ static struct srpt_ioctx **srpt_alloc_ioctx_ring(struct srpt_device *sdev,
 	WARN_ON(ioctx_size != sizeof(struct srpt_recv_ioctx)
 		&& ioctx_size != sizeof(struct srpt_send_ioctx));
 
-	ring = kmalloc(ring_size * sizeof(ring[0]), GFP_KERNEL);
+	ring = kmalloc_array(ring_size, sizeof(ring[0]), GFP_KERNEL);
 	if (!ring)
 		goto out;
 	for (i = 0; i < ring_size; ++i) {
@@ -925,7 +925,8 @@ static int srpt_get_desc_tbl(struct srpt_send_ioctx *ioctx,
 			ioctx->rbufs = &ioctx->single_rbuf;
 		else {
 			ioctx->rbufs =
-				kmalloc(ioctx->n_rbuf * sizeof *db, GFP_ATOMIC);
+				kmalloc_array(ioctx->n_rbuf, sizeof(*db),
+					      GFP_ATOMIC);
 			if (!ioctx->rbufs) {
 				ioctx->n_rbuf = 0;
 				ret = -ENOMEM;
@@ -1169,8 +1170,9 @@ static int srpt_map_sg_to_ib_sge(struct srpt_rdma_ch *ch,
 			if (rsize > 0 && riu->sge_cnt == SRPT_DEF_SG_PER_WQE) {
 				++ioctx->n_rdma;
 				riu->sge =
-				    kmalloc(riu->sge_cnt * sizeof *riu->sge,
-					    GFP_KERNEL);
+				    kmalloc_array(riu->sge_cnt,
+						  sizeof(*riu->sge),
+						  GFP_KERNEL);
 				if (!riu->sge)
 					goto free_mem;
 
@@ -1182,8 +1184,8 @@ static int srpt_map_sg_to_ib_sge(struct srpt_rdma_ch *ch,
 		}
 
 		++ioctx->n_rdma;
-		riu->sge = kmalloc(riu->sge_cnt * sizeof *riu->sge,
-				   GFP_KERNEL);
+		riu->sge = kmalloc_array(riu->sge_cnt, sizeof(*riu->sge),
+					 GFP_KERNEL);
 		if (!riu->sge)
 			goto free_mem;
 	}

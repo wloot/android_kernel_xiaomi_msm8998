@@ -534,7 +534,7 @@ static int ahash_setkey(struct crypto_ahash *ahash,
 #endif
 
 	if (keylen > blocksize) {
-		hashed_key = kmalloc(sizeof(u8) * digestsize, GFP_KERNEL |
+		hashed_key = kmalloc(digestsize, GFP_KERNEL |
 				     GFP_DMA);
 		if (!hashed_key)
 			return -ENOMEM;

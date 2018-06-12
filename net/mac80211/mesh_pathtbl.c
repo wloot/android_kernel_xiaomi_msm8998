@@ -95,8 +95,8 @@ static struct mesh_table *mesh_table_alloc(int size_order)
 		return NULL;
 	}
 
-	newtbl->hashwlock = kmalloc(sizeof(spinlock_t) *
-			(1 << size_order), GFP_ATOMIC);
+	newtbl->hashwlock = kmalloc_array(1 << size_order, sizeof(spinlock_t),
+					  GFP_ATOMIC);
 	if (!newtbl->hashwlock) {
 		kfree(newtbl->hash_buckets);
 		kfree(newtbl);

@@ -5383,7 +5383,8 @@ static int __handle_ioctl_overlay_prepare(struct msm_fb_data_type *mfd,
 		return -EINVAL;
 	}
 
-	overlays = kmalloc(ovlist.num_overlays * sizeof(*overlays), GFP_KERNEL);
+	overlays = kmalloc_array(ovlist.num_overlays, sizeof(*overlays),
+				 GFP_KERNEL);
 	if (!overlays) {
 		pr_err("Unable to allocate memory for overlays\n");
 		return -ENOMEM;

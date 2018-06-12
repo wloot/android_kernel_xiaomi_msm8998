@@ -237,8 +237,8 @@ static void pxa_dma_init_debugfs(void)
 	if (!dbgfs_state)
 		goto err_state;
 
-	dbgfs_chan = kmalloc(sizeof(*dbgfs_state) * num_dma_channels,
-			     GFP_KERNEL);
+	dbgfs_chan = kmalloc_array(num_dma_channels, sizeof(*dbgfs_state),
+				   GFP_KERNEL);
 	if (!dbgfs_chan)
 		goto err_alloc;
 

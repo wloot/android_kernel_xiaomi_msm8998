@@ -74,7 +74,7 @@ int getChannelsLength(void)
 {
 
 	int ret;
-	u8 *data = (u8 *)kmalloc(2*sizeof(u8), GFP_KERNEL);
+	u8 *data = (u8 *)kmalloc(2, GFP_KERNEL);
 
 	if (data == NULL) {
 		logError(1, "%s getChannelsLength: ERROR %02X\n", tag, ERROR_ALLOC);
@@ -100,7 +100,7 @@ int getChannelsLength(void)
 int getFrameData(u16 address, int size, short **frame)
 {
 	int i, j, ret;
-	u8 *data = (u8 *)kmalloc(size*sizeof(u8), GFP_KERNEL);
+	u8 *data = (u8 *)kmalloc(size, GFP_KERNEL);
 	if (data == NULL) {
 		logError(1, "%s getFrameData: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -480,7 +480,8 @@ int getMSFrame2(u16 type, MutualSenseFrame *frame)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	frame->node_data = (short *)kmalloc(size*sizeof(short), GFP_KERNEL);
+	frame->node_data = (short *) kmalloc_array(size, sizeof(short),
+						   GFP_KERNEL);
 	if (frame->node_data == NULL) {
 		logError(1, "%s getMSFrame: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -534,7 +535,7 @@ int getSSFrame2(u16 type, SelfSenseFrame *frame)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	temp = (short *)kmalloc(size*sizeof(short), GFP_KERNEL);
+	temp = (short *) kmalloc_array(size, sizeof(short), GFP_KERNEL);
 	if (temp == NULL) {
 		logError(1, "%s getSSFrame: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -546,7 +547,9 @@ int getSSFrame2(u16 type, SelfSenseFrame *frame)
 		return (ret | ERROR_GET_FRAME_DATA);
 	}
 
-	frame->force_data = (short *)kmalloc(frame->header.force_node*sizeof(short), GFP_KERNEL);
+	frame->force_data = (short *) kmalloc_array(frame->header.force_node,
+						    sizeof(short),
+						    GFP_KERNEL);
 	if (frame->force_data == NULL) {
 		logError(1, "%s getSSFrame: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -554,7 +557,9 @@ int getSSFrame2(u16 type, SelfSenseFrame *frame)
 
 	memcpy(frame->force_data, temp, frame->header.force_node*sizeof(short));
 
-	frame->sense_data = (short *)kmalloc(frame->header.sense_node*sizeof(short), GFP_KERNEL);
+	frame->sense_data = (short *) kmalloc_array(frame->header.sense_node,
+						    sizeof(short),
+						    GFP_KERNEL);
 	if (frame->sense_data == NULL) {
 		logError(1, "%s getSSFrame: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;

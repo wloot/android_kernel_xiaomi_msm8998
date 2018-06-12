@@ -2339,8 +2339,9 @@ static int smsm_cb_init(void)
 	int n;
 	int ret = 0;
 
-	smsm_states = kmalloc(sizeof(struct smsm_state_info)*SMSM_NUM_ENTRIES,
-		   GFP_KERNEL);
+	smsm_states = kmalloc_array(SMSM_NUM_ENTRIES,
+				    sizeof(struct smsm_state_info),
+				    GFP_KERNEL);
 
 	if (!smsm_states) {
 		pr_err("%s: SMSM init failed\n", __func__);

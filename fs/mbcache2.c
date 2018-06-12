@@ -282,8 +282,9 @@ struct mb2_cache *mb2_cache_create(int bucket_bits)
 	cache->c_bucket_bits = bucket_bits;
 	INIT_LIST_HEAD(&cache->c_lru_list);
 	spin_lock_init(&cache->c_lru_list_lock);
-	cache->c_hash = kmalloc(bucket_count * sizeof(struct hlist_bl_head),
-				GFP_KERNEL);
+	cache->c_hash = kmalloc_array(bucket_count,
+				      sizeof(struct hlist_bl_head),
+				      GFP_KERNEL);
 	if (!cache->c_hash) {
 		kfree(cache);
 		goto err_out;

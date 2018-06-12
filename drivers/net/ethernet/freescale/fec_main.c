@@ -2073,7 +2073,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
 	fep->mii_bus->priv = fep;
 	fep->mii_bus->parent = &pdev->dev;
 
-	fep->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	fep->mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int),
+					  GFP_KERNEL);
 	if (!fep->mii_bus->irq) {
 		err = -ENOMEM;
 		goto err_out_free_mdiobus;

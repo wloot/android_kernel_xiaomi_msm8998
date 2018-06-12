@@ -2263,7 +2263,7 @@ static int b44_register_phy_one(struct b44 *bp)
 	mii_bus->parent = sdev->dev;
 	mii_bus->phy_mask = ~(1 << bp->phy_addr);
 	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%x", instance);
-	mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int), GFP_KERNEL);
 	if (!mii_bus->irq) {
 		dev_err(sdev->dev, "mii_bus irq allocation failed\n");
 		err = -ENOMEM;

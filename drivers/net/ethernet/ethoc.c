@@ -1207,7 +1207,7 @@ static int ethoc_probe(struct platform_device *pdev)
 	priv->mdio->write = ethoc_mdio_write;
 	priv->mdio->priv = priv;
 
-	priv->mdio->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	priv->mdio->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int), GFP_KERNEL);
 	if (!priv->mdio->irq) {
 		ret = -ENOMEM;
 		goto free_mdio;

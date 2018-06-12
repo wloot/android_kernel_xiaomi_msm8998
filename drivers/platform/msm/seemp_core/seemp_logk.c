@@ -467,8 +467,9 @@ static long seemp_logk_set_mapping(unsigned long arg)
 		kfree(ptempmask);
 	}
 	write_unlock(&filter_lock);
-	pbuffer = kmalloc(sizeof(struct seemp_source_mask)
-				* num_elements, GFP_KERNEL);
+	pbuffer = kmalloc_array(num_elements,
+				sizeof(struct seemp_source_mask),
+				GFP_KERNEL);
 	if (NULL == pbuffer)
 		return -ENOMEM;
 

@@ -89,7 +89,8 @@ static ssize_t stm_driver_test_store(struct device *dev,
 	int n;
 	char *p = (char *) buf;
 
-	functionToTest = (u32 *) kmalloc(MAX_PARAMS * sizeof (u32), GFP_KERNEL);
+	functionToTest = (u32 *) kmalloc_array(MAX_PARAMS, sizeof(u32),
+					       GFP_KERNEL);
 	if (functionToTest == NULL) {
 		logError(1, "%s impossible to allocate functionToTest!\n", tag);
 		return count;
@@ -193,12 +194,14 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 			if (numberParam >= 4) {
 				temp = (int) functionToTest[1];
 				if (numberParam == 4 + (temp - 1) && temp != 0) {
-					cmd = (u8 *) kmalloc(temp * sizeof (u8), GFP_KERNEL);
+					cmd = (u8 *) kmalloc(temp,
+							     GFP_KERNEL);
 					for (i = 0; i < temp; i++) {
 						cmd[i] = functionToTest[i + 2];
 					}
 					byteToRead = functionToTest[i + 2];
-					readData = (u8 *) kmalloc(byteToRead * sizeof (u8), GFP_KERNEL);
+					readData = (u8 *) kmalloc(byteToRead,
+								  GFP_KERNEL);
 					res = fts_readCmd(cmd, temp, readData, byteToRead);
 					size += (byteToRead * sizeof (u8))*2;
 				} else {
@@ -216,7 +219,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 			if (numberParam >= 3) { /* need to pass: cmdLength cmd[0]  cmd[1] … cmd[cmdLength-1] */
 				temp = (int) functionToTest[1];
 				if (numberParam == 3 + (temp - 1) && temp != 0) {
-					cmd = (u8 *) kmalloc(temp * sizeof (u8), GFP_KERNEL);
+					cmd = (u8 *) kmalloc(temp,
+							     GFP_KERNEL);
 					for (i = 0; i < temp; i++) {
 						cmd[i] = functionToTest[i + 2];
 					}
@@ -236,7 +240,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 			if (numberParam >= 3) { /* need to pass: cmdLength cmd[0]  cmd[1] … cmd[cmdLength-1] */
 				temp = (int) functionToTest[1];
 				if (numberParam == 3 + (temp - 1) && temp != 0) {
-					cmd = (u8 *) kmalloc(temp * sizeof (u8), GFP_KERNEL);
+					cmd = (u8 *) kmalloc(temp,
+							     GFP_KERNEL);
 					for (i = 0; i < temp; i++) {
 						cmd[i] = functionToTest[i + 2];
 					}
@@ -255,7 +260,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 		case CMD_READU16:
 			if (numberParam == 6) { /* need to pass: cmd addr[0] addr[1] byteToRead hasDummyByte */
 				byteToRead = functionToTest[4];
-				readData = (u8 *) kmalloc(byteToRead * sizeof (u8), GFP_KERNEL);
+				readData = (u8 *) kmalloc(byteToRead,
+							  GFP_KERNEL);
 				res = readCmdU16((u8) functionToTest[1], (u16) ((((u8) functionToTest[2] & 0x00FF) << 8) + ((u8) functionToTest[3] & 0x00FF)), readData, byteToRead, functionToTest[5]);
 				size += (byteToRead * sizeof (u8))*2;
 			} else {
@@ -267,7 +273,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 		case CMD_READB2:
 			if (numberParam == 4) { /* need to pass: addr[0]  addr[1] byteToRead */
 				byteToRead = functionToTest[3];
-				readData = (u8 *) kmalloc(byteToRead * sizeof (u8), GFP_KERNEL);
+				readData = (u8 *) kmalloc(byteToRead,
+							  GFP_KERNEL);
 				res = readB2((u16) ((((u8) functionToTest[1] & 0x00FF) << 8) + ((u8) functionToTest[2] & 0x00FF)), readData, byteToRead);
 				size += (byteToRead * sizeof (u8))*2;
 			} else {
@@ -279,7 +286,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 		case CMD_READB2U16:
 			if (numberParam == 4) { /* need to pass: addr[0]  addr[1] byteToRead */
 				byteToRead = functionToTest[3];
-				readData = (u8 *) kmalloc(byteToRead * sizeof (u8), GFP_KERNEL);
+				readData = (u8 *) kmalloc(byteToRead,
+							  GFP_KERNEL);
 				res = readB2U16((u16) ((((u8) functionToTest[1] & 0x00FF) << 8) + ((u8) functionToTest[2] & 0x00FF)), readData, byteToRead);
 				size += (byteToRead * sizeof (u8))*2;
 			} else {
@@ -292,7 +300,8 @@ static ssize_t stm_driver_test_show(struct device *dev, struct device_attribute 
 			if (numberParam >= 5) { /* need to pass: eventLength event[0] event[1] event[eventLength-1] timeTowait */
 				temp = (int) functionToTest[1];
 				if (numberParam == 5 + (temp - 1) && temp != 0) {
-					readData = (u8 *) kmalloc(FIFO_EVENT_SIZE * sizeof (u8), GFP_KERNEL);
+					readData = (u8 *) kmalloc(FIFO_EVENT_SIZE,
+								  GFP_KERNEL);
 					res = pollForEvent((int *) &functionToTest[2], temp, readData, ((functionToTest[temp + 2] & 0x00FF) << 8)+(functionToTest[temp + 3] & 0x00FF));
 		if (res >= OK)
 			res = OK;	/* pollForEvent return the number of error found */

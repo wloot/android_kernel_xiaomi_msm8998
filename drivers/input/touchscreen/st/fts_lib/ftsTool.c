@@ -57,7 +57,8 @@ int readB2(u16 address, u8 *outBuf, int len)
 	int retry = 0;
 	int ret;
 	int event_to_search[3];
-	u8 *readEvent = (u8 *)kmalloc(FIFO_EVENT_SIZE*sizeof(u8), GFP_KERNEL);
+	u8 *readEvent = (u8 *)kmalloc(FIFO_EVENT_SIZE,
+				      GFP_KERNEL);
 		u8 cmd[4] = { FTS_CMD_REQU_FW_CONF, 0x00, 0x00, (u8)len };
 
 	if (readEvent == NULL) {
@@ -121,7 +122,7 @@ int readB2U16(u16 address, u8 *outBuf, int byteToRead)
 	int toRead = 0;
 	int ret;
 
-	u8 *buff = (u8 *)kmalloc((B2_CHUNK + 1)*sizeof(u8), GFP_KERNEL);
+	u8 *buff = (u8 *)kmalloc(B2_CHUNK + 1, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s readB2U16: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -186,7 +187,8 @@ char *printHex(char *label, u8 *buff, int count)
 	char *result = NULL;
 
 	offset = strlen(label);
-	result = (char *)kmalloc(((offset + 3 * count) + 1)*sizeof(char), GFP_KERNEL);
+	result = (char *)kmalloc((offset + 3 * count) + 1,
+				 GFP_KERNEL);
 	if (result != NULL) {
 		strlcpy(result, label, sizeof(result));
 
@@ -311,7 +313,7 @@ int u8ToU16n(u8 *src, int src_length, u16 *dst)
 		return 0;
 	}
 	j = 0;
-	dst = (u16 *)kmalloc((src_length / 2)*sizeof(u16), GFP_KERNEL);
+	dst = (u16 *) kmalloc_array(src_length / 2, sizeof(u16), GFP_KERNEL);
 	for (i = 0; i < src_length; i += 2) {
 		dst[j] = ((src[i+1] & 0x00FF) << 8) + (src[i] & 0x00FF);
 		j++;
@@ -335,7 +337,7 @@ int u8ToU16_le(u8 *src, u16 *dst)
 int u16ToU8n(u16 *src, int src_length, u8 *dst)
 {
 	int i, j;
-	dst = (u8 *)kmalloc((2 * src_length)*sizeof(u8), GFP_KERNEL);
+	dst = (u8 *) kmalloc_array(2, src_length, GFP_KERNEL);
 	j = 0;
 	for (i = 0; i < src_length; i++) {
 		dst[j] = (u8) (src[i] & 0xFF00)>>8;
@@ -619,10 +621,14 @@ short **array1dTo2d_short(short *data, int size, int columns)
 {
 
 	int i;
-	short **matrix = (short **)kmalloc(((int)(size / columns))*sizeof(short *), GFP_KERNEL);
+	short **matrix = (short **) kmalloc_array((int)(size / columns),
+						  sizeof(short *),
+						  GFP_KERNEL);
 	if (matrix != NULL) {
 		for (i = 0; i < (int)(size / columns); i++) {
-			matrix[i] = (short *)kmalloc(columns*sizeof(short), GFP_KERNEL);
+			matrix[i] = (short *) kmalloc_array(columns,
+							    sizeof(short),
+							    GFP_KERNEL);
 		}
 
 		for (i = 0; i < size; i++)
@@ -636,10 +642,13 @@ u8 **array1dTo2d_u8(u8 *data, int size, int columns)
 {
 
 	int i;
-	u8 **matrix = (u8 **)kmalloc(((int)(size / columns))*sizeof(u8 *), GFP_KERNEL);
+	u8 **matrix = (u8 **) kmalloc_array((int)(size / columns),
+					    sizeof(u8 *),
+					    GFP_KERNEL);
 	if (matrix != NULL) {
 		for (i = 0; i < (int)(size / columns); i++) {
-			matrix[i] = (u8 *)kmalloc(columns*sizeof(u8), GFP_KERNEL);
+			matrix[i] = (u8 *)kmalloc(columns,
+						  GFP_KERNEL);
 		}
 
 		for (i = 0; i < size; i++)

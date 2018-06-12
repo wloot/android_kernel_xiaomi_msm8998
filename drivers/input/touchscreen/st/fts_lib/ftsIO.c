@@ -225,7 +225,7 @@ int readCmdU16(u8 cmd, u16 address, u8 *outBuf, int byteToRead, int hasDummyByte
 	int toRead = 0;
 	u8 rCmd[3] = { cmd, 0x00, 0x00 };
 
-	u8 *buff = (u8 *)kmalloc((READ_CHUNK + 1)*sizeof(u8), GFP_KERNEL);
+	u8 *buff = (u8 *)kmalloc(READ_CHUNK + 1, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s readCmdU16: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -271,7 +271,7 @@ int writeCmdU16(u8 WriteCmd, u16 address, u8 *dataToWrite, int byteToWrite)
 	int remaining = byteToWrite;
 	int toWrite = 0;
 
-	u8 *buff = (u8 *)kmalloc((WRITE_CHUNK + 3)*sizeof(u8), GFP_KERNEL);
+	u8 *buff = (u8 *)kmalloc(WRITE_CHUNK + 3, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s writeCmdU16: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -310,7 +310,7 @@ int writeCmdU32(u8 writeCmd1, u8 writeCmd2, u32 address, u8 *dataToWrite, int by
 	int toWrite = 0;
 
 	u8 buff1[3] = { writeCmd1, 0x00, 0x00 };
-	u8 *buff2 = (u8 *)kmalloc((WRITE_CHUNK + 3)*sizeof(u8), GFP_KERNEL);
+	u8 *buff2 = (u8 *)kmalloc(WRITE_CHUNK + 3, GFP_KERNEL);
 	if (buff2 == NULL) {
 		logError(1, "%s writeCmdU32: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -357,7 +357,7 @@ int writeReadCmdU32(u8 wCmd, u8 rCmd, u32 address, u8 *outBuf, int byteToRead, i
 	u8 reaCmd[3];
 	u8 wriCmd[3];
 
-	u8 *buff = (u8 *)kmalloc((READ_CHUNK + 1)*sizeof(u8), GFP_KERNEL);
+	u8 *buff = (u8 *)kmalloc(READ_CHUNK + 1, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s writereadCmd32: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;

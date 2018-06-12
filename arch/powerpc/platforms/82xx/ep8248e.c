@@ -131,7 +131,7 @@ static int ep8248e_mdio_probe(struct platform_device *ofdev)
 	if (!bus)
 		return -ENOMEM;
 
-	bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int), GFP_KERNEL);
 	if (bus->irq == NULL) {
 		ret = -ENOMEM;
 		goto err_free_bus;

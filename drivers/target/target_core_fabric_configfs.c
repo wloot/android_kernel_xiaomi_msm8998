@@ -321,8 +321,9 @@ static struct config_group *target_fabric_make_mappedlun(
 	}
 
 	lacl_cg = &lacl->se_lun_group;
-	lacl_cg->default_groups = kmalloc(sizeof(struct config_group *) * 2,
-				GFP_KERNEL);
+	lacl_cg->default_groups = kmalloc_array(2,
+						sizeof(struct config_group *),
+						GFP_KERNEL);
 	if (!lacl_cg->default_groups) {
 		pr_err("Unable to allocate lacl_cg->default_groups\n");
 		ret = -ENOMEM;
@@ -337,8 +338,9 @@ static struct config_group *target_fabric_make_mappedlun(
 	lacl_cg->default_groups[1] = NULL;
 
 	ml_stat_grp = &lacl->ml_stat_grps.stat_group;
-	ml_stat_grp->default_groups = kmalloc(sizeof(struct config_group *) * 3,
-				GFP_KERNEL);
+	ml_stat_grp->default_groups = kmalloc_array(3,
+						    sizeof(struct config_group *),
+						    GFP_KERNEL);
 	if (!ml_stat_grp->default_groups) {
 		pr_err("Unable to allocate ml_stat_grp->default_groups\n");
 		ret = -ENOMEM;
@@ -818,8 +820,9 @@ static struct config_group *target_fabric_make_lun(
 		return ERR_CAST(lun);
 
 	lun_cg = &lun->lun_group;
-	lun_cg->default_groups = kmalloc(sizeof(struct config_group *) * 2,
-				GFP_KERNEL);
+	lun_cg->default_groups = kmalloc_array(2,
+					       sizeof(struct config_group *),
+					       GFP_KERNEL);
 	if (!lun_cg->default_groups) {
 		pr_err("Unable to allocate lun_cg->default_groups\n");
 		kfree(lun);

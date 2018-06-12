@@ -1840,7 +1840,7 @@ static int bfin_mii_bus_probe(struct platform_device *pdev)
 
 	snprintf(miibus->id, MII_BUS_ID_SIZE, "%s-%x",
 		pdev->name, pdev->id);
-	miibus->irq = kmalloc(sizeof(int)*PHY_MAX_ADDR, GFP_KERNEL);
+	miibus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int), GFP_KERNEL);
 	if (!miibus->irq)
 		goto out_err_irq_alloc;
 

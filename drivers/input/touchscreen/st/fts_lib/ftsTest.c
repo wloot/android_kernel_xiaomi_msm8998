@@ -67,7 +67,7 @@ int computeAdjHoriz(u8 *data, int row, int column, u8 **result)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	*result = (u8 *) kmalloc(size * sizeof (u8), GFP_KERNEL);
+	*result = (u8 *) kmalloc(size, GFP_KERNEL);
 	if (*result == NULL) {
 		logError(1, "%s computeAdjHoriz: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -93,7 +93,7 @@ int computeAdjHorizTotal(u16 *data, int row, int column, u16 **result)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	*result = (u16 *) kmalloc(size * sizeof (u16), GFP_KERNEL);
+	*result = (u16 *) kmalloc_array(size, sizeof(u16), GFP_KERNEL);
 	if (*result == NULL) {
 		logError(1, "%s computeAdjHorizTotal: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -119,7 +119,7 @@ int computeAdjVert(u8 *data, int row, int column, u8 **result)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	*result = (u8 *) kmalloc(size * sizeof (u8), GFP_KERNEL);
+	*result = (u8 *) kmalloc(size, GFP_KERNEL);
 	if (*result == NULL) {
 		logError(1, "%s computeAdjVert: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -144,7 +144,7 @@ int computeAdjVertTotal(u16 *data, int row, int column, u16 **result)
 		return ERROR_OP_NOT_ALLOW;
 	}
 
-	*result = (u16 *) kmalloc(size * sizeof (u16), GFP_KERNEL);
+	*result = (u16 *) kmalloc_array(size, sizeof(u16), GFP_KERNEL);
 	if (*result == NULL) {
 		logError(1, "%s computeAdjVertTotal: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -164,7 +164,7 @@ int computeTotal(u8 *data, u8 main, int row, int column, int m, int n, u16 **res
 	int i, j;
 	int size = (row)*(column);
 
-	*result = (u16 *) kmalloc(size * sizeof (u16), GFP_KERNEL);
+	*result = (u16 *) kmalloc_array(size, sizeof(u16), GFP_KERNEL);
 	if (*result == NULL) {
 		logError(1, "%s computeTotal : ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -2194,7 +2194,7 @@ int parseProductionTestLimits(char *path, char *label, int **data, int *row, int
 	fd = 0;
 #endif
 
-	line = (char *)kmalloc(1800*sizeof(char), GFP_KERNEL);
+	line = (char *)kmalloc(1800, GFP_KERNEL);
 	buf = line;
 
 	if (fd == 0) {
@@ -2246,7 +2246,9 @@ int parseProductionTestLimits(char *path, char *label, int **data, int *row, int
 						goto END;
 					}
 
-					*data = (int *)kmalloc(((*row)*(*column))*sizeof(int), GFP_KERNEL);
+					*data = (int *) kmalloc_array((*row) * (*column),
+								      sizeof(int),
+								      GFP_KERNEL);
 					/* allocate the memory for containing the data */
 					j = 0;
 					if (*data == NULL) {

@@ -398,7 +398,7 @@ static int cp210x_set_config(struct usb_serial_port *port, u8 request,
 	/* Number of integers required to contain the array */
 	length = (((size - 1) | 3) + 1) / 4;
 
-	buf = kmalloc(length * sizeof(__le32), GFP_KERNEL);
+	buf = kmalloc_array(length, sizeof(__le32), GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 

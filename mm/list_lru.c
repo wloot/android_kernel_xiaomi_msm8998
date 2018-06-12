@@ -325,7 +325,7 @@ static int memcg_init_list_lru_node(struct list_lru_node *nlru)
 {
 	int size = memcg_nr_cache_ids;
 
-	nlru->memcg_lrus = kmalloc(size * sizeof(void *), GFP_KERNEL);
+	nlru->memcg_lrus = kmalloc_array(size, sizeof(void *), GFP_KERNEL);
 	if (!nlru->memcg_lrus)
 		return -ENOMEM;
 
@@ -351,7 +351,7 @@ static int memcg_update_list_lru_node(struct list_lru_node *nlru,
 	BUG_ON(old_size > new_size);
 
 	old = nlru->memcg_lrus;
-	new = kmalloc(new_size * sizeof(void *), GFP_KERNEL);
+	new = kmalloc_array(new_size, sizeof(void *), GFP_KERNEL);
 	if (!new)
 		return -ENOMEM;
 

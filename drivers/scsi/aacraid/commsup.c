@@ -1778,8 +1778,8 @@ int aac_command_thread(void *data)
 				hw_fib_pool = NULL;
 				fib_pool = NULL;
 				if (num
-				 && ((hw_fib_pool = kmalloc(sizeof(struct hw_fib *) * num, GFP_KERNEL)))
-				 && ((fib_pool = kmalloc(sizeof(struct fib *) * num, GFP_KERNEL)))) {
+				 && ((hw_fib_pool = kmalloc_array(num, sizeof(struct hw_fib *), GFP_KERNEL)))
+				 && ((fib_pool = kmalloc_array(num, sizeof(struct fib *), GFP_KERNEL)))) {
 					hw_fib_p = hw_fib_pool;
 					fib_p = fib_pool;
 					while (hw_fib_p < &hw_fib_pool[num]) {

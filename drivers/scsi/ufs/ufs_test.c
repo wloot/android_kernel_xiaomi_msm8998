@@ -1409,8 +1409,8 @@ static int ufs_test_debugfs_init(struct ufs_test_data *utd)
 	utils_root = ts->debug.debug_utils_root;
 	tests_root = ts->debug.debug_tests_root;
 
-	utd->test_list = kmalloc(sizeof(struct dentry *) * NUM_TESTS,
-			GFP_KERNEL);
+	utd->test_list = kmalloc_array(NUM_TESTS, sizeof(struct dentry *),
+				       GFP_KERNEL);
 	if (!utd->test_list) {
 		pr_err("%s: failed to allocate tests dentrys", __func__);
 		return -ENODEV;

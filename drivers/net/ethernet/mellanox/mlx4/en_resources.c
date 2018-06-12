@@ -114,7 +114,7 @@ int mlx4_en_map_buffer(struct mlx4_buf *buf)
 	if (BITS_PER_LONG == 64 || buf->nbufs == 1)
 		return 0;
 
-	pages = kmalloc(sizeof *pages * buf->nbufs, GFP_KERNEL);
+	pages = kmalloc_array(buf->nbufs, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
 		return -ENOMEM;
 

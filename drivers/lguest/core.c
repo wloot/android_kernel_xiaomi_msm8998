@@ -62,9 +62,9 @@ static __init int map_switcher(void)
 	 * We allocate an array of struct page pointers.  map_vm_area() wants
 	 * this, rather than just an array of pages.
 	 */
-	lg_switcher_pages = kmalloc(sizeof(lg_switcher_pages[0])
-				    * TOTAL_SWITCHER_PAGES,
-				    GFP_KERNEL);
+	lg_switcher_pages = kmalloc_array(TOTAL_SWITCHER_PAGES,
+					  sizeof(lg_switcher_pages[0]),
+					  GFP_KERNEL);
 	if (!lg_switcher_pages) {
 		err = -ENOMEM;
 		goto out;

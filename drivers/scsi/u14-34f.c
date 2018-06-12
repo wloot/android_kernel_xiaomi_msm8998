@@ -979,9 +979,8 @@ static int port_detect \
             &HD(j)->cp[i], sizeof(struct mscp), PCI_DMA_BIDIRECTIONAL);
 
    for (i = 0; i < sh[j]->can_queue; i++)
-      if (! ((&HD(j)->cp[i])->sglist = kmalloc(
-            sh[j]->sg_tablesize * sizeof(struct sg_list),
-            (sh[j]->unchecked_isa_dma ? GFP_DMA : 0) | GFP_ATOMIC))) {
+      if (! ((&HD(j)->cp[i])->sglist = kmalloc_array(sh[j]->sg_tablesize, sizeof(struct sg_list),
+                                                     (sh[j]->unchecked_isa_dma ? GFP_DMA : 0) | GFP_ATOMIC))) {
          printk("%s: kmalloc SGlist failed, mbox %d, detaching.\n", BN(j), i);
          goto release;
          }

@@ -80,8 +80,9 @@ fmr_op_init(struct rpcrdma_xprt *r_xprt)
 		if (!r)
 			goto out;
 
-		r->r.fmr.physaddrs = kmalloc(RPCRDMA_MAX_FMR_SGES *
-					     sizeof(u64), GFP_KERNEL);
+		r->r.fmr.physaddrs = kmalloc_array(RPCRDMA_MAX_FMR_SGES,
+						   sizeof(u64),
+						   GFP_KERNEL);
 		if (!r->r.fmr.physaddrs)
 			goto out_free;
 

@@ -351,14 +351,16 @@ mb_cache_create(const char *name, int bucket_bits)
 	cache->c_name = name;
 	atomic_set(&cache->c_entry_count, 0);
 	cache->c_bucket_bits = bucket_bits;
-	cache->c_block_hash = kmalloc(bucket_count *
-		sizeof(struct hlist_bl_head), GFP_KERNEL);
+	cache->c_block_hash = kmalloc_array(bucket_count,
+					    sizeof(struct hlist_bl_head),
+					    GFP_KERNEL);
 	if (!cache->c_block_hash)
 		goto fail;
 	for (n=0; n<bucket_count; n++)
 		INIT_HLIST_BL_HEAD(&cache->c_block_hash[n]);
-	cache->c_index_hash = kmalloc(bucket_count *
-		sizeof(struct hlist_bl_head), GFP_KERNEL);
+	cache->c_index_hash = kmalloc_array(bucket_count,
+					    sizeof(struct hlist_bl_head),
+					    GFP_KERNEL);
 	if (!cache->c_index_hash)
 		goto fail;
 	for (n=0; n<bucket_count; n++)

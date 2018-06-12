@@ -172,7 +172,7 @@ static int fs_enet_mdio_probe(struct platform_device *ofdev)
 		goto out_free_bus;
 
 	new_bus->phy_mask = ~0;
-	new_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	new_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int), GFP_KERNEL);
 	if (!new_bus->irq) {
 		ret = -ENOMEM;
 		goto out_unmap_regs;

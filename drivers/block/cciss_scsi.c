@@ -220,7 +220,8 @@ scsi_cmd_stack_setup(ctlr_info_t *h, struct cciss_scsi_adapter_data_t *sa)
 		sa->cmd_sg_list = NULL;
 		return -ENOMEM;
 	}
-	stk->elem = kmalloc(sizeof(stk->elem[0]) * stk->nelems, GFP_KERNEL);
+	stk->elem = kmalloc_array(stk->nelems, sizeof(stk->elem[0]),
+				  GFP_KERNEL);
 	if (!stk->elem) {
 		pci_free_consistent(h->pdev, size, stk->pool,
 		stk->cmd_pool_handle);

@@ -642,7 +642,8 @@ static int ax_mii_init(struct net_device *dev)
 	snprintf(ax->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		pdev->name, pdev->id);
 
-	ax->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	ax->mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int),
+					 GFP_KERNEL);
 	if (!ax->mii_bus->irq) {
 		err = -ENOMEM;
 		goto out_free_mdio_bitbang;

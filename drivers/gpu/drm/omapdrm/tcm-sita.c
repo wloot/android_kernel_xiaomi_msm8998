@@ -107,13 +107,13 @@ struct tcm *sita_init(u16 width, u16 height, struct tcm_pt *attr)
 	spin_lock_init(&(pvt->lock));
 
 	/* Creating tam map */
-	pvt->map = kmalloc(sizeof(*pvt->map) * tcm->width, GFP_KERNEL);
+	pvt->map = kmalloc_array(tcm->width, sizeof(*pvt->map), GFP_KERNEL);
 	if (!pvt->map)
 		goto error;
 
 	for (i = 0; i < tcm->width; i++) {
 		pvt->map[i] =
-			kmalloc(sizeof(**pvt->map) * tcm->height,
+			kmalloc_array(tcm->height, sizeof(**pvt->map),
 								GFP_KERNEL);
 		if (pvt->map[i] == NULL) {
 			while (i--)

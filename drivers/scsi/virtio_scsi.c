@@ -934,9 +934,10 @@ static int virtscsi_init(struct virtio_device *vdev,
 	struct virtqueue **vqs;
 
 	num_vqs = vscsi->num_queues + VIRTIO_SCSI_VQ_BASE;
-	vqs = kmalloc(num_vqs * sizeof(struct virtqueue *), GFP_KERNEL);
-	callbacks = kmalloc(num_vqs * sizeof(vq_callback_t *), GFP_KERNEL);
-	names = kmalloc(num_vqs * sizeof(char *), GFP_KERNEL);
+	vqs = kmalloc_array(num_vqs, sizeof(struct virtqueue *), GFP_KERNEL);
+	callbacks = kmalloc_array(num_vqs, sizeof(vq_callback_t *),
+				  GFP_KERNEL);
+	names = kmalloc_array(num_vqs, sizeof(char *), GFP_KERNEL);
 
 	if (!callbacks || !vqs || !names) {
 		err = -ENOMEM;

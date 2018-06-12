@@ -439,7 +439,8 @@ static int macb_mii_init(struct macb *bp)
 	bp->mii_bus->parent = &bp->dev->dev;
 	pdata = dev_get_platdata(&bp->pdev->dev);
 
-	bp->mii_bus->irq = kmalloc(sizeof(int)*PHY_MAX_ADDR, GFP_KERNEL);
+	bp->mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int),
+					 GFP_KERNEL);
 	if (!bp->mii_bus->irq) {
 		err = -ENOMEM;
 		goto err_out_free_mdiobus;

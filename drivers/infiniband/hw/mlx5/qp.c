@@ -794,11 +794,18 @@ static int create_kernel_qp(struct mlx5_ib_dev *dev,
 		goto err_free;
 	}
 
-	qp->sq.wrid = kmalloc(qp->sq.wqe_cnt * sizeof(*qp->sq.wrid), GFP_KERNEL);
-	qp->sq.wr_data = kmalloc(qp->sq.wqe_cnt * sizeof(*qp->sq.wr_data), GFP_KERNEL);
-	qp->rq.wrid = kmalloc(qp->rq.wqe_cnt * sizeof(*qp->rq.wrid), GFP_KERNEL);
-	qp->sq.w_list = kmalloc(qp->sq.wqe_cnt * sizeof(*qp->sq.w_list), GFP_KERNEL);
-	qp->sq.wqe_head = kmalloc(qp->sq.wqe_cnt * sizeof(*qp->sq.wqe_head), GFP_KERNEL);
+	qp->sq.wrid = kmalloc_array(qp->sq.wqe_cnt, sizeof(*qp->sq.wrid),
+				    GFP_KERNEL);
+	qp->sq.wr_data = kmalloc_array(qp->sq.wqe_cnt,
+				       sizeof(*qp->sq.wr_data),
+				       GFP_KERNEL);
+	qp->rq.wrid = kmalloc_array(qp->rq.wqe_cnt, sizeof(*qp->rq.wrid),
+				    GFP_KERNEL);
+	qp->sq.w_list = kmalloc_array(qp->sq.wqe_cnt, sizeof(*qp->sq.w_list),
+				      GFP_KERNEL);
+	qp->sq.wqe_head = kmalloc_array(qp->sq.wqe_cnt,
+					sizeof(*qp->sq.wqe_head),
+					GFP_KERNEL);
 
 	if (!qp->sq.wrid || !qp->sq.wr_data || !qp->rq.wrid ||
 	    !qp->sq.w_list || !qp->sq.wqe_head) {

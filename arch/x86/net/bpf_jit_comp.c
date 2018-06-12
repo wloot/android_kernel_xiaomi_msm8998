@@ -1059,7 +1059,7 @@ void bpf_int_jit_compile(struct bpf_prog *prog)
 	if (!prog || !prog->len)
 		return;
 
-	addrs = kmalloc(prog->len * sizeof(*addrs), GFP_KERNEL);
+	addrs = kmalloc_array(prog->len, sizeof(*addrs), GFP_KERNEL);
 	if (!addrs)
 		return;
 

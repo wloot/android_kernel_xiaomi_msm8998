@@ -76,8 +76,9 @@ int c2_init_pd_table(struct c2_dev *c2dev)
 	c2dev->pd_table.last = 0;
 	c2dev->pd_table.max = c2dev->props.max_pd;
 	spin_lock_init(&c2dev->pd_table.lock);
-	c2dev->pd_table.table = kmalloc(BITS_TO_LONGS(c2dev->props.max_pd) *
-					sizeof(long), GFP_KERNEL);
+	c2dev->pd_table.table = kmalloc_array(BITS_TO_LONGS(c2dev->props.max_pd),
+					      sizeof(long),
+					      GFP_KERNEL);
 	if (!c2dev->pd_table.table)
 		return -ENOMEM;
 	bitmap_zero(c2dev->pd_table.table, c2dev->props.max_pd);

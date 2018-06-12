@@ -353,7 +353,7 @@ static int start_read(struct inode *inode, struct list_head *page_list, int max)
 
 	/* build page vector */
 	nr_pages = calc_pages_for(0, len);
-	pages = kmalloc(sizeof(*pages) * nr_pages, GFP_KERNEL);
+	pages = kmalloc_array(nr_pages, sizeof(*pages), GFP_KERNEL);
 	ret = -ENOMEM;
 	if (!pages)
 		goto out;
@@ -895,8 +895,9 @@ get_more_pages:
 				req->r_inode = inode;
 
 				max_pages = calc_pages_for(0, (u64)len);
-				pages = kmalloc(max_pages * sizeof (*pages),
-						GFP_NOFS);
+				pages = kmalloc_array(max_pages,
+						      sizeof(*pages),
+						      GFP_NOFS);
 				if (!pages) {
 					pool = fsc->wb_pagevec_pool;
 					pages = mempool_alloc(pool, GFP_NOFS);

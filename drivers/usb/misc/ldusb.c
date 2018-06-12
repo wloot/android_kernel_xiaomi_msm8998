@@ -709,7 +709,9 @@ static int ld_usb_probe(struct usb_interface *intf, const struct usb_device_id *
 		dev_warn(&intf->dev, "Interrupt out endpoint not found (using control endpoint instead)\n");
 
 	dev->interrupt_in_endpoint_size = usb_endpoint_maxp(dev->interrupt_in_endpoint);
-	dev->ring_buffer = kmalloc(ring_buffer_size*(sizeof(size_t)+dev->interrupt_in_endpoint_size), GFP_KERNEL);
+	dev->ring_buffer = kmalloc_array(ring_buffer_size,
+					 (sizeof(size_t) + dev->interrupt_in_endpoint_size),
+					 GFP_KERNEL);
 	if (!dev->ring_buffer) {
 		dev_err(&intf->dev, "Couldn't allocate ring_buffer\n");
 		goto error;
@@ -726,7 +728,9 @@ static int ld_usb_probe(struct usb_interface *intf, const struct usb_device_id *
 	}
 	dev->interrupt_out_endpoint_size = dev->interrupt_out_endpoint ? usb_endpoint_maxp(dev->interrupt_out_endpoint) :
 									 udev->descriptor.bMaxPacketSize0;
-	dev->interrupt_out_buffer = kmalloc(write_buffer_size*dev->interrupt_out_endpoint_size, GFP_KERNEL);
+	dev->interrupt_out_buffer = kmalloc_array(write_buffer_size,
+						  dev->interrupt_out_endpoint_size,
+						  GFP_KERNEL);
 	if (!dev->interrupt_out_buffer) {
 		dev_err(&intf->dev, "Couldn't allocate interrupt_out_buffer\n");
 		goto error;

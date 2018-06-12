@@ -55,8 +55,9 @@ int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
 				buf, sdata->multiread_bit);
 		} else {
 			u8 *rx_array;
-			rx_array = kmalloc(byte_for_channel * num_data_channels,
-					   GFP_KERNEL);
+			rx_array = kmalloc_array(num_data_channels,
+						 byte_for_channel,
+						 GFP_KERNEL);
 			if (!rx_array) {
 				len = -ENOMEM;
 				goto st_sensors_free_memory;

@@ -620,9 +620,9 @@ static int uci_init_client_attributes(struct mhi_uci_ctxt_t *uci_ctxt)
 			client = &uci_ctxt->client_handles[index];
 			chan_attrib->nr_trbs = 9;
 			client->in_buf_list =
-			      kmalloc(sizeof(struct mhi_dev_iov) *
-					      chan_attrib->nr_trbs,
-					GFP_KERNEL);
+			      kmalloc_array(chan_attrib->nr_trbs,
+					    sizeof(struct mhi_dev_iov),
+					    GFP_KERNEL);
 			if (client->in_buf_list == NULL)
 				return -ENOMEM;
 		}

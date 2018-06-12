@@ -566,7 +566,7 @@ ssize_t compat_rw_copy_check_uvector(int type,
 		goto out;
 	if (nr_segs > fast_segs) {
 		ret = -ENOMEM;
-		iov = kmalloc(nr_segs*sizeof(struct iovec), GFP_KERNEL);
+		iov = kmalloc_array(nr_segs, sizeof(struct iovec), GFP_KERNEL);
 		if (iov == NULL)
 			goto out;
 	}
@@ -1260,7 +1260,7 @@ int compat_core_sys_select(int n, compat_ulong_t __user *inp,
 	size = FDS_BYTES(n);
 	bits = stack_fds;
 	if (size > sizeof(stack_fds) / 6) {
-		bits = kmalloc(6 * size, GFP_KERNEL);
+		bits = kmalloc_array(6, size, GFP_KERNEL);
 		ret = -ENOMEM;
 		if (!bits)
 			goto out_nofds;

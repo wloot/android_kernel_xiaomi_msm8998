@@ -428,7 +428,7 @@ static int rxkad_verify_packet_encrypt(const struct rxrpc_call *call,
 
 	sg = _sg;
 	if (unlikely(nsg > 4)) {
-		sg = kmalloc(sizeof(*sg) * nsg, GFP_NOIO);
+		sg = kmalloc_array(nsg, sizeof(*sg), GFP_NOIO);
 		if (!sg)
 			goto nomem;
 	}
