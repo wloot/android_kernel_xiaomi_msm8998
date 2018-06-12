@@ -114,7 +114,7 @@ long mm_iommu_get(unsigned long ua, unsigned long entries,
 		goto unlock_exit;
 	}
 
-	mem->hpas = vzalloc(entries * sizeof(mem->hpas[0]));
+	mem->hpas = vzalloc(array_size(entries, sizeof(mem->hpas[0])));
 	if (!mem->hpas) {
 		kfree(mem);
 		ret = -ENOMEM;

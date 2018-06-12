@@ -2552,8 +2552,7 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 		 */
 		p->cluster_next = 1 + (prandom_u32() % p->highest_bit);
 
-		cluster_info = vzalloc(DIV_ROUND_UP(maxpages,
-			SWAPFILE_CLUSTER) * sizeof(*cluster_info));
+		cluster_info = vzalloc(array_size(sizeof(*cluster_info), DIV_ROUND_UP(maxpages, SWAPFILE_CLUSTER)));
 		if (!cluster_info) {
 			error = -ENOMEM;
 			goto bad_swap;
@@ -2582,7 +2581,7 @@ SYSCALL_DEFINE2(swapon, const char __user *, specialfile, int, swap_flags)
 	}
 	/* frontswap enabled? set up bit-per-page map for frontswap */
 	if (frontswap_enabled)
-		frontswap_map = vzalloc(BITS_TO_LONGS(maxpages) * sizeof(long));
+		frontswap_map = vzalloc(array_size(sizeof(long), BITS_TO_LONGS(maxpages)));
 
 	if (p->bdev &&(swap_flags & SWAP_FLAG_DISCARD) && swap_discardable(p)) {
 		/*

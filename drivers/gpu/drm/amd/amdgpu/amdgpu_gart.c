@@ -331,13 +331,12 @@ int amdgpu_gart_init(struct amdgpu_device *adev)
 	DRM_INFO("GART: num cpu pages %u, num gpu pages %u\n",
 		 adev->gart.num_cpu_pages, adev->gart.num_gpu_pages);
 	/* Allocate pages table */
-	adev->gart.pages = vzalloc(sizeof(void *) * adev->gart.num_cpu_pages);
+	adev->gart.pages = vzalloc(array_size(sizeof(void *), adev->gart.num_cpu_pages));
 	if (adev->gart.pages == NULL) {
 		amdgpu_gart_fini(adev);
 		return -ENOMEM;
 	}
-	adev->gart.pages_addr = vzalloc(sizeof(dma_addr_t) *
-					adev->gart.num_cpu_pages);
+	adev->gart.pages_addr = vzalloc(array_size(sizeof(dma_addr_t), adev->gart.num_cpu_pages));
 	if (adev->gart.pages_addr == NULL) {
 		amdgpu_gart_fini(adev);
 		return -ENOMEM;

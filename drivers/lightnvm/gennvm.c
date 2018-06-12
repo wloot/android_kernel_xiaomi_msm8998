@@ -157,8 +157,7 @@ static int gennvm_blocks_init(struct nvm_dev *dev, struct gen_nvm *gn)
 	int ret;
 
 	gennvm_for_each_lun(gn, lun, lun_iter) {
-		lun->vlun.blocks = vzalloc(sizeof(struct nvm_block) *
-							dev->blks_per_lun);
+		lun->vlun.blocks = vzalloc(array_size(sizeof(struct nvm_block), dev->blks_per_lun));
 		if (!lun->vlun.blocks)
 			return -ENOMEM;
 

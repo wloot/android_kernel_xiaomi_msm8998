@@ -331,7 +331,7 @@ static int epool_init(struct entry_pool *ep, unsigned nr_entries)
 {
 	unsigned i;
 
-	ep->entries = vzalloc(sizeof(struct entry) * nr_entries);
+	ep->entries = vzalloc(array_size(nr_entries, sizeof(struct entry)));
 	if (!ep->entries)
 		return -ENOMEM;
 
@@ -1411,7 +1411,7 @@ static struct dm_cache_policy *mq_create(dm_cblock_t cache_size,
 
 	mq->nr_buckets = next_power(from_cblock(cache_size) / 2, 16);
 	mq->hash_bits = __ffs(mq->nr_buckets);
-	mq->table = vzalloc(sizeof(*mq->table) * mq->nr_buckets);
+	mq->table = vzalloc(array_size(sizeof(*mq->table), mq->nr_buckets));
 	if (!mq->table)
 		goto bad_alloc_table;
 

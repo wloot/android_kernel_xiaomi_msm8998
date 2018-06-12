@@ -2157,7 +2157,7 @@ static int adjust_insn_aux_data(struct verifier_env *env, u32 prog_len,
 
 	if (cnt == 1)
 		return 0;
-	new_data = vzalloc(sizeof(struct bpf_insn_aux_data) * prog_len);
+	new_data = vzalloc(array_size(prog_len, sizeof(struct bpf_insn_aux_data)));
 	if (!new_data)
 		return -ENOMEM;
 	memcpy(new_data, old_data, sizeof(struct bpf_insn_aux_data) * off);
@@ -2382,8 +2382,7 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr)
 	if (!env)
 		return -ENOMEM;
 
-	env->insn_aux_data = vzalloc(sizeof(struct bpf_insn_aux_data) *
-				     (*prog)->len);
+	env->insn_aux_data = vzalloc(array_size(sizeof(struct bpf_insn_aux_data), (*prog)->len));
 	ret = -ENOMEM;
 	if (!env->insn_aux_data)
 		goto err_free_env;

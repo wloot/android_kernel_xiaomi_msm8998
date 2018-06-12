@@ -225,7 +225,7 @@ int ipz_queue_ctor(struct ehca_pd *pd, struct ipz_queue *queue,
 	queue->queue_pages = kcalloc(nr_of_pages, sizeof(void *),
 				     GFP_KERNEL | __GFP_NOWARN);
 	if (!queue->queue_pages) {
-		queue->queue_pages = vzalloc(nr_of_pages * sizeof(void *));
+		queue->queue_pages = vzalloc(array_size(nr_of_pages, sizeof(void *)));
 		if (!queue->queue_pages) {
 			ehca_gen_err("Couldn't allocate queue page list");
 			return 0;
