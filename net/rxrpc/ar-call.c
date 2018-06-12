@@ -208,8 +208,9 @@ static struct rxrpc_call *rxrpc_alloc_call(gfp_t gfp)
 		return NULL;
 
 	call->acks_winsz = 16;
-	call->acks_window = kmalloc(call->acks_winsz * sizeof(unsigned long),
-				    gfp);
+	call->acks_window = kmalloc_array(call->acks_winsz,
+					  sizeof(unsigned long),
+					  gfp);
 	if (!call->acks_window) {
 		kmem_cache_free(rxrpc_call_jar, call);
 		return NULL;

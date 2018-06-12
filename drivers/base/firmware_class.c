@@ -915,8 +915,8 @@ static int fw_realloc_buffer(struct firmware_priv *fw_priv, int min_size)
 					 buf->page_array_size * 2);
 		struct page **new_pages;
 
-		new_pages = kmalloc(new_array_size * sizeof(void *),
-				    GFP_KERNEL);
+		new_pages = kmalloc_array(new_array_size, sizeof(void *),
+					  GFP_KERNEL);
 		if (!new_pages) {
 			fw_load_abort(fw_priv);
 			return -ENOMEM;

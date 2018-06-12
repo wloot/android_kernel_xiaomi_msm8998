@@ -726,7 +726,9 @@ static int scan(struct wiphy *wiphy, struct cfg80211_scan_request *request)
 		if (request->n_ssids >= 1) {
 
 
-			strHiddenNetwork.pstrHiddenNetworkInfo = kmalloc(request->n_ssids * sizeof(struct hidden_network), GFP_KERNEL);
+			strHiddenNetwork.pstrHiddenNetworkInfo = kmalloc_array(request->n_ssids,
+									       sizeof(struct hidden_network),
+									       GFP_KERNEL);
 			strHiddenNetwork.u8ssidnum = request->n_ssids;
 
 

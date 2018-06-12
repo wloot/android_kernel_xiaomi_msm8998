@@ -575,8 +575,8 @@ __i915_gem_userptr_get_pages_worker(struct work_struct *_work)
 	ret = -ENOMEM;
 	pinned = 0;
 
-	pvec = kmalloc(npages*sizeof(struct page *),
-		       GFP_TEMPORARY | __GFP_NOWARN | __GFP_NORETRY);
+	pvec = kmalloc_array(npages, sizeof(struct page *),
+			     GFP_TEMPORARY | __GFP_NOWARN | __GFP_NORETRY);
 	if (pvec == NULL)
 		pvec = drm_malloc_ab(npages, sizeof(struct page *));
 	if (pvec != NULL) {
@@ -715,8 +715,8 @@ i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
 	pvec = NULL;
 	pinned = 0;
 	if (obj->userptr.mm->mm == current->mm) {
-		pvec = kmalloc(num_pages*sizeof(struct page *),
-			       GFP_TEMPORARY | __GFP_NOWARN | __GFP_NORETRY);
+		pvec = kmalloc_array(num_pages, sizeof(struct page *),
+				     GFP_TEMPORARY | __GFP_NOWARN | __GFP_NORETRY);
 		if (pvec == NULL) {
 			pvec = drm_malloc_ab(num_pages, sizeof(struct page *));
 			if (pvec == NULL) {

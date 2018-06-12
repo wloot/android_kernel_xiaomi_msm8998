@@ -1532,7 +1532,8 @@ static int mmc_test_area_init(struct mmc_test_card *test, int erase, int fill)
 	if (!t->mem)
 		return -ENOMEM;
 
-	t->sg = kmalloc(sizeof(struct scatterlist) * t->max_segs, GFP_KERNEL);
+	t->sg = kmalloc_array(t->max_segs, sizeof(struct scatterlist),
+			      GFP_KERNEL);
 	if (!t->sg) {
 		ret = -ENOMEM;
 		goto out_free;

@@ -351,7 +351,7 @@ static int hidinput_get_battery_property(struct power_supply *psy,
 
 	case POWER_SUPPLY_PROP_CAPACITY:
 
-		buf = kmalloc(2 * sizeof(__u8), GFP_KERNEL);
+		buf = kmalloc(2, GFP_KERNEL);
 		if (!buf) {
 			ret = -ENOMEM;
 			break;

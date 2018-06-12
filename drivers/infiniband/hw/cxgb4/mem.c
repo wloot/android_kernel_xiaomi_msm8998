@@ -478,7 +478,7 @@ static int build_phys_page_list(struct ib_phys_buf *buffer_list,
 	if (!*npages)
 		return -EINVAL;
 
-	*page_list = kmalloc(sizeof(u64) * *npages, GFP_KERNEL);
+	*page_list = kmalloc_array(*npages, sizeof(u64), GFP_KERNEL);
 	if (!*page_list)
 		return -ENOMEM;
 

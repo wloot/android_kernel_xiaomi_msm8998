@@ -123,23 +123,25 @@ static int _sde_splash_parse_dt_get_display_node(struct drm_device *dev,
 		sinfo->splash_mem_num = 0;
 
 	sinfo->splash_mem_paddr =
-			kmalloc(sizeof(phys_addr_t) * sinfo->splash_mem_num,
-				GFP_KERNEL);
+			kmalloc_array(sinfo->splash_mem_num,
+				      sizeof(phys_addr_t),
+				      GFP_KERNEL);
 	if (!sinfo->splash_mem_paddr) {
 		SDE_ERROR("alloc splash_mem_paddr failed\n");
 		return -ENOMEM;
 	}
 
 	sinfo->splash_mem_size =
-			kmalloc(sizeof(size_t) * sinfo->splash_mem_num,
-				GFP_KERNEL);
+			kmalloc_array(sinfo->splash_mem_num, sizeof(size_t),
+				      GFP_KERNEL);
 	if (!sinfo->splash_mem_size) {
 		SDE_ERROR("alloc splash_mem_size failed\n");
 		goto error;
 	}
 
-	sinfo->obj = kmalloc(sizeof(struct drm_gem_object *) *
-				sinfo->splash_mem_num, GFP_KERNEL);
+	sinfo->obj = kmalloc_array(sinfo->splash_mem_num,
+				   sizeof(struct drm_gem_object *),
+				   GFP_KERNEL);
 	if (!sinfo->obj) {
 		SDE_ERROR("construct splash gem objects failed\n");
 		goto error;

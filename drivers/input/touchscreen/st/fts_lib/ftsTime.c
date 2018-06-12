@@ -71,7 +71,7 @@ int elapsedNanosecond(StopWatch *w)
 char *timestamp(void)
 {
 	char *result = NULL;
-	result = (char *)kmalloc((1)*sizeof(char), GFP_KERNEL);
+	result = (char *)kmalloc(1, GFP_KERNEL);
 	if (result == NULL)
 		return NULL;
 	result[0] = ' ';

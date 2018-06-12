@@ -338,7 +338,7 @@ int snd_dice_transaction_init(struct snd_dice *dice)
 	int err;
 
 	/* Use the same way which dice_interface_check() does. */
-	pointers = kmalloc(sizeof(__be32) * 10, GFP_KERNEL);
+	pointers = kmalloc_array(10, sizeof(__be32), GFP_KERNEL);
 	if (pointers == NULL)
 		return -ENOMEM;
 

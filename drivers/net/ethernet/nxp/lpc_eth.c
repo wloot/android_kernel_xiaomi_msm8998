@@ -851,7 +851,8 @@ static int lpc_mii_init(struct netdata_local *pldat)
 	pldat->mii_bus->priv = pldat;
 	pldat->mii_bus->parent = &pldat->pdev->dev;
 
-	pldat->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	pldat->mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int),
+					    GFP_KERNEL);
 	if (!pldat->mii_bus->irq) {
 		err = -ENOMEM;
 		goto err_out_1;

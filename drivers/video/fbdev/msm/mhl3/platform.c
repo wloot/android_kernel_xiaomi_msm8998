@@ -1613,8 +1613,7 @@ static int __devinit si_8620_mhl_tx_i2c_probe(struct i2c_client *client,
 		ret = -EIO;
 		goto done;
 	}
-	i2c_mem.block_tx_buffers = kmalloc(MAX_I2C_EMSC_BLOCK_SIZE *
-		NUM_BLOCK_QUEUE_REQUESTS, GFP_KERNEL);
+	i2c_mem.block_tx_buffers = kmalloc_array(NUM_BLOCK_QUEUE_REQUESTS, MAX_I2C_EMSC_BLOCK_SIZE, GFP_KERNEL);
 	if (NULL == i2c_mem.block_tx_buffers) {
 		ret = -ENOMEM;
 		goto done;
@@ -1883,8 +1882,9 @@ static int __devinit si_8620_mhl_tx_spi_probe(struct spi_device *spi)
 
 	spi_mem.tx_buf = kmalloc(MAX_SPI_XFER_BUFFER_SIZE, GFP_KERNEL);
 	spi_mem.rx_buf = kmalloc(MAX_SPI_XFER_BUFFER_SIZE, GFP_KERNEL);
-	spi_mem.block_tx_buffers = kmalloc(MAX_SPI_EMSC_BLOCK_SIZE *
-		NUM_BLOCK_QUEUE_REQUESTS, GFP_KERNEL);
+	spi_mem.block_tx_buffers = kmalloc_array(NUM_BLOCK_QUEUE_REQUESTS,
+						 MAX_SPI_EMSC_BLOCK_SIZE,
+						 GFP_KERNEL);
 	if (!spi_mem.tx_buf || !spi_mem.rx_buf || !spi_mem.block_tx_buffers) {
 		ret = -ENOMEM;
 		goto mem_cleanup;

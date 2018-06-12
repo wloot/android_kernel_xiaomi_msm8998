@@ -896,8 +896,8 @@ static int bcm_tx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
 
 		/* create array for can_frames and copy the data */
 		if (msg_head->nframes > 1) {
-			op->frames = kmalloc(msg_head->nframes * CFSIZ,
-					     GFP_KERNEL);
+			op->frames = kmalloc_array(msg_head->nframes, CFSIZ,
+						   GFP_KERNEL);
 			if (!op->frames) {
 				kfree(op);
 				return -ENOMEM;
@@ -1060,8 +1060,8 @@ static int bcm_rx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
 
 		if (msg_head->nframes > 1) {
 			/* create array for can_frames and copy the data */
-			op->frames = kmalloc(msg_head->nframes * CFSIZ,
-					     GFP_KERNEL);
+			op->frames = kmalloc_array(msg_head->nframes, CFSIZ,
+						   GFP_KERNEL);
 			if (!op->frames) {
 				kfree(op);
 				return -ENOMEM;

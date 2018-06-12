@@ -796,8 +796,8 @@ int mlx4_buf_write_mtt(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
 	int err;
 	int i;
 
-	page_list = kmalloc(buf->npages * sizeof *page_list,
-			    gfp);
+	page_list = kmalloc_array(buf->npages, sizeof(*page_list),
+				  gfp);
 	if (!page_list)
 		return -ENOMEM;
 

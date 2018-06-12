@@ -425,7 +425,7 @@ struct dentry **tpm_bios_log_setup(char *name)
 	if (is_bad(ascii_file))
 		goto out_bin;
 
-	ret = kmalloc(3 * sizeof(struct dentry *), GFP_KERNEL);
+	ret = kmalloc_array(3, sizeof(struct dentry *), GFP_KERNEL);
 	if (!ret)
 		goto out_ascii;
 

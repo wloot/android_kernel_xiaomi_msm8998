@@ -1641,7 +1641,8 @@ tfa98xx_dsp_read_mem(Tfa98xx_handle_t handle,
 	int num_bytes;
 	int *p;
 
-	bytes = (unsigned char *)kmalloc(num_words*bytes_per_word, GFP_KERNEL);
+	bytes = (unsigned char *) kmalloc_array(bytes_per_word, num_words,
+						GFP_KERNEL);
 	if (bytes == NULL)
 		return Tfa98xx_Error_Fail;
 

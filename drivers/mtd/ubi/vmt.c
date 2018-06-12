@@ -241,7 +241,8 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
 	if (err)
 		goto out_acc;
 
-	vol->eba_tbl = kmalloc(vol->reserved_pebs * sizeof(int), GFP_KERNEL);
+	vol->eba_tbl = kmalloc_array(vol->reserved_pebs, sizeof(int),
+				     GFP_KERNEL);
 	if (!vol->eba_tbl) {
 		err = -ENOMEM;
 		goto out_acc;
@@ -455,7 +456,7 @@ int ubi_resize_volume(struct ubi_volume_desc *desc, int reserved_pebs)
 	if (reserved_pebs == vol->reserved_pebs)
 		return 0;
 
-	new_mapping = kmalloc(reserved_pebs * sizeof(int), GFP_KERNEL);
+	new_mapping = kmalloc_array(reserved_pebs, sizeof(int), GFP_KERNEL);
 	if (!new_mapping)
 		return -ENOMEM;
 

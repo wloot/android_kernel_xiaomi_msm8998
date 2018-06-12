@@ -435,7 +435,8 @@ ltq_etop_mdio_init(struct net_device *dev)
 	priv->mii_bus->name = "ltq_mii";
 	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		priv->pdev->name, priv->pdev->id);
-	priv->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	priv->mii_bus->irq = kmalloc_array(PHY_MAX_ADDR, sizeof(int),
+					   GFP_KERNEL);
 	if (!priv->mii_bus->irq) {
 		err = -ENOMEM;
 		goto err_out_free_mdiobus;

@@ -282,9 +282,9 @@ static int msm_spm_dev_init(struct msm_spm_device *dev,
 
 	dev->cpu_vdd = VDD_DEFAULT;
 	dev->num_modes = data->num_modes;
-	dev->modes = kmalloc(
-			sizeof(struct msm_spm_power_modes) * dev->num_modes,
-			GFP_KERNEL);
+	dev->modes = kmalloc_array(dev->num_modes,
+				   sizeof(struct msm_spm_power_modes),
+				   GFP_KERNEL);
 
 	if (!dev->modes)
 		goto spm_failed_malloc;

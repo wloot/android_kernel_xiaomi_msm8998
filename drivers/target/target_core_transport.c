@@ -2316,7 +2316,7 @@ void *transport_kmap_data_sg(struct se_cmd *cmd)
 		return kmap(sg_page(sg)) + sg->offset;
 
 	/* >1 page. use vmap */
-	pages = kmalloc(sizeof(*pages) * cmd->t_data_nents, GFP_KERNEL);
+	pages = kmalloc_array(cmd->t_data_nents, sizeof(*pages), GFP_KERNEL);
 	if (!pages)
 		return NULL;
 
@@ -2359,7 +2359,7 @@ target_alloc_sgl(struct scatterlist **sgl, unsigned int *nents, u32 length,
 	int i = 0;
 
 	nent = DIV_ROUND_UP(length, PAGE_SIZE);
-	sg = kmalloc(sizeof(struct scatterlist) * nent, GFP_KERNEL);
+	sg = kmalloc_array(nent, sizeof(struct scatterlist), GFP_KERNEL);
 	if (!sg)
 		return -ENOMEM;
 

@@ -1473,9 +1473,9 @@ int hfi1_qp_init(struct hfi1_ibdev *dev)
 	dev->qp_dev->qp_table_size = hfi1_qp_table_size;
 	dev->qp_dev->qp_table_bits = ilog2(hfi1_qp_table_size);
 	dev->qp_dev->qp_table =
-		kmalloc(dev->qp_dev->qp_table_size *
-				sizeof(*dev->qp_dev->qp_table),
-			GFP_KERNEL);
+		kmalloc_array(dev->qp_dev->qp_table_size,
+			      sizeof(*dev->qp_dev->qp_table),
+			      GFP_KERNEL);
 	if (!dev->qp_dev->qp_table)
 		goto nomem;
 	for (i = 0; i < dev->qp_dev->qp_table_size; i++)

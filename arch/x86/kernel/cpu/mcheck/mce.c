@@ -1847,7 +1847,7 @@ static ssize_t mce_chrdev_read(struct file *filp, char __user *ubuf,
 	unsigned prev, next;
 	int i, err;
 
-	cpu_tsc = kmalloc(nr_cpu_ids * sizeof(long), GFP_KERNEL);
+	cpu_tsc = kmalloc_array(nr_cpu_ids, sizeof(long), GFP_KERNEL);
 	if (!cpu_tsc)
 		return -ENOMEM;
 

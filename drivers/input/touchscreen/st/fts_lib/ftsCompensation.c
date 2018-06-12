@@ -166,7 +166,7 @@ int readMutualSenseNodeData(u16 address, MutualSenseData *node)
 
 	logError(0, "%s Address for Node data = %02X \n", tag, address);
 
-	node->node_data = (u8 *)kmalloc(size*(sizeof(u8)), GFP_KERNEL);
+	node->node_data = (u8 *)kmalloc(size, GFP_KERNEL);
 
 	if (node->node_data == NULL) {
 		 logError(1, "%s readMutualSenseNodeData: ERROR %02X", tag, ERROR_ALLOC);
@@ -264,10 +264,14 @@ int readSelfSenseNodeData(u16 address, SelfSenseData *node)
 	int size = node->header.force_node*2+node->header.sense_node*2;
 	u8 data[size];
 
-	node->ix2_fm = (u8 *)kmalloc(node->header.force_node*(sizeof(u8)), GFP_KERNEL);
-	node->cx2_fm = (u8 *)kmalloc(node->header.force_node*(sizeof(u8)), GFP_KERNEL);
-	node->ix2_sn = (u8 *)kmalloc(node->header.sense_node*(sizeof(u8)), GFP_KERNEL);
-	node->cx2_sn = (u8 *)kmalloc(node->header.sense_node*(sizeof(u8)), GFP_KERNEL);
+	node->ix2_fm = (u8 *)kmalloc(node->header.force_node,
+				     GFP_KERNEL);
+	node->cx2_fm = (u8 *)kmalloc(node->header.force_node,
+				     GFP_KERNEL);
+	node->ix2_sn = (u8 *)kmalloc(node->header.sense_node,
+				     GFP_KERNEL);
+	node->cx2_sn = (u8 *)kmalloc(node->header.sense_node,
+				     GFP_KERNEL);
 
 	if (node->ix2_fm == NULL || node->cx2_fm == NULL || node->ix2_sn == NULL
 		|| node->cx2_sn == NULL) {

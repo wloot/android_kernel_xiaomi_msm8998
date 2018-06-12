@@ -310,7 +310,7 @@ static int xhci_setup_msix(struct xhci_hcd *xhci)
 				HCS_MAX_INTRS(xhci->hcs_params1));
 
 	xhci->msix_entries =
-		kmalloc((sizeof(struct msix_entry))*xhci->msix_count,
+		kmalloc_array(xhci->msix_count, sizeof(struct msix_entry),
 				GFP_KERNEL);
 	if (!xhci->msix_entries) {
 		xhci_err(xhci, "Failed to allocate MSI-X entries\n");

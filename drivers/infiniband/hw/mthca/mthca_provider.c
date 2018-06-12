@@ -943,7 +943,7 @@ static struct ib_mr *mthca_reg_phys_mr(struct ib_pd       *pd,
 	if (!npages)
 		return &mr->ibmr;
 
-	page_list = kmalloc(npages * sizeof *page_list, GFP_KERNEL);
+	page_list = kmalloc_array(npages, sizeof(*page_list), GFP_KERNEL);
 	if (!page_list) {
 		kfree(mr);
 		return ERR_PTR(-ENOMEM);

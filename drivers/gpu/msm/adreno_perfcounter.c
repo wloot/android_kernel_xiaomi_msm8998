@@ -255,8 +255,9 @@ int adreno_perfcounter_read_group(struct adreno_device *adreno_dev,
 	if (reads == NULL || count == 0 || count > 100)
 		return -EINVAL;
 
-	list = kmalloc(sizeof(struct kgsl_perfcounter_read_group) * count,
-			GFP_KERNEL);
+	list = kmalloc_array(count,
+			     sizeof(struct kgsl_perfcounter_read_group),
+			     GFP_KERNEL);
 	if (!list)
 		return -ENOMEM;
 
@@ -406,7 +407,7 @@ int adreno_perfcounter_query_group(struct adreno_device *adreno_dev,
 
 	t = min_t(unsigned int, group->reg_count, count);
 
-	buf = kmalloc(t * sizeof(unsigned int), GFP_KERNEL);
+	buf = kmalloc_array(t, sizeof(unsigned int), GFP_KERNEL);
 	if (buf == NULL) {
 		mutex_unlock(&device->mutex);
 		return -ENOMEM;

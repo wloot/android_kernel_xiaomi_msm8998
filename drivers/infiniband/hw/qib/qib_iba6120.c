@@ -2531,8 +2531,8 @@ static void init_6120_cntrnames(struct qib_devdata *dd)
 		dd->cspec->cntrnamelen = sizeof(cntr6120names) - 1;
 	else
 		dd->cspec->cntrnamelen = 1 + s - cntr6120names;
-	dd->cspec->cntrs = kmalloc(dd->cspec->ncntrs
-		* sizeof(u64), GFP_KERNEL);
+	dd->cspec->cntrs = kmalloc_array(dd->cspec->ncntrs, sizeof(u64),
+				         GFP_KERNEL);
 	if (!dd->cspec->cntrs)
 		qib_dev_err(dd, "Failed allocation for counters\n");
 
@@ -2540,8 +2540,9 @@ static void init_6120_cntrnames(struct qib_devdata *dd)
 		s = strchr(s + 1, '\n');
 	dd->cspec->nportcntrs = i - 1;
 	dd->cspec->portcntrnamelen = sizeof(portcntr6120names) - 1;
-	dd->cspec->portcntrs = kmalloc(dd->cspec->nportcntrs
-		* sizeof(u64), GFP_KERNEL);
+	dd->cspec->portcntrs = kmalloc_array(dd->cspec->nportcntrs,
+				             sizeof(u64),
+				             GFP_KERNEL);
 	if (!dd->cspec->portcntrs)
 		qib_dev_err(dd, "Failed allocation for portcounters\n");
 }

@@ -285,7 +285,7 @@ int parseBinFile(const char *pathToFile, u8 **data, int *length, int dimension)
 #endif
 			return ERROR_FILE_PARSE;
 		}
-		*data = (u8 *) kmalloc(dimension * sizeof (u8), GFP_KERNEL);
+		*data = (u8 *) kmalloc(dimension, GFP_KERNEL);
 		if (*data == NULL) {
 			logError(1, "%s parseBinFile: ERROR %02X\n", tag, ERROR_ALLOC);
 #ifndef FW_H_FILE
@@ -342,7 +342,7 @@ int fillMemory(u32 address, u8 *data, int size)
 	int remaining = size;
 	int toWrite = 0;
 
-	u8 *buff = (u8 *) kmalloc((MEMORY_CHUNK + 3) * sizeof (u8), GFP_KERNEL);
+	u8 *buff = (u8 *) kmalloc(MEMORY_CHUNK + 3, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s fillMemory: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -703,7 +703,8 @@ fw_size = SIZE_NAME;
 			goto END;
 		}
 
-			fwData->data = (u8 *) kmalloc(dimension * sizeof (u8), GFP_KERNEL);
+			fwData->data = (u8 *) kmalloc(dimension,
+						      GFP_KERNEL);
 			if (fwData->data == NULL) {
 				logError(1, "%s parseBinFile: ERROR %02X\n", tag, ERROR_ALLOC);
 				res = ERROR_ALLOC;
@@ -842,7 +843,7 @@ int fillFlash(u32 address, u8 *data, int size)
 	int res;
 	int delta;
 
-	u8 *buff = (u8 *) kmalloc((DMA_CHUNK + 3) * sizeof (u8), GFP_KERNEL);
+	u8 *buff = (u8 *) kmalloc(DMA_CHUNK + 3, GFP_KERNEL);
 	if (buff == NULL) {
 		logError(1, "%s fillFlash: ERROR %02X\n", tag, ERROR_ALLOC);
 		return ERROR_ALLOC;
@@ -899,7 +900,7 @@ int fillFlash(u32 address, u8 *data, int size)
 		/* configuring the DMA */
 		byteBlock = byteBlock / 4 - 1;
 
-		buff = (u8 *) kmalloc((9) * sizeof (u8), GFP_KERNEL);
+		buff = (u8 *) kmalloc(9, GFP_KERNEL);
 		buff[0] = FLASH_CMD_WRITE_REGISTER;
 		buff[1] = FLASH_DMA_CONFIG;
 		buff[2] = 0x00;

@@ -1070,7 +1070,8 @@ static void __rx_worker(struct edge_info *einfo, bool atomic_ctx)
 			if (cmd_data) {
 				intents = cmd_data;
 			} else {
-				intents = kmalloc(sizeof(*intents) * cmd.param2,
+				intents = kmalloc_array(cmd.param2,
+								sizeof(*intents),
 								GFP_ATOMIC);
 				if (!intents) {
 					for (i = 0; i < cmd.param2; ++i)

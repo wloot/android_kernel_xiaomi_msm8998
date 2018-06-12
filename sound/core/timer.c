@@ -1336,8 +1336,9 @@ static int snd_timer_user_open(struct inode *inode, struct file *file)
 	mutex_init(&tu->ioctl_lock);
 	tu->ticks = 1;
 	tu->queue_size = 128;
-	tu->queue = kmalloc(tu->queue_size * sizeof(struct snd_timer_read),
-			    GFP_KERNEL);
+	tu->queue = kmalloc_array(tu->queue_size,
+				  sizeof(struct snd_timer_read),
+				  GFP_KERNEL);
 	if (tu->queue == NULL) {
 		kfree(tu);
 		return -ENOMEM;
@@ -1615,13 +1616,15 @@ static int snd_timer_user_tselect(struct file *file,
 	kfree(tu->tqueue);
 	tu->tqueue = NULL;
 	if (tu->tread) {
-		tu->tqueue = kmalloc(tu->queue_size * sizeof(struct snd_timer_tread),
-				     GFP_KERNEL);
+		tu->tqueue = kmalloc_array(tu->queue_size,
+					   sizeof(struct snd_timer_tread),
+					   GFP_KERNEL);
 		if (tu->tqueue == NULL)
 			err = -ENOMEM;
 	} else {
-		tu->queue = kmalloc(tu->queue_size * sizeof(struct snd_timer_read),
-				    GFP_KERNEL);
+		tu->queue = kmalloc_array(tu->queue_size,
+					  sizeof(struct snd_timer_read),
+					  GFP_KERNEL);
 		if (tu->queue == NULL)
 			err = -ENOMEM;
 	}
@@ -1742,16 +1745,16 @@ static int snd_timer_user_params(struct file *file,
 	if (params.queue_size > 0 &&
 	    (unsigned int)tu->queue_size != params.queue_size) {
 		if (tu->tread) {
-			ttr = kmalloc(params.queue_size * sizeof(*ttr),
-				      GFP_KERNEL);
+			ttr = kmalloc_array(params.queue_size, sizeof(*ttr),
+					    GFP_KERNEL);
 			if (ttr) {
 				kfree(tu->tqueue);
 				tu->queue_size = params.queue_size;
 				tu->tqueue = ttr;
 			}
 		} else {
-			tr = kmalloc(params.queue_size * sizeof(*tr),
-				     GFP_KERNEL);
+			tr = kmalloc_array(params.queue_size, sizeof(*tr),
+					   GFP_KERNEL);
 			if (tr) {
 				kfree(tu->queue);
 				tu->queue_size = params.queue_size;
