@@ -382,14 +382,14 @@ static void init_shadow_tids(struct qib_devdata *dd)
 	struct page **pages;
 	dma_addr_t *addrs;
 
-	pages = vzalloc(dd->cfgctxts * dd->rcvtidcnt * sizeof(struct page *));
+	pages = vzalloc(array_size(sizeof(struct page *), (dd->cfgctxts * dd->rcvtidcnt)));
 	if (!pages) {
 		qib_dev_err(dd,
 			"failed to allocate shadow page * array, no expected sends!\n");
 		goto bail;
 	}
 
-	addrs = vzalloc(dd->cfgctxts * dd->rcvtidcnt * sizeof(dma_addr_t));
+	addrs = vzalloc(array_size(sizeof(dma_addr_t), (dd->cfgctxts * dd->rcvtidcnt)));
 	if (!addrs) {
 		qib_dev_err(dd,
 			"failed to allocate shadow dma handle array, no expected sends!\n");

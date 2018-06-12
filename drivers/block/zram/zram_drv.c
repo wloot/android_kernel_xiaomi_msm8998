@@ -921,7 +921,7 @@ static bool zram_meta_alloc(struct zram *zram, u64 disksize)
 	char *backend = CONFIG_ZRAM_DEFAULT_POOL;
 
 	num_pages = disksize >> PAGE_SHIFT;
-	zram->table = vzalloc(num_pages * sizeof(*zram->table));
+	zram->table = vzalloc(array_size(num_pages, sizeof(*zram->table)));
 	if (!zram->table)
 		return false;
 

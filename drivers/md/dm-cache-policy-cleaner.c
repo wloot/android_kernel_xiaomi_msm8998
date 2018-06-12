@@ -84,7 +84,7 @@ static int alloc_hash(struct hash *hash, unsigned elts)
 {
 	hash->nr_buckets = next_power(elts >> 4, 16);
 	hash->hash_bits = __ffs(hash->nr_buckets);
-	hash->table = vzalloc(sizeof(*hash->table) * hash->nr_buckets);
+	hash->table = vzalloc(array_size(sizeof(*hash->table), hash->nr_buckets));
 
 	return hash->table ? 0 : -ENOMEM;
 }
@@ -98,7 +98,7 @@ static int alloc_cache_blocks_with_hash(struct policy *p, dm_cblock_t cache_size
 {
 	int r = -ENOMEM;
 
-	p->cblocks = vzalloc(sizeof(*p->cblocks) * from_cblock(cache_size));
+	p->cblocks = vzalloc(array_size(sizeof(*p->cblocks), from_cblock(cache_size)));
 	if (p->cblocks) {
 		unsigned u = from_cblock(cache_size);
 

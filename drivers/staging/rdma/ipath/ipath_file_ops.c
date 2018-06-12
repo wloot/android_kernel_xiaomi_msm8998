@@ -1540,7 +1540,7 @@ static int init_subports(struct ipath_devdata *dd,
 	}
 
 	num_subports = uinfo->spu_subport_cnt;
-	pd->subport_uregbase = vzalloc(PAGE_SIZE * num_subports);
+	pd->subport_uregbase = vzalloc(array_size(num_subports, PAGE_SIZE));
 	if (!pd->subport_uregbase) {
 		ret = -ENOMEM;
 		goto bail;
@@ -1554,9 +1554,7 @@ static int init_subports(struct ipath_devdata *dd,
 		goto bail_ureg;
 	}
 
-	pd->subport_rcvegrbuf = vzalloc(pd->port_rcvegrbuf_chunks *
-					pd->port_rcvegrbuf_size *
-					num_subports);
+	pd->subport_rcvegrbuf = vzalloc(array3_size(pd->port_rcvegrbuf_chunks, pd->port_rcvegrbuf_size, num_subports));
 	if (!pd->subport_rcvegrbuf) {
 		ret = -ENOMEM;
 		goto bail_rhdr;

@@ -270,15 +270,13 @@ int ib_umem_odp_get(struct ib_ucontext *context, struct ib_umem *umem)
 
 	init_completion(&umem->odp_data->notifier_completion);
 
-	umem->odp_data->page_list = vzalloc(ib_umem_num_pages(umem) *
-					    sizeof(*umem->odp_data->page_list));
+	umem->odp_data->page_list = vzalloc(array_size(sizeof(*umem->odp_data->page_list), ib_umem_num_pages(umem)));
 	if (!umem->odp_data->page_list) {
 		ret_val = -ENOMEM;
 		goto out_odp_data;
 	}
 
-	umem->odp_data->dma_list = vzalloc(ib_umem_num_pages(umem) *
-					  sizeof(*umem->odp_data->dma_list));
+	umem->odp_data->dma_list = vzalloc(array_size(sizeof(*umem->odp_data->dma_list), ib_umem_num_pages(umem)));
 	if (!umem->odp_data->dma_list) {
 		ret_val = -ENOMEM;
 		goto out_page_list;

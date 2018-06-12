@@ -459,7 +459,7 @@ int c2_rnic_init(struct c2_dev *c2dev)
 	     IB_DEVICE_MEM_WINDOW);
 
 	/* Allocate the qptr_array */
-	c2dev->qptr_array = vzalloc(C2_MAX_CQS * sizeof(void *));
+	c2dev->qptr_array = vzalloc(array_size(C2_MAX_CQS, sizeof(void *)));
 	if (!c2dev->qptr_array) {
 		return -ENOMEM;
 	}
