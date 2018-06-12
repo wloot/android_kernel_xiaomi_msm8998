@@ -323,8 +323,9 @@ static int dnet_mii_init(struct dnet *bp)
 
 	bp->mii_bus->priv = bp;
 
-	bp->mii_bus->irq = devm_kmalloc(&bp->pdev->dev,
-					sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
+	bp->mii_bus->irq = devm_kmalloc_array(&bp->pdev->dev,
+					PHY_MAX_ADDR, sizeof(int),
+					GFP_KERNEL);
 	if (!bp->mii_bus->irq) {
 		err = -ENOMEM;
 		goto err_out;
