@@ -192,7 +192,8 @@ static int hwevent_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	if (drvdata->nr_hmux > 0) {
-		drvdata->hmux = devm_kzalloc(dev, drvdata->nr_hmux *
+		drvdata->hmux = devm_kcalloc(dev,
+					     drvdata->nr_hmux,
 					     sizeof(*drvdata->hmux),
 					     GFP_KERNEL);
 		if (!drvdata->hmux)
@@ -230,7 +231,8 @@ static int hwevent_probe(struct platform_device *pdev)
 						     "qcom,hwevent-regs");
 
 	if (drvdata->nr_hclk > 0) {
-		drvdata->hclk = devm_kzalloc(dev, drvdata->nr_hclk *
+		drvdata->hclk = devm_kcalloc(dev,
+					     drvdata->nr_hclk,
 					     sizeof(*drvdata->hclk),
 					     GFP_KERNEL);
 		if (!drvdata->hclk)
@@ -249,7 +251,8 @@ static int hwevent_probe(struct platform_device *pdev)
 		}
 	}
 	if (drvdata->nr_hreg > 0) {
-		drvdata->hreg = devm_kzalloc(dev, drvdata->nr_hreg *
+		drvdata->hreg = devm_kcalloc(dev,
+					     drvdata->nr_hreg,
 					     sizeof(*drvdata->hreg),
 					     GFP_KERNEL);
 		if (!drvdata->hreg)

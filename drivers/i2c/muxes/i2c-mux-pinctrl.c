@@ -77,8 +77,8 @@ static int i2c_mux_pinctrl_parse_dt(struct i2c_mux_pinctrl *mux,
 		return num_names;
 	}
 
-	mux->pdata->pinctrl_states = devm_kzalloc(&pdev->dev,
-		sizeof(*mux->pdata->pinctrl_states) * num_names,
+	mux->pdata->pinctrl_states = devm_kcalloc(&pdev->dev,
+		num_names, sizeof(*mux->pdata->pinctrl_states),
 		GFP_KERNEL);
 	if (!mux->pdata->pinctrl_states) {
 		dev_err(mux->dev, "Cannot allocate pinctrl_states\n");
@@ -157,8 +157,9 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	mux->states = devm_kzalloc(&pdev->dev,
-				   sizeof(*mux->states) * mux->pdata->bus_count,
+	mux->states = devm_kcalloc(&pdev->dev,
+				   mux->pdata->bus_count,
+				   sizeof(*mux->states),
 				   GFP_KERNEL);
 	if (!mux->states) {
 		dev_err(&pdev->dev, "Cannot allocate states\n");
@@ -166,8 +167,9 @@ static int i2c_mux_pinctrl_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	mux->busses = devm_kzalloc(&pdev->dev,
-				   sizeof(*mux->busses) * mux->pdata->bus_count,
+	mux->busses = devm_kcalloc(&pdev->dev,
+				   mux->pdata->bus_count,
+				   sizeof(*mux->busses),
 				   GFP_KERNEL);
 	if (!mux->busses) {
 		dev_err(&pdev->dev, "Cannot allocate busses\n");

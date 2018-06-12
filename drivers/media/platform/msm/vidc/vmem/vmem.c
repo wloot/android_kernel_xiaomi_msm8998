@@ -517,15 +517,16 @@ static inline int __init_resources(struct vmem *v,
 		goto exit;
 	}
 
-	v->clocks = devm_kzalloc(&pdev->dev, sizeof(*v->clocks) * v->num_clocks,
-			GFP_KERNEL);
+	v->clocks = devm_kcalloc(&pdev->dev,
+				 v->num_clocks, sizeof(*v->clocks),
+				 GFP_KERNEL);
 	if (!v->clocks) {
 		rc = -ENOMEM;
 		goto exit;
 	}
 
-	clock_props = devm_kzalloc(&pdev->dev,
-					v->num_clocks * sizeof(*clock_props),
+	clock_props = devm_kcalloc(&pdev->dev,
+					v->num_clocks, sizeof(*clock_props),
 					GFP_KERNEL);
 	if (!clock_props) {
 		pr_err("Failed to allocate clock config table\n");

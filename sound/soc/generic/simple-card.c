@@ -567,8 +567,8 @@ static int asoc_simple_card_probe(struct platform_device *pdev)
 	priv->gpio_mic_det = -ENOENT;
 
 	/* Get room for the other properties */
-	priv->dai_props = devm_kzalloc(dev,
-			sizeof(*priv->dai_props) * num_links,
+	priv->dai_props = devm_kcalloc(dev,
+			num_links, sizeof(*priv->dai_props),
 			GFP_KERNEL);
 	if (!priv->dai_props)
 		return -ENOMEM;

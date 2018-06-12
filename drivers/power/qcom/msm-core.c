@@ -579,8 +579,8 @@ static int msm_core_stats_init(struct device *dev, int cpu)
 	cpu_stats[cpu].throttling = false;
 
 	cpu_stats[cpu].len = cpu_node->sp->num_of_freqs;
-	pstate = devm_kzalloc(dev,
-		sizeof(*pstate) * cpu_node->sp->num_of_freqs,
+	pstate = devm_kcalloc(dev,
+		cpu_node->sp->num_of_freqs, sizeof(*pstate),
 		GFP_KERNEL);
 	if (!pstate)
 		return -ENOMEM;
@@ -658,8 +658,8 @@ static int msm_get_voltage_levels(struct device *dev, int cpu,
 	if (!cpu_dev)
 		return -ENODEV;
 
-	voltage = devm_kzalloc(dev,
-			sizeof(*voltage) * sp->num_of_freqs, GFP_KERNEL);
+	voltage = devm_kcalloc(dev,
+			sp->num_of_freqs, sizeof(*voltage), GFP_KERNEL);
 
 	if (!voltage)
 		return -ENOMEM;

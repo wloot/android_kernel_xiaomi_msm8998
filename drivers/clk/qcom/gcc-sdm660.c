@@ -3291,8 +3291,8 @@ static int clk_debug_660_probe(struct platform_device *pdev)
 
 	gcc_debug_mux.num_parent_regmap =  count;
 
-	gcc_debug_mux.regmap = devm_kzalloc(&pdev->dev,
-				sizeof(struct regmap *) * count, GFP_KERNEL);
+	gcc_debug_mux.regmap = devm_kcalloc(&pdev->dev,
+				count, sizeof(struct regmap *), GFP_KERNEL);
 	if (!gcc_debug_mux.regmap)
 		return -ENOMEM;
 

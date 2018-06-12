@@ -1156,14 +1156,15 @@ static int skl_tplg_widget_load(struct snd_soc_component *cmpnt,
 	mconfig->time_slot = dfw_config->time_slot;
 	mconfig->formats_config.caps_size = dfw_config->caps.caps_size;
 
-	mconfig->m_in_pin = devm_kzalloc(bus->dev,
-				(mconfig->max_in_queue) *
-					sizeof(*mconfig->m_in_pin),
+	mconfig->m_in_pin = devm_kcalloc(bus->dev,
+				mconfig->max_in_queue,
+				sizeof(*mconfig->m_in_pin),
 				GFP_KERNEL);
 	if (!mconfig->m_in_pin)
 		return -ENOMEM;
 
-	mconfig->m_out_pin = devm_kzalloc(bus->dev, (mconfig->max_out_queue) *
+	mconfig->m_out_pin = devm_kcalloc(bus->dev,
+						mconfig->max_out_queue,
 						sizeof(*mconfig->m_out_pin),
 						GFP_KERNEL);
 	if (!mconfig->m_out_pin)

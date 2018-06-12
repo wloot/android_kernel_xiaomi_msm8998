@@ -254,8 +254,8 @@ static int thingm_probe(struct hid_device *hdev, const struct hid_device_id *id)
 		goto stop;
 	}
 
-	tdev->rgb = devm_kzalloc(&hdev->dev,
-			sizeof(struct thingm_rgb) * tdev->fwinfo->numrgb,
+	tdev->rgb = devm_kcalloc(&hdev->dev,
+			tdev->fwinfo->numrgb, sizeof(struct thingm_rgb),
 			GFP_KERNEL);
 	if (!tdev->rgb) {
 		err = -ENOMEM;

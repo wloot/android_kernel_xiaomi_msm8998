@@ -567,7 +567,7 @@ static int qcom_ice_parse_clock_info(struct platform_device *pdev,
 	if (len != cnt)
 		goto out;
 
-	clkfreq = devm_kzalloc(dev, len * sizeof(*clkfreq), GFP_KERNEL);
+	clkfreq = devm_kcalloc(dev, len, sizeof(*clkfreq), GFP_KERNEL);
 	if (!clkfreq) {
 		dev_err(dev, "%s: no memory\n", "qcom,op-freq-hz");
 		ret = -ENOMEM;

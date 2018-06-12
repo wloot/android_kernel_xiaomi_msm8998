@@ -367,22 +367,26 @@ static int of_get_fmax_vdd_class(struct platform_device *pdev,
 	}
 
 	prop_len /= num;
-	vdd->level_votes = devm_kzalloc(&pdev->dev, prop_len * sizeof(int),
+	vdd->level_votes = devm_kcalloc(&pdev->dev, prop_len, sizeof(int),
 					GFP_KERNEL);
 	if (!vdd->level_votes)
 		return -ENOMEM;
 
 	vdd->vdd_uv = devm_kzalloc(&pdev->dev,
-			prop_len * sizeof(int) * (num - 1), GFP_KERNEL);
+			array3_size(prop_len, sizeof(int), (num - 1)),
+			GFP_KERNEL);
 	if (!vdd->vdd_uv)
 		return -ENOMEM;
 
-	gpu_clks_init[index].rate_max = devm_kzalloc(&pdev->dev, prop_len *
-					sizeof(unsigned long), GFP_KERNEL);
+	gpu_clks_init[index].rate_max = devm_kcalloc(&pdev->dev,
+						     prop_len,
+						     sizeof(unsigned long),
+						     GFP_KERNEL);
 	if (!gpu_clks_init[index].rate_max)
 		return -ENOMEM;
 
-	array = devm_kzalloc(&pdev->dev, prop_len * sizeof(u32) * num,
+	array = devm_kzalloc(&pdev->dev,
+				array3_size(prop_len, num, sizeof(u32)),
 				GFP_KERNEL);
 	if (!array)
 		return -ENOMEM;

@@ -419,8 +419,8 @@ static int __init scpsys_probe(struct platform_device *pdev)
 
 	pd_data = &scp->pd_data;
 
-	pd_data->domains = devm_kzalloc(&pdev->dev,
-			sizeof(*pd_data->domains) * NUM_DOMAINS, GFP_KERNEL);
+	pd_data->domains = devm_kcalloc(&pdev->dev,
+			NUM_DOMAINS, sizeof(*pd_data->domains), GFP_KERNEL);
 	if (!pd_data->domains)
 		return -ENOMEM;
 

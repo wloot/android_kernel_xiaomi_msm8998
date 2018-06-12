@@ -2723,9 +2723,9 @@ static int synaptics_dsx_get_virtual_keys(struct device *dev,
 	if (!rmi4_pdata->virtual_key_map)
 		return -ENOMEM;
 
-	rmi4_pdata->virtual_key_map->map = devm_kzalloc(dev,
-		sizeof(*rmi4_pdata->virtual_key_map->map) *
-		num_keys, GFP_KERNEL);
+	rmi4_pdata->virtual_key_map->map = devm_kcalloc(dev,
+		num_keys, sizeof(*rmi4_pdata->virtual_key_map->map),
+		GFP_KERNEL);
 	if (!rmi4_pdata->virtual_key_map->map)
 		return -ENOMEM;
 
@@ -2758,9 +2758,9 @@ static int synaptics_dsx_get_button_map(struct device *dev,
 	if (!rmi4_pdata->cap_button_map)
 		return -ENOMEM;
 
-	rmi4_pdata->cap_button_map->map = devm_kzalloc(dev,
-		sizeof(*rmi4_pdata->cap_button_map->map) *
-		num_buttons, GFP_KERNEL);
+	rmi4_pdata->cap_button_map->map = devm_kcalloc(dev,
+		num_buttons, sizeof(*rmi4_pdata->cap_button_map->map),
+		GFP_KERNEL);
 	if (!rmi4_pdata->cap_button_map->map)
 		return -ENOMEM;
 

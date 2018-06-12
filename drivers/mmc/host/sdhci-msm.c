@@ -1458,7 +1458,7 @@ static int sdhci_msm_dt_get_array(struct device *dev, const char *prop_name,
 		goto out;
 	}
 
-	arr = devm_kzalloc(dev, sz * sizeof(*arr), GFP_KERNEL);
+	arr = devm_kcalloc(dev, sz, sizeof(*arr), GFP_KERNEL);
 	if (!arr) {
 		dev_err(dev, "%s failed allocating memory\n", prop_name);
 		ret = -ENOMEM;
@@ -1621,8 +1621,10 @@ static int sdhci_msm_dt_parse_gpio_info(struct device *dev,
 			goto out;
 		}
 		pin_data->gpio_data->size = cnt;
-		pin_data->gpio_data->gpio = devm_kzalloc(dev, cnt *
-				sizeof(struct sdhci_msm_gpio), GFP_KERNEL);
+		pin_data->gpio_data->gpio = devm_kcalloc(dev,
+							 cnt,
+							 sizeof(struct sdhci_msm_gpio),
+							 GFP_KERNEL);
 
 		if (!pin_data->gpio_data->gpio) {
 			dev_err(dev, "No memory for gpio\n");

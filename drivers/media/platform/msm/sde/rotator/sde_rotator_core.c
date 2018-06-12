@@ -2129,8 +2129,8 @@ static int sde_rotator_open_session(struct sde_rot_mgr *mgr,
 	if (!perf)
 		return -ENOMEM;
 
-	perf->work_distribution = devm_kzalloc(&mgr->pdev->dev,
-		sizeof(u32) * mgr->queue_count, GFP_KERNEL);
+	perf->work_distribution = devm_kcalloc(&mgr->pdev->dev,
+		mgr->queue_count, sizeof(u32), GFP_KERNEL);
 	if (!perf->work_distribution) {
 		ret = -ENOMEM;
 		goto alloc_err;
@@ -2558,8 +2558,9 @@ static int sde_rotator_get_dt_vreg_data(struct device *dev,
 		return 0;
 	}
 	mp->num_vreg = dt_vreg_total;
-	mp->vreg_config = devm_kzalloc(dev, sizeof(struct sde_vreg) *
-		dt_vreg_total, GFP_KERNEL);
+	mp->vreg_config = devm_kcalloc(dev,
+				       dt_vreg_total, sizeof(struct sde_vreg),
+				       GFP_KERNEL);
 	if (!mp->vreg_config)
 		return -ENOMEM;
 
@@ -2677,8 +2678,8 @@ static int sde_rotator_parse_dt_clk(struct platform_device *pdev,
 	}
 
 	mgr->num_rot_clk = num_clk;
-	mgr->rot_clk = devm_kzalloc(&pdev->dev,
-			sizeof(struct sde_rot_clk) * mgr->num_rot_clk,
+	mgr->rot_clk = devm_kcalloc(&pdev->dev,
+			mgr->num_rot_clk, sizeof(struct sde_rot_clk),
 			GFP_KERNEL);
 	if (!mgr->rot_clk) {
 		rc = -ENOMEM;

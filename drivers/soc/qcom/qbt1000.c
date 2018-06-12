@@ -1139,8 +1139,8 @@ static int qbt1000_read_device_tree(struct platform_device *pdev,
 	/* alloc mem for clock array - auto free if probe fails */
 	drvdata->clock_count = clkcnt;
 	pr_debug("clock count %d\n", clkcnt);
-	drvdata->clocks = devm_kzalloc(&pdev->dev,
-		sizeof(struct clk *) * drvdata->clock_count, GFP_KERNEL);
+	drvdata->clocks = devm_kcalloc(&pdev->dev,
+		drvdata->clock_count, sizeof(struct clk *), GFP_KERNEL);
 	if (!drvdata->clocks) {
 		rc = -ENOMEM;
 		goto end;

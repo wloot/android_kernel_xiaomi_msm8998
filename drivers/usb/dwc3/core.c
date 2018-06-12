@@ -316,8 +316,8 @@ static int dwc3_alloc_event_buffers(struct dwc3 *dwc, unsigned length)
 	dwc->num_event_buffers = dwc->num_normal_event_buffers +
 		dwc->num_gsi_event_buffers;
 
-	dwc->ev_buffs = devm_kzalloc(dwc->dev,
-			sizeof(*dwc->ev_buffs) * dwc->num_event_buffers,
+	dwc->ev_buffs = devm_kcalloc(dwc->dev,
+			dwc->num_event_buffers, sizeof(*dwc->ev_buffs),
 			GFP_KERNEL);
 	if (!dwc->ev_buffs)
 		return -ENOMEM;

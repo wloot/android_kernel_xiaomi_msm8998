@@ -352,8 +352,8 @@ static int msm_rpmstats_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	ss.master = devm_kzalloc(&pdev->dev,
-			sizeof(char *) * ss.num_masters, GFP_KERNEL);
+	ss.master = devm_kcalloc(&pdev->dev,
+			ss.num_masters, sizeof(char *), GFP_KERNEL);
 
 	if (!ss.master) {
 		dev_err(&pdev->dev, "%s:Failed to allocated memory\n",

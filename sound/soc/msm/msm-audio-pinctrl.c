@@ -101,9 +101,10 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 		goto err;
 	}
 	gpioset_info[client].gpiosets_max = num_strings;
-	gpioset_info[client].gpiosets = devm_kzalloc(dev,
-				gpioset_info[client].gpiosets_max *
-					sizeof(char *), GFP_KERNEL);
+	gpioset_info[client].gpiosets = devm_kcalloc(dev,
+				gpioset_info[client].gpiosets_max,
+				sizeof(char *),
+				GFP_KERNEL);
 	if (!gpioset_info[client].gpiosets) {
 		dev_err(dev, "Can't allocate memory for gpio set names\n");
 		ret = -ENOMEM;
@@ -130,9 +131,10 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 	num_strings = 0;
 
 	/* Allocating memory for gpio set counter */
-	gpioset_info[client].gpioset_state = devm_kzalloc(dev,
-				gpioset_info[client].gpiosets_max *
-				sizeof(uint8_t), GFP_KERNEL);
+	gpioset_info[client].gpioset_state = devm_kcalloc(dev,
+				gpioset_info[client].gpiosets_max,
+				sizeof(uint8_t),
+				GFP_KERNEL);
 	if (!gpioset_info[client].gpioset_state) {
 		dev_err(dev, "Can't allocate memory for gpio set counter\n");
 		ret = -ENOMEM;
@@ -149,8 +151,8 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 		goto err;
 	}
 	gpioset_info[client].gpiosets_comb_max = num_strings;
-	gpioset_info[client].gpiosets_comb_names = devm_kzalloc(dev,
-				num_strings * sizeof(char *), GFP_KERNEL);
+	gpioset_info[client].gpiosets_comb_names = devm_kcalloc(dev,
+				num_strings, sizeof(char *), GFP_KERNEL);
 	if (!gpioset_info[client].gpiosets_comb_names) {
 		ret = -ENOMEM;
 		goto err;
@@ -177,8 +179,8 @@ int msm_gpioset_initialize(enum pinctrl_client client,
 	}
 
 	/* Allocating memory for handles to pinctrl states */
-	pinctrl_info[client].cdc_lines = devm_kzalloc(dev,
-		num_strings * sizeof(char *), GFP_KERNEL);
+	pinctrl_info[client].cdc_lines = devm_kcalloc(dev,
+		num_strings, sizeof(char *), GFP_KERNEL);
 	if (!pinctrl_info[client].cdc_lines) {
 		ret = -ENOMEM;
 		goto err;

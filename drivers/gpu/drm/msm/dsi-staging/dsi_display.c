@@ -1192,16 +1192,16 @@ static int dsi_display_parse_dt(struct dsi_display *display)
 	if (of_get_property(display->pdev->dev.of_node, "qcom,dsi-panel",
 			&size)) {
 		display->panel_count = size / sizeof(int);
-		display->panel_of = devm_kzalloc(&display->pdev->dev,
-			sizeof(struct device_node *) * display->panel_count,
+		display->panel_of = devm_kcalloc(&display->pdev->dev,
+			display->panel_count, sizeof(struct device_node *),
 			GFP_KERNEL);
 		if (!display->panel_of) {
 			SDE_ERROR("out of memory for panel_of\n");
 			rc = -ENOMEM;
 			goto error;
 		}
-		display->panel = devm_kzalloc(&display->pdev->dev,
-			sizeof(struct dsi_panel *) * display->panel_count,
+		display->panel = devm_kcalloc(&display->pdev->dev,
+			display->panel_count, sizeof(struct dsi_panel *),
 			GFP_KERNEL);
 		if (!display->panel) {
 			SDE_ERROR("out of memory for panel\n");
@@ -1232,8 +1232,8 @@ static int dsi_display_parse_dt(struct dsi_display *display)
 			rc = -EINVAL;
 			goto error;
 		}
-		display->bridge_idx = devm_kzalloc(&display->pdev->dev,
-			sizeof(u32) * display->panel_count, GFP_KERNEL);
+		display->bridge_idx = devm_kcalloc(&display->pdev->dev,
+			display->panel_count, sizeof(u32), GFP_KERNEL);
 		if (!display->bridge_idx) {
 			SDE_ERROR("out of memory for bridge_idx\n");
 			rc = -ENOMEM;

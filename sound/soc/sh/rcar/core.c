@@ -745,8 +745,8 @@ static void rsnd_of_parse_dai(struct platform_device *pdev,
 	if (!nr)
 		return;
 
-	dai_info = devm_kzalloc(dev,
-				sizeof(struct rsnd_dai_platform_info) * nr,
+	dai_info = devm_kcalloc(dev,
+				nr, sizeof(struct rsnd_dai_platform_info),
 				GFP_KERNEL);
 	if (!dai_info) {
 		dev_err(dev, "dai info allocation error\n");
@@ -828,8 +828,8 @@ static int rsnd_dai_probe(struct platform_device *pdev,
 		return -EIO;
 	}
 
-	drv  = devm_kzalloc(dev, sizeof(*drv)  * dai_nr, GFP_KERNEL);
-	rdai = devm_kzalloc(dev, sizeof(*rdai) * dai_nr, GFP_KERNEL);
+	drv  = devm_kcalloc(dev, dai_nr, sizeof(*drv), GFP_KERNEL);
+	rdai = devm_kcalloc(dev, dai_nr, sizeof(*rdai), GFP_KERNEL);
 	if (!drv || !rdai) {
 		dev_err(dev, "dai allocate failed\n");
 		return -ENOMEM;

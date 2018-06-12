@@ -201,13 +201,14 @@ int vsp1_entity_init(struct vsp1_device *vsp1, struct vsp1_entity *entity,
 	entity->source_pad = num_pads - 1;
 
 	/* Allocate formats and pads. */
-	entity->formats = devm_kzalloc(vsp1->dev,
-				       num_pads * sizeof(*entity->formats),
+	entity->formats = devm_kcalloc(vsp1->dev,
+				       num_pads, sizeof(*entity->formats),
 				       GFP_KERNEL);
 	if (entity->formats == NULL)
 		return -ENOMEM;
 
-	entity->pads = devm_kzalloc(vsp1->dev, num_pads * sizeof(*entity->pads),
+	entity->pads = devm_kcalloc(vsp1->dev,
+				    num_pads, sizeof(*entity->pads),
 				    GFP_KERNEL);
 	if (entity->pads == NULL)
 		return -ENOMEM;

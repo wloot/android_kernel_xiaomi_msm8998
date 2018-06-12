@@ -340,15 +340,15 @@ static int get_device_tree_data(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	epm_ch_gain = devm_kzalloc(&spi->dev,
-			epm_num_channels * sizeof(u32), GFP_KERNEL);
+	epm_ch_gain = devm_kcalloc(&spi->dev,
+			epm_num_channels, sizeof(u32), GFP_KERNEL);
 	if (!epm_ch_gain) {
 		dev_err(&spi->dev, "cannot allocate gain\n");
 		return -ENOMEM;
 	}
 
-	epm_ch_rsense = devm_kzalloc(&spi->dev,
-			epm_num_channels * sizeof(u32), GFP_KERNEL);
+	epm_ch_rsense = devm_kcalloc(&spi->dev,
+			epm_num_channels, sizeof(u32), GFP_KERNEL);
 	if (!epm_ch_rsense) {
 		dev_err(&spi->dev, "cannot allocate rsense\n");
 		return -ENOMEM;

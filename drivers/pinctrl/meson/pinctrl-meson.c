@@ -661,8 +661,9 @@ static int meson_pinctrl_parse_dt(struct meson_pinctrl *pc,
 		return -EINVAL;
 	}
 
-	pc->domains = devm_kzalloc(pc->dev, num_domains *
-				   sizeof(struct meson_domain), GFP_KERNEL);
+	pc->domains = devm_kcalloc(pc->dev,
+				   num_domains, sizeof(struct meson_domain),
+				   GFP_KERNEL);
 	if (!pc->domains)
 		return -ENOMEM;
 

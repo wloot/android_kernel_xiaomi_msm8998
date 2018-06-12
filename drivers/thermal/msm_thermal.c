@@ -1457,7 +1457,9 @@ static void update_cpu_topology(struct device *dev)
 	core_ptr->entity_count = cluster_cnt;
 	core_ptr->cluster_id = -1;
 
-	temp_ptr = devm_kzalloc(dev, sizeof(struct cluster_info) * cluster_cnt,
+	temp_ptr = devm_kcalloc(dev,
+					cluster_cnt,
+					sizeof(struct cluster_info),
 					GFP_KERNEL);
 	if (!temp_ptr) {
 		pr_err("Memory alloc failed\n");
@@ -2492,8 +2494,8 @@ static int create_sensor_zone_id_map(void)
 	int i = 0;
 	int zone_id = -1;
 
-	zone_id_tsens_map = devm_kzalloc(&msm_thermal_info.pdev->dev,
-		sizeof(int) * max_tsens_num, GFP_KERNEL);
+	zone_id_tsens_map = devm_kcalloc(&msm_thermal_info.pdev->dev,
+		max_tsens_num, sizeof(int), GFP_KERNEL);
 
 	if (!zone_id_tsens_map) {
 		pr_err("Cannot allocate memory for zone_id_tsens_map\n");
@@ -2525,8 +2527,8 @@ static int create_sensor_id_map(struct device *dev)
 {
 	int ret = 0;
 
-	tsens_id_map = devm_kzalloc(dev,
-		sizeof(int) * max_tsens_num, GFP_KERNEL);
+	tsens_id_map = devm_kcalloc(dev,
+		max_tsens_num, sizeof(int), GFP_KERNEL);
 
 	if (!tsens_id_map) {
 		pr_err("Cannot allocate memory for tsens_id_map\n");
@@ -5211,8 +5213,9 @@ static void msm_thermal_panic_notifier_init(struct device *dev)
 {
 	int i;
 
-	tsens_temp_at_panic = devm_kzalloc(dev,	sizeof(int) * max_tsens_num,
-				GFP_KERNEL);
+	tsens_temp_at_panic = devm_kcalloc(dev,
+					   	max_tsens_num, sizeof(int),
+					   	GFP_KERNEL);
 	if (!tsens_temp_at_panic) {
 		pr_err("kzalloc failed\n");
 		return;
@@ -5258,9 +5261,10 @@ static int msm_thermal_pre_init(struct device *dev)
 		memset(thresh, 0, sizeof(struct threshold_info) *
 			MSM_LIST_MAX_NR);
 	}
-	mit_config = devm_kzalloc(dev,
-			sizeof(struct msm_thermal_debugfs_thresh_config)
-			* (MSM_LIST_MAX_NR + MAX_CPU_CONFIG), GFP_KERNEL);
+	mit_config = devm_kcalloc(dev,
+			MSM_LIST_MAX_NR + MAX_CPU_CONFIG,
+			sizeof(struct msm_thermal_debugfs_thresh_config),
+			GFP_KERNEL);
 	if (!mit_config) {
 		pr_err("kzalloc failed\n");
 		ret = -ENOMEM;
@@ -6459,8 +6463,8 @@ static void probe_sensor_info(struct device_node *node,
 		goto read_node_fail;
 	}
 
-	sensors = devm_kzalloc(&pdev->dev,
-			sizeof(struct msm_sensor_info) * sensor_cnt,
+	sensors = devm_kcalloc(&pdev->dev,
+			sensor_cnt, sizeof(struct msm_sensor_info),
 			GFP_KERNEL);
 	if (!sensors) {
 		pr_err("Fail to allocate memory for sensor_info.\n");

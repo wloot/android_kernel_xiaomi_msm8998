@@ -2432,8 +2432,8 @@ static const struct mxt_platform_data *mxt_parse_dt(struct i2c_client *client)
 	if (of_find_property(np, "linux,gpio-keymap", &proplen)) {
 		pdata->t19_num_keys = proplen / sizeof(u32);
 
-		keymap = devm_kzalloc(&client->dev,
-				pdata->t19_num_keys * sizeof(keymap[0]),
+		keymap = devm_kcalloc(&client->dev,
+				pdata->t19_num_keys, sizeof(keymap[0]),
 				GFP_KERNEL);
 		if (!keymap)
 			return ERR_PTR(-ENOMEM);

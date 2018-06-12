@@ -1758,8 +1758,8 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 
 	mcasp->num_serializer = pdata->num_serializer;
 #ifdef CONFIG_PM_SLEEP
-	mcasp->context.xrsr_regs = devm_kzalloc(&pdev->dev,
-					sizeof(u32) * mcasp->num_serializer,
+	mcasp->context.xrsr_regs = devm_kcalloc(&pdev->dev,
+					mcasp->num_serializer, sizeof(u32),
 					GFP_KERNEL);
 #endif
 	mcasp->serial_dir = pdata->serial_dir;
@@ -1877,13 +1877,15 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
 	 * bytes.
 	 */
 	mcasp->chconstr[SNDRV_PCM_STREAM_PLAYBACK].list =
-		devm_kzalloc(mcasp->dev, sizeof(unsigned int) *
-			     (32 + mcasp->num_serializer - 2),
+		devm_kcalloc(mcasp->dev,
+			     32 + mcasp->num_serializer - 2,
+			     sizeof(unsigned int),
 			     GFP_KERNEL);
 
 	mcasp->chconstr[SNDRV_PCM_STREAM_CAPTURE].list =
-		devm_kzalloc(mcasp->dev, sizeof(unsigned int) *
-			     (32 + mcasp->num_serializer - 2),
+		devm_kcalloc(mcasp->dev,
+			     32 + mcasp->num_serializer - 2,
+			     sizeof(unsigned int),
 			     GFP_KERNEL);
 
 	if (!mcasp->chconstr[SNDRV_PCM_STREAM_PLAYBACK].list ||

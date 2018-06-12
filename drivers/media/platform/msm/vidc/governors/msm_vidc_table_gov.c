@@ -234,8 +234,8 @@ static int msm_vidc_load_bus_table(struct platform_device *pdev,
 		return 0;
 	}
 
-	data->bus_prof_entries = devm_kzalloc(&pdev->dev,
-			sizeof(*data->bus_prof_entries) * data->count,
+	data->bus_prof_entries = devm_kcalloc(&pdev->dev,
+			data->count, sizeof(*data->bus_prof_entries),
 			GFP_KERNEL);
 	if (!data->bus_prof_entries) {
 		dprintk(VIDC_DBG, "no memory to allocate bus_prof_entries\n");

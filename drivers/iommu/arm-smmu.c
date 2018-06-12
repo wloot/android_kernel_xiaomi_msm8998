@@ -3701,8 +3701,8 @@ static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
 		return 0;
 	}
 
-	smmu->clocks = devm_kzalloc(
-		dev, sizeof(*smmu->clocks) * smmu->num_clocks,
+	smmu->clocks = devm_kcalloc(
+		dev, smmu->num_clocks, sizeof(*smmu->clocks),
 		GFP_KERNEL);
 
 	if (!smmu->clocks) {
@@ -4107,7 +4107,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	smmu->irqs = devm_kzalloc(dev, sizeof(*smmu->irqs) * num_irqs,
+	smmu->irqs = devm_kcalloc(dev, num_irqs, sizeof(*smmu->irqs),
 				  GFP_KERNEL);
 	if (!smmu->irqs) {
 		dev_err(dev, "failed to allocate %d irqs\n", num_irqs);

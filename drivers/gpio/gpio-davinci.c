@@ -227,8 +227,8 @@ static int davinci_gpio_probe(struct platform_device *pdev)
 	if (WARN_ON(ARCH_NR_GPIOS < ngpio))
 		ngpio = ARCH_NR_GPIOS;
 
-	chips = devm_kzalloc(dev,
-			     ngpio * sizeof(struct davinci_gpio_controller),
+	chips = devm_kcalloc(dev,
+			     ngpio, sizeof(struct davinci_gpio_controller),
 			     GFP_KERNEL);
 	if (!chips)
 		return -ENOMEM;

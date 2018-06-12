@@ -168,9 +168,9 @@ static int msm_apm_ctrl_devm_ioremap(struct platform_device *pdev,
 	if (ctrl->version >= HMSS_VERSION_1P2)
 		return ret;
 
-	ctrl->apcs_spm_events_addr = devm_kzalloc(&pdev->dev,
-						  SPM_EVENT_NUM
-						  * sizeof(void __iomem *),
+	ctrl->apcs_spm_events_addr = devm_kcalloc(&pdev->dev,
+						  SPM_EVENT_NUM,
+						  sizeof(void __iomem *),
 						  GFP_KERNEL);
 	if (!ctrl->apcs_spm_events_addr) {
 		dev_err(dev, "Failed to allocate memory for APCS SPM event registers\n");
