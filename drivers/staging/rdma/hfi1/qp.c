@@ -1059,7 +1059,7 @@ struct ib_qp *hfi1_create_qp(struct ib_pd *ibpd,
 		sz = sizeof(struct hfi1_sge) *
 			init_attr->cap.max_send_sge +
 			sizeof(struct hfi1_swqe);
-		swq = vmalloc((init_attr->cap.max_send_wr + 1) * sz);
+		swq = vmalloc(array_size((init_attr->cap.max_send_wr + 1), sz));
 		if (swq == NULL) {
 			ret = ERR_PTR(-ENOMEM);
 			goto bail;

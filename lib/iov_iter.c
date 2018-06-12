@@ -590,7 +590,7 @@ static struct page **get_pages_array(size_t n)
 {
 	struct page **p = kmalloc_array(n, sizeof(struct page *), GFP_KERNEL);
 	if (!p)
-		p = vmalloc(n * sizeof(struct page *));
+		p = vmalloc(array_size(n, sizeof(struct page *)));
 	return p;
 }
 

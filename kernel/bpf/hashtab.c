@@ -97,7 +97,7 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
 				      GFP_USER | __GFP_NOWARN);
 
 	if (!htab->buckets) {
-		htab->buckets = vmalloc(htab->n_buckets * sizeof(struct hlist_head));
+		htab->buckets = vmalloc(array_size(sizeof(struct hlist_head), htab->n_buckets));
 		if (!htab->buckets)
 			goto free_htab;
 	}

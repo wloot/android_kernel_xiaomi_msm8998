@@ -175,7 +175,7 @@ int kvm_vcpu_ioctl_set_cpuid(struct kvm_vcpu *vcpu,
 	if (cpuid->nent > KVM_MAX_CPUID_ENTRIES)
 		goto out;
 	r = -ENOMEM;
-	cpuid_entries = vmalloc(sizeof(struct kvm_cpuid_entry) * cpuid->nent);
+	cpuid_entries = vmalloc(array_size(sizeof(struct kvm_cpuid_entry), cpuid->nent));
 	if (!cpuid_entries)
 		goto out;
 	r = -EFAULT;

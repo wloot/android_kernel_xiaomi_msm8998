@@ -438,7 +438,7 @@ static int msm_fd_open(struct file *file)
 	}
 
 	ctx->mem_pool.fd_device = ctx->fd_device;
-	ctx->stats = vmalloc(sizeof(*ctx->stats) * MSM_FD_MAX_RESULT_BUFS);
+	ctx->stats = vmalloc(array_size(MSM_FD_MAX_RESULT_BUFS, sizeof(*ctx->stats)));
 	if (!ctx->stats) {
 		dev_err(device->dev, "No memory for face statistics\n");
 		ret = -ENOMEM;

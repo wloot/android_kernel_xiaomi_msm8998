@@ -319,7 +319,7 @@ static int rds_iw_setup_qp(struct rds_connection *conn)
 		goto out;
 	}
 
-	ic->i_sends = vmalloc(ic->i_send_ring.w_nr * sizeof(struct rds_iw_send_work));
+	ic->i_sends = vmalloc(array_size(sizeof(struct rds_iw_send_work), ic->i_send_ring.w_nr));
 	if (!ic->i_sends) {
 		ret = -ENOMEM;
 		rdsdebug("send allocation failed\n");
@@ -327,7 +327,7 @@ static int rds_iw_setup_qp(struct rds_connection *conn)
 	}
 	rds_iw_send_init_ring(ic);
 
-	ic->i_recvs = vmalloc(ic->i_recv_ring.w_nr * sizeof(struct rds_iw_recv_work));
+	ic->i_recvs = vmalloc(array_size(sizeof(struct rds_iw_recv_work), ic->i_recv_ring.w_nr));
 	if (!ic->i_recvs) {
 		ret = -ENOMEM;
 		rdsdebug("recv allocation failed\n");
