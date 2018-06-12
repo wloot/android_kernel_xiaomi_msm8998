@@ -949,7 +949,7 @@ static int fiq_debugger_tty_init(void)
 	int ret;
 	struct fiq_debugger_state **states = NULL;
 
-	states = kzalloc(sizeof(*states) * MAX_FIQ_DEBUGGER_PORTS, GFP_KERNEL);
+	states = kcalloc(MAX_FIQ_DEBUGGER_PORTS, sizeof(*states), GFP_KERNEL);
 	if (!states) {
 		pr_err("Failed to allocate fiq debugger state structres\n");
 		return -ENOMEM;

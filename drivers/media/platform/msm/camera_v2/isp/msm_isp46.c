@@ -145,14 +145,14 @@ static int32_t msm_vfe46_init_dt_parms(struct vfe_device *vfe_dev,
 		pr_err("%s: NO QOS entries found\n", __func__);
 		return -EINVAL;
 	} else {
-		dt_settings = kzalloc(sizeof(uint32_t) * num_dt_entries,
-			GFP_KERNEL);
+		dt_settings = kcalloc(num_dt_entries, sizeof(uint32_t),
+				      GFP_KERNEL);
 		if (!dt_settings) {
 			pr_err("%s:%d No memory\n", __func__, __LINE__);
 			return -ENOMEM;
 		}
-		dt_regs = kzalloc(sizeof(uint32_t) * num_dt_entries,
-			GFP_KERNEL);
+		dt_regs = kcalloc(num_dt_entries, sizeof(uint32_t),
+				  GFP_KERNEL);
 		if (!dt_regs) {
 			pr_err("%s:%d No memory\n", __func__, __LINE__);
 			kfree(dt_settings);

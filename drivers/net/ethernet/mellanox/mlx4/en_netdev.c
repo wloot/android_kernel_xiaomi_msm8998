@@ -2864,13 +2864,14 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
 	priv->tx_work_limit = MLX4_EN_DEFAULT_TX_WORK;
 	netdev_rss_key_fill(priv->rss_key, sizeof(priv->rss_key));
 
-	priv->tx_ring = kzalloc(sizeof(struct mlx4_en_tx_ring *) * MAX_TX_RINGS,
+	priv->tx_ring = kcalloc(MAX_TX_RINGS,
+				sizeof(struct mlx4_en_tx_ring *),
 				GFP_KERNEL);
 	if (!priv->tx_ring) {
 		err = -ENOMEM;
 		goto out;
 	}
-	priv->tx_cq = kzalloc(sizeof(struct mlx4_en_cq *) * MAX_TX_RINGS,
+	priv->tx_cq = kcalloc(MAX_TX_RINGS, sizeof(struct mlx4_en_cq *),
 			      GFP_KERNEL);
 	if (!priv->tx_cq) {
 		err = -ENOMEM;

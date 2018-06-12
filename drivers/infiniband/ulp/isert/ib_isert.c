@@ -211,8 +211,9 @@ isert_alloc_rx_descriptors(struct isert_conn *isert_conn)
 	u64 dma_addr;
 	int i, j;
 
-	isert_conn->rx_descs = kzalloc(ISERT_QP_MAX_RECV_DTOS *
-				sizeof(struct iser_rx_desc), GFP_KERNEL);
+	isert_conn->rx_descs = kcalloc(ISERT_QP_MAX_RECV_DTOS,
+				       sizeof(struct iser_rx_desc),
+				       GFP_KERNEL);
 	if (!isert_conn->rx_descs)
 		goto fail;
 
@@ -2438,7 +2439,7 @@ isert_map_rdma(struct iscsi_conn *conn, struct iscsi_cmd *cmd,
 	data_left = data->len;
 	offset = data->offset;
 
-	ib_sge = kzalloc(sizeof(struct ib_sge) * data->nents, GFP_KERNEL);
+	ib_sge = kcalloc(data->nents, sizeof(struct ib_sge), GFP_KERNEL);
 	if (!ib_sge) {
 		isert_warn("Unable to allocate ib_sge\n");
 		ret = -ENOMEM;
@@ -2447,7 +2448,7 @@ isert_map_rdma(struct iscsi_conn *conn, struct iscsi_cmd *cmd,
 	wr->ib_sge = ib_sge;
 
 	wr->rdma_wr_num = DIV_ROUND_UP(data->nents, isert_conn->max_sge);
-	wr->rdma_wr = kzalloc(sizeof(struct ib_rdma_wr) * wr->rdma_wr_num,
+	wr->rdma_wr = kcalloc(wr->rdma_wr_num, sizeof(struct ib_rdma_wr),
 				GFP_KERNEL);
 	if (!wr->rdma_wr) {
 		isert_dbg("Unable to allocate wr->rdma_wr\n");

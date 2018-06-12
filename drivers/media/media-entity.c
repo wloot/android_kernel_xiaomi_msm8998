@@ -58,7 +58,7 @@ media_entity_init(struct media_entity *entity, u16 num_pads,
 	unsigned int max_links = num_pads + extra_links;
 	unsigned int i;
 
-	links = kzalloc(max_links * sizeof(links[0]), GFP_KERNEL);
+	links = kcalloc(max_links, sizeof(links[0]), GFP_KERNEL);
 	if (links == NULL)
 		return -ENOMEM;
 

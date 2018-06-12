@@ -345,8 +345,9 @@ static void req_cryptd_crypt_read_convert(struct req_dm_crypt_io *io)
 		split_transfers = 1;
 
 	if (split_transfers) {
-		split_io = kzalloc(sizeof(struct req_dm_split_req_io)
-				* engine_list_total, GFP_KERNEL);
+		split_io = kcalloc(engine_list_total,
+				   sizeof(struct req_dm_split_req_io),
+				   GFP_KERNEL);
 		if (!split_io) {
 			DMERR("%s split_io allocation failed\n", __func__);
 			error = DM_REQ_CRYPT_ERROR;

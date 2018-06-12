@@ -99,7 +99,7 @@ int qed_init_alloc(struct qed_hwfn *p_hwfn)
 {
 	struct qed_rt_data *rt_data;
 
-	rt_data = kzalloc(sizeof(*rt_data) * RUNTIME_ARRAY_SIZE, GFP_ATOMIC);
+	rt_data = kcalloc(RUNTIME_ARRAY_SIZE, sizeof(*rt_data), GFP_ATOMIC);
 	if (!rt_data)
 		return -ENOMEM;
 

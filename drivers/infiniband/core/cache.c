@@ -1016,8 +1016,9 @@ int ib_cache_setup_one(struct ib_device *device)
 	rwlock_init(&device->cache.lock);
 
 	device->cache.pkey_cache =
-		kzalloc(sizeof *device->cache.pkey_cache *
-			(rdma_end_port(device) - rdma_start_port(device) + 1), GFP_KERNEL);
+		kcalloc(rdma_end_port(device) - rdma_start_port(device) + 1,
+			sizeof(*device->cache.pkey_cache),
+			GFP_KERNEL);
 	device->cache.lmc_cache = kmalloc_array(rdma_end_port(device) - rdma_start_port(device) + 1,
 						sizeof(*device->cache.lmc_cache),
 						GFP_KERNEL);

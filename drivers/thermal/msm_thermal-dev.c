@@ -139,9 +139,9 @@ static long msm_thermal_process_freq_table_req(struct msm_thermal_ioctl *query,
 			freq_table_set[cluster_id]++;
 
 		if (!freq_table_ptr[cluster_id]) {
-			freq_table_ptr[cluster_id] = kzalloc(
-				sizeof(unsigned int) *
-				freq_table_len[cluster_id], GFP_KERNEL);
+			freq_table_ptr[cluster_id] = kcalloc(freq_table_len[cluster_id],
+							     sizeof(unsigned int),
+							     GFP_KERNEL);
 			if (!freq_table_ptr[cluster_id]) {
 				pr_err("%s: memory alloc failed\n",
 						KBUILD_MODNAME);
@@ -224,9 +224,9 @@ static long msm_thermal_process_voltage_table_req(
 				goto process_volt_exit;
 			}
 		}
-		voltage_table_ptr[cluster_id] = kzalloc(
-			sizeof(uint32_t) *
-			freq_table_len[cluster_id], GFP_KERNEL);
+		voltage_table_ptr[cluster_id] = kcalloc(freq_table_len[cluster_id],
+							sizeof(uint32_t),
+							GFP_KERNEL);
 		if (!voltage_table_ptr[cluster_id]) {
 			pr_err("%s: memory alloc failed\n",
 				KBUILD_MODNAME);

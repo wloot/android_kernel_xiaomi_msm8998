@@ -628,9 +628,9 @@ static int32_t msm_cpp_create_buff_queue(struct cpp_device *cpp_dev,
 {
 	struct msm_cpp_buff_queue_info_t *buff_queue;
 
-	buff_queue = kzalloc(
-		sizeof(struct msm_cpp_buff_queue_info_t) * num_buffq,
-		GFP_KERNEL);
+	buff_queue = kcalloc(num_buffq,
+			     sizeof(struct msm_cpp_buff_queue_info_t),
+			     GFP_KERNEL);
 	if (!buff_queue) {
 		pr_err("Buff queue allocation failure\n");
 		return -ENOMEM;
@@ -2190,8 +2190,8 @@ static struct msm_cpp_frame_info_t *msm_cpp_get_frame(
 		goto frame_err;
 	}
 
-	cpp_frame_msg = kzalloc(sizeof(uint32_t) * new_frame->msg_len,
-		GFP_KERNEL);
+	cpp_frame_msg = kcalloc(new_frame->msg_len, sizeof(uint32_t),
+				GFP_KERNEL);
 	if (!cpp_frame_msg) {
 		pr_err("Insufficient memory\n");
 		goto frame_err;
@@ -3312,9 +3312,9 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 
 		if (u_stream_buff_info->num_buffs != 0) {
 			k_stream_buff_info.buffer_info =
-				kzalloc(k_stream_buff_info.num_buffs *
-				sizeof(struct msm_cpp_buffer_info_t),
-				GFP_KERNEL);
+				kcalloc(k_stream_buff_info.num_buffs,
+					sizeof(struct msm_cpp_buffer_info_t),
+					GFP_KERNEL);
 			if (ZERO_OR_NULL_PTR(k_stream_buff_info.buffer_info)) {
 				pr_err("%s:%d: malloc error\n",
 					__func__, __LINE__);
@@ -3936,8 +3936,8 @@ static struct msm_cpp_frame_info_t *get_64bit_cpp_frame_from_compat(
 		goto frame_err;
 	}
 
-	cpp_frame_msg = kzalloc(sizeof(uint32_t)*new_frame->msg_len,
-		GFP_KERNEL);
+	cpp_frame_msg = kcalloc(new_frame->msg_len, sizeof(uint32_t),
+				GFP_KERNEL);
 	if (!cpp_frame_msg) {
 		pr_err("Insufficient memory\n");
 		goto frame_err;

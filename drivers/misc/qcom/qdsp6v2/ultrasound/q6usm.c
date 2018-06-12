@@ -320,7 +320,7 @@ struct us_client *q6usm_us_client_alloc(
 		pr_err("%s: us_client allocation failed\n", __func__);
 		return NULL;
 	}
-	p_mem_handle = kzalloc(sizeof(uint32_t) * 4, GFP_KERNEL);
+	p_mem_handle = kcalloc(4, sizeof(uint32_t), GFP_KERNEL);
 	if (p_mem_handle == NULL) {
 		pr_err("%s: p_mem_handle allocation failed\n", __func__);
 		kfree(usc);

@@ -162,7 +162,7 @@ static void find_and_init_hw_mutex(void)
 	init_hw_mutex(node);
 	hw_mutex_reg_base = ioremap(reg_base, reg_size);
 	BUG_ON(hw_mutex_reg_base == NULL);
-	hw_spinlocks = kzalloc(sizeof(int) * lock_count, GFP_KERNEL);
+	hw_spinlocks = kcalloc(lock_count, sizeof(int), GFP_KERNEL);
 	BUG_ON(hw_spinlocks == NULL);
 }
 

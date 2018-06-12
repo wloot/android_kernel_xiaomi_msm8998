@@ -72,7 +72,7 @@ static int parse_ofpart_partitions(struct mtd_info *master,
 	if (nr_parts == 0)
 		return 0;
 
-	*pparts = kzalloc(nr_parts * sizeof(**pparts), GFP_KERNEL);
+	*pparts = kcalloc(nr_parts, sizeof(**pparts), GFP_KERNEL);
 	if (!*pparts)
 		return -ENOMEM;
 
@@ -173,7 +173,7 @@ static int parse_ofoldpart_partitions(struct mtd_info *master,
 
 	nr_parts = plen / sizeof(part[0]);
 
-	*pparts = kzalloc(nr_parts * sizeof(*(*pparts)), GFP_KERNEL);
+	*pparts = kcalloc(nr_parts, sizeof(*(*pparts)), GFP_KERNEL);
 	if (!*pparts)
 		return -ENOMEM;
 

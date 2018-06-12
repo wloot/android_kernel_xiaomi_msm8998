@@ -582,9 +582,9 @@ static int32_t msm_cpp_create_buff_queue(struct cpp_device *cpp_dev,
 {
 	struct msm_cpp_buff_queue_info_t *buff_queue;
 
-	buff_queue = kzalloc(
-		sizeof(struct msm_cpp_buff_queue_info_t) * num_buffq,
-		GFP_KERNEL);
+	buff_queue = kcalloc(num_buffq,
+			     sizeof(struct msm_cpp_buff_queue_info_t),
+			     GFP_KERNEL);
 	if (!buff_queue) {
 		pr_err("Buff queue allocation failure\n");
 		return -ENOMEM;
@@ -3093,9 +3093,9 @@ long msm_cpp_subdev_ioctl(struct v4l2_subdev *sd,
 
 		if (u_stream_buff_info->num_buffs != 0) {
 			k_stream_buff_info.buffer_info =
-				kzalloc(k_stream_buff_info.num_buffs *
-				sizeof(struct msm_cpp_buffer_info_t),
-				GFP_KERNEL);
+				kcalloc(k_stream_buff_info.num_buffs,
+					sizeof(struct msm_cpp_buffer_info_t),
+					GFP_KERNEL);
 			if (ZERO_OR_NULL_PTR(k_stream_buff_info.buffer_info)) {
 				pr_err("%s:%d: malloc error\n",
 					__func__, __LINE__);

@@ -1858,13 +1858,13 @@ int diagfwd_init(void)
 		goto err;
 	kmemleak_not_leak(driver->user_space_data_buf);
 	if (driver->client_map == NULL &&
-	    (driver->client_map = kzalloc
-	     ((driver->num_clients) * sizeof(struct diag_client_map),
+	    (driver->client_map = kcalloc
+	     (driver->num_clients, sizeof(struct diag_client_map),
 		   GFP_KERNEL)) == NULL)
 		goto err;
 	kmemleak_not_leak(driver->client_map);
 	if (driver->data_ready == NULL &&
-	     (driver->data_ready = kzalloc(driver->num_clients * sizeof(int)
+	     (driver->data_ready = kcalloc(driver->num_clients, sizeof(int)
 							, GFP_KERNEL)) == NULL)
 		goto err;
 	kmemleak_not_leak(driver->data_ready);

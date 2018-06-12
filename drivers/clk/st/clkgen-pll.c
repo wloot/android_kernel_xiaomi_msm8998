@@ -933,7 +933,7 @@ static void __init clkgena_c65_pll_setup(struct device_node *np)
 		return;
 
 	clk_data->clk_num = num_pll_outputs;
-	clk_data->clks = kzalloc(clk_data->clk_num * sizeof(struct clk *),
+	clk_data->clks = kcalloc(clk_data->clk_num, sizeof(struct clk *),
 				 GFP_KERNEL);
 
 	if (!clk_data->clks)
@@ -1130,7 +1130,7 @@ static void __init clkgen_c32_pll_setup(struct device_node *np)
 		return;
 
 	clk_data->clk_num = num_odfs;
-	clk_data->clks = kzalloc(clk_data->clk_num * sizeof(struct clk *),
+	clk_data->clks = kcalloc(clk_data->clk_num, sizeof(struct clk *),
 				 GFP_KERNEL);
 
 	if (!clk_data->clks)

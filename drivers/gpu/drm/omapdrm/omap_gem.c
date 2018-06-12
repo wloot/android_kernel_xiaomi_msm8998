@@ -254,7 +254,7 @@ static int omap_gem_attach_pages(struct drm_gem_object *obj)
 					0, PAGE_SIZE, DMA_BIDIRECTIONAL);
 		}
 	} else {
-		addrs = kzalloc(npages * sizeof(*addrs), GFP_KERNEL);
+		addrs = kcalloc(npages, sizeof(*addrs), GFP_KERNEL);
 		if (!addrs) {
 			ret = -ENOMEM;
 			goto free_pages;

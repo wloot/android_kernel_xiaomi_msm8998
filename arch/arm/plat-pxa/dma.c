@@ -356,7 +356,8 @@ int __init pxa_init_dma(int irq, int num_ch)
 {
 	int i, ret;
 
-	dma_channels = kzalloc(sizeof(struct dma_channel) * num_ch, GFP_KERNEL);
+	dma_channels = kcalloc(num_ch, sizeof(struct dma_channel),
+			       GFP_KERNEL);
 	if (dma_channels == NULL)
 		return -ENOMEM;
 

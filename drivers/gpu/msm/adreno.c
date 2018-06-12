@@ -973,10 +973,10 @@ static void adreno_fault_detect_init(struct adreno_device *adreno_dev)
 	adreno_ft_regs_num = (ARRAY_SIZE(adreno_ft_regs_default) +
 		gpudev->ft_perf_counters_count*2);
 
-	adreno_ft_regs = kzalloc(adreno_ft_regs_num * sizeof(unsigned int),
-		GFP_KERNEL);
-	adreno_ft_regs_val = kzalloc(adreno_ft_regs_num * sizeof(unsigned int),
-		GFP_KERNEL);
+	adreno_ft_regs = kcalloc(adreno_ft_regs_num, sizeof(unsigned int),
+				 GFP_KERNEL);
+	adreno_ft_regs_val = kcalloc(adreno_ft_regs_num, sizeof(unsigned int),
+				     GFP_KERNEL);
 
 	if (adreno_ft_regs == NULL || adreno_ft_regs_val == NULL) {
 		kfree(adreno_ft_regs);

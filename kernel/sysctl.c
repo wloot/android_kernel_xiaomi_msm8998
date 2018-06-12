@@ -2849,7 +2849,8 @@ int proc_do_large_bitmap(struct ctl_table *table, int write,
                 }
 		kbuf[left] = 0;
 
-		tmp_bitmap = kzalloc(BITS_TO_LONGS(bitmap_len) * sizeof(unsigned long),
+		tmp_bitmap = kcalloc(BITS_TO_LONGS(bitmap_len),
+				     sizeof(unsigned long),
 				     GFP_KERNEL);
 		if (!tmp_bitmap) {
 			free_page(page);

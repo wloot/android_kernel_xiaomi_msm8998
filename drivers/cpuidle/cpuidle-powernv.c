@@ -226,14 +226,14 @@ static int powernv_add_idle_states(void)
 		goto out;
 	}
 
-	flags = kzalloc(sizeof(*flags) * dt_idle_states, GFP_KERNEL);
+	flags = kcalloc(dt_idle_states, sizeof(*flags), GFP_KERNEL);
 	if (of_property_read_u32_array(power_mgt,
 			"ibm,cpu-idle-state-flags", flags, dt_idle_states)) {
 		pr_warn("cpuidle-powernv : missing ibm,cpu-idle-state-flags in DT\n");
 		goto out_free_flags;
 	}
 
-	latency_ns = kzalloc(sizeof(*latency_ns) * dt_idle_states, GFP_KERNEL);
+	latency_ns = kcalloc(dt_idle_states, sizeof(*latency_ns), GFP_KERNEL);
 	rc = of_property_read_u32_array(power_mgt,
 		"ibm,cpu-idle-state-latencies-ns", latency_ns, dt_idle_states);
 	if (rc) {
@@ -241,7 +241,8 @@ static int powernv_add_idle_states(void)
 		goto out_free_latency;
 	}
 
-	residency_ns = kzalloc(sizeof(*residency_ns) * dt_idle_states, GFP_KERNEL);
+	residency_ns = kcalloc(dt_idle_states, sizeof(*residency_ns),
+			       GFP_KERNEL);
 	rc = of_property_read_u32_array(power_mgt,
 		"ibm,cpu-idle-state-residency-ns", residency_ns, dt_idle_states);
 

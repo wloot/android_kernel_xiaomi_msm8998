@@ -2260,7 +2260,7 @@ static int diag_cmd_register_tbl(struct diag_cmd_reg_tbl_t *reg_tbl)
 		return -EFAULT;
 	}
 
-	entries = kzalloc(count * entry_len, GFP_KERNEL);
+	entries = kcalloc(entry_len, count, GFP_KERNEL);
 	if (!entries) {
 		pr_err("diag: In %s, unable to create memory for registration table entries\n",
 		       __func__);

@@ -345,10 +345,9 @@ static int ipa2_active_clients_log_init(void)
 {
 	int i;
 
-	ipa_ctx->ipa2_active_clients_logging.log_buffer[0] = kzalloc(
-			IPA2_ACTIVE_CLIENTS_LOG_BUFFER_SIZE_LINES *
-			sizeof(char[IPA2_ACTIVE_CLIENTS_LOG_LINE_LEN]),
-			GFP_KERNEL);
+	ipa_ctx->ipa2_active_clients_logging.log_buffer[0] = kcalloc(IPA2_ACTIVE_CLIENTS_LOG_BUFFER_SIZE_LINES,
+								     sizeof(char[IPA2_ACTIVE_CLIENTS_LOG_LINE_LEN]),
+								     GFP_KERNEL);
 	active_clients_table_buf = kzalloc(sizeof(
 			char[IPA2_ACTIVE_CLIENTS_TABLE_BUF_SIZE]), GFP_KERNEL);
 	if (ipa_ctx->ipa2_active_clients_logging.log_buffer == NULL) {

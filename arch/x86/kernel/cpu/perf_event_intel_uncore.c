@@ -789,7 +789,7 @@ static int __init uncore_type_init(struct intel_uncore_type *type)
 	struct attribute **attrs;
 	int i, j;
 
-	pmus = kzalloc(sizeof(*pmus) * type->num_boxes, GFP_KERNEL);
+	pmus = kcalloc(type->num_boxes, sizeof(*pmus), GFP_KERNEL);
 	if (!pmus)
 		return -ENOMEM;
 

@@ -202,14 +202,14 @@ static int32_t msm_vfe47_init_dt_parms(struct vfe_device *vfe_dev,
 		pr_err("%s: NO QOS entries found\n", __func__);
 		return -EINVAL;
 	} else {
-		dt_settings = kzalloc(sizeof(uint32_t) * num_dt_entries,
-			GFP_KERNEL);
+		dt_settings = kcalloc(num_dt_entries, sizeof(uint32_t),
+				      GFP_KERNEL);
 		if (!dt_settings) {
 			pr_err("%s:%d No memory\n", __func__, __LINE__);
 			return -ENOMEM;
 		}
-		dt_regs = kzalloc(sizeof(uint32_t) * num_dt_entries,
-			GFP_KERNEL);
+		dt_regs = kcalloc(num_dt_entries, sizeof(uint32_t),
+				  GFP_KERNEL);
 		if (!dt_regs) {
 			pr_err("%s:%d No memory\n", __func__, __LINE__);
 			kfree(dt_settings);
@@ -2827,8 +2827,9 @@ int msm_vfe47_get_regulators(struct vfe_device *vfe_dev)
 	vfe_dev->vfe_num_regulators =
 		sizeof(*vfe_dev->hw_info->regulator_names) / sizeof(char *);
 
-	vfe_dev->regulator_info = kzalloc(sizeof(struct msm_cam_regulator) *
-				vfe_dev->vfe_num_regulators, GFP_KERNEL);
+	vfe_dev->regulator_info = kcalloc(vfe_dev->vfe_num_regulators,
+					  sizeof(struct msm_cam_regulator),
+					  GFP_KERNEL);
 	if (!vfe_dev->regulator_info)
 		return -ENOMEM;
 

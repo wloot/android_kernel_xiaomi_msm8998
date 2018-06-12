@@ -1762,24 +1762,27 @@ static int vhost_scsi_make_nexus(struct vhost_scsi_tpg *tpg,
 	for (i = 0; i < VHOST_SCSI_DEFAULT_TAGS; i++) {
 		tv_cmd = &((struct vhost_scsi_cmd *)se_sess->sess_cmd_map)[i];
 
-		tv_cmd->tvc_sgl = kzalloc(sizeof(struct scatterlist) *
-					VHOST_SCSI_PREALLOC_SGLS, GFP_KERNEL);
+		tv_cmd->tvc_sgl = kcalloc(VHOST_SCSI_PREALLOC_SGLS,
+					  sizeof(struct scatterlist),
+					  GFP_KERNEL);
 		if (!tv_cmd->tvc_sgl) {
 			mutex_unlock(&tpg->tv_tpg_mutex);
 			pr_err("Unable to allocate tv_cmd->tvc_sgl\n");
 			goto out;
 		}
 
-		tv_cmd->tvc_upages = kzalloc(sizeof(struct page *) *
-					VHOST_SCSI_PREALLOC_UPAGES, GFP_KERNEL);
+		tv_cmd->tvc_upages = kcalloc(VHOST_SCSI_PREALLOC_UPAGES,
+					     sizeof(struct page *),
+					     GFP_KERNEL);
 		if (!tv_cmd->tvc_upages) {
 			mutex_unlock(&tpg->tv_tpg_mutex);
 			pr_err("Unable to allocate tv_cmd->tvc_upages\n");
 			goto out;
 		}
 
-		tv_cmd->tvc_prot_sgl = kzalloc(sizeof(struct scatterlist) *
-					VHOST_SCSI_PREALLOC_PROT_SGLS, GFP_KERNEL);
+		tv_cmd->tvc_prot_sgl = kcalloc(VHOST_SCSI_PREALLOC_PROT_SGLS,
+					       sizeof(struct scatterlist),
+					       GFP_KERNEL);
 		if (!tv_cmd->tvc_prot_sgl) {
 			mutex_unlock(&tpg->tv_tpg_mutex);
 			pr_err("Unable to allocate tv_cmd->tvc_prot_sgl\n");

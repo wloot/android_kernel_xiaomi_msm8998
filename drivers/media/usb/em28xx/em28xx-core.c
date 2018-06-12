@@ -906,13 +906,13 @@ int em28xx_alloc_urbs(struct em28xx *dev, enum em28xx_mode mode, int xfer_bulk,
 
 	usb_bufs->num_bufs = num_bufs;
 
-	usb_bufs->urb = kzalloc(sizeof(void *)*num_bufs,  GFP_KERNEL);
+	usb_bufs->urb = kcalloc(num_bufs, sizeof(void *),  GFP_KERNEL);
 	if (!usb_bufs->urb) {
 		em28xx_errdev("cannot alloc memory for usb buffers\n");
 		return -ENOMEM;
 	}
 
-	usb_bufs->transfer_buffer = kzalloc(sizeof(void *)*num_bufs,
+	usb_bufs->transfer_buffer = kcalloc(num_bufs, sizeof(void *),
 					     GFP_KERNEL);
 	if (!usb_bufs->transfer_buffer) {
 		em28xx_errdev("cannot allocate memory for usb transfer\n");

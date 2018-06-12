@@ -289,8 +289,9 @@ static int sde_rotator_queue_setup(struct vb2_queue *q,
 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
 		ctx->nbuf_out = *num_buffers;
 		kfree(ctx->vbinfo_out);
-		ctx->vbinfo_out = kzalloc(sizeof(struct sde_rotator_vbinfo) *
-					ctx->nbuf_out, GFP_KERNEL);
+		ctx->vbinfo_out = kcalloc(ctx->nbuf_out,
+					  sizeof(struct sde_rotator_vbinfo),
+					  GFP_KERNEL);
 		if (!ctx->vbinfo_out)
 			return -ENOMEM;
 		for (i = 0; i < ctx->nbuf_out; i++) {
@@ -302,8 +303,9 @@ static int sde_rotator_queue_setup(struct vb2_queue *q,
 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
 		ctx->nbuf_cap = *num_buffers;
 		kfree(ctx->vbinfo_cap);
-		ctx->vbinfo_cap = kzalloc(sizeof(struct sde_rotator_vbinfo) *
-					ctx->nbuf_cap, GFP_KERNEL);
+		ctx->vbinfo_cap = kcalloc(ctx->nbuf_cap,
+					  sizeof(struct sde_rotator_vbinfo),
+					  GFP_KERNEL);
 		if (!ctx->vbinfo_cap)
 			return -ENOMEM;
 		for (i = 0; i < ctx->nbuf_cap; i++) {

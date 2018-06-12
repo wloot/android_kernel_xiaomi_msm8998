@@ -155,7 +155,7 @@ static int vgic_init_bitmap(struct vgic_bitmap *b, int nr_cpus, int nr_irqs)
 
 	nr_longs = nr_cpus + BITS_TO_LONGS(nr_irqs - VGIC_NR_PRIVATE_IRQS);
 
-	b->private = kzalloc(sizeof(unsigned long) * nr_longs, GFP_KERNEL);
+	b->private = kcalloc(nr_longs, sizeof(unsigned long), GFP_KERNEL);
 	if (!b->private)
 		return -ENOMEM;
 
@@ -1994,13 +1994,15 @@ int vgic_init(struct kvm *kvm)
 	if (ret)
 		goto out;
 
-	dist->irq_sgi_sources = kzalloc(nr_cpus * VGIC_NR_SGIS, GFP_KERNEL);
+	dist->irq_sgi_sources = kcalloc(VGIC_NR_SGIS, nr_cpus, GFP_KERNEL);
 	dist->irq_spi_cpu = kzalloc(nr_irqs - VGIC_NR_PRIVATE_IRQS, GFP_KERNEL);
-	dist->irq_spi_target = kzalloc(sizeof(*dist->irq_spi_target) * nr_cpus,
+	dist->irq_spi_target = kcalloc(nr_cpus, sizeof(*dist->irq_spi_target),
 				       GFP_KERNEL);
-	dist->irq_pending_on_cpu = kzalloc(BITS_TO_LONGS(nr_cpus) * sizeof(long),
+	dist->irq_pending_on_cpu = kcalloc(BITS_TO_LONGS(nr_cpus),
+					   sizeof(long),
 					   GFP_KERNEL);
-	dist->irq_active_on_cpu = kzalloc(BITS_TO_LONGS(nr_cpus) * sizeof(long),
+	dist->irq_active_on_cpu = kcalloc(BITS_TO_LONGS(nr_cpus),
+					   sizeof(long),
 					   GFP_KERNEL);
 	if (!dist->irq_sgi_sources ||
 	    !dist->irq_spi_cpu ||

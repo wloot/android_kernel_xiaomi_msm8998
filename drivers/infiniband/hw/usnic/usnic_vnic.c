@@ -247,7 +247,7 @@ usnic_vnic_get_resources(struct usnic_vnic *vnic, enum usnic_vnic_res_type type,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	ret->res = kzalloc(sizeof(*(ret->res))*cnt, GFP_ATOMIC);
+	ret->res = kcalloc(cnt, sizeof(*(ret->res)), GFP_ATOMIC);
 	if (!ret->res) {
 		usnic_err("Failed to allocate resources for %s. Out of memory\n",
 				usnic_vnic_pci_name(vnic));
@@ -311,7 +311,7 @@ static int usnic_vnic_alloc_res_chunk(struct usnic_vnic *vnic,
 		return -EINVAL;
 
 	chunk->cnt = chunk->free_cnt = cnt;
-	chunk->res = kzalloc(sizeof(*(chunk->res))*cnt, GFP_KERNEL);
+	chunk->res = kcalloc(cnt, sizeof(*(chunk->res)), GFP_KERNEL);
 	if (!chunk->res)
 		return -ENOMEM;
 

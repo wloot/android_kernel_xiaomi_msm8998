@@ -1439,8 +1439,9 @@ int ipa2_setup_sys_pipe(struct ipa_sys_connect_params *sys_in, u32 *clnt_hdl)
 
 	if (ep->sys->repl_hdlr == ipa_fast_replenish_rx_cache) {
 		ep->sys->repl.capacity = ep->sys->rx_pool_sz + 1;
-		ep->sys->repl.cache = kzalloc(ep->sys->repl.capacity *
-				sizeof(void *), GFP_KERNEL);
+		ep->sys->repl.cache = kcalloc(ep->sys->repl.capacity,
+					      sizeof(void *),
+					      GFP_KERNEL);
 		if (!ep->sys->repl.cache) {
 			IPAERR("ep=%d fail to alloc repl cache\n", ipa_ep_idx);
 			ep->sys->repl_hdlr = ipa_replenish_rx_cache;
@@ -1671,7 +1672,7 @@ int ipa2_tx_dp(enum ipa_client_type dst, struct sk_buff *skb,
 		 * 1 desc may be needed for the PACKET_INIT;
 		 * 1 desc for each frag
 		 */
-		desc = kzalloc(sizeof(*desc) * (num_frags + 2), GFP_ATOMIC);
+		desc = kcalloc(num_frags + 2, sizeof(*desc), GFP_ATOMIC);
 		if (!desc) {
 			IPAERR("failed to alloc desc array\n");
 			goto fail_mem;

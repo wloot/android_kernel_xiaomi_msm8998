@@ -81,7 +81,7 @@ static int ls1x_cpufreq_init(struct cpufreq_policy *policy)
 	pll_freq = clk_get_rate(ls1x_cpufreq.pll_clk) / 1000;
 
 	steps = 1 << DIV_CPU_WIDTH;
-	freq_tbl = kzalloc(sizeof(*freq_tbl) * steps, GFP_KERNEL);
+	freq_tbl = kcalloc(steps, sizeof(*freq_tbl), GFP_KERNEL);
 	if (!freq_tbl) {
 		dev_err(ls1x_cpufreq.dev,
 			"failed to alloc cpufreq_frequency_table\n");

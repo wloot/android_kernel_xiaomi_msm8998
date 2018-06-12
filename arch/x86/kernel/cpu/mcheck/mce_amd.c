@@ -747,7 +747,7 @@ static int threshold_create_device(unsigned int cpu)
 	struct threshold_bank **bp;
 	int err = 0;
 
-	bp = kzalloc(sizeof(struct threshold_bank *) * mca_cfg.banks,
+	bp = kcalloc(mca_cfg.banks, sizeof(struct threshold_bank *),
 		     GFP_KERNEL);
 	if (!bp)
 		return -ENOMEM;

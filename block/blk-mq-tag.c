@@ -573,7 +573,7 @@ static int bt_alloc(struct blk_mq_bitmap_tags *bt, unsigned int depth,
 		bt->map_nr = nr;
 	}
 
-	bt->bs = kzalloc(BT_WAIT_QUEUES * sizeof(*bt->bs), GFP_KERNEL);
+	bt->bs = kcalloc(BT_WAIT_QUEUES, sizeof(*bt->bs), GFP_KERNEL);
 	if (!bt->bs) {
 		kfree(bt->map);
 		bt->map = NULL;

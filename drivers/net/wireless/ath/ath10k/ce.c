@@ -1188,9 +1188,9 @@ ath10k_ce_alloc_src_ring(struct ath10k *ar, unsigned int ce_id,
 			src_ring->base_addr_ce_space_unaligned,
 			CE_DESC_RING_ALIGN);
 
-	src_ring->shadow_base_unaligned = kzalloc(
-					  nentries * sizeof(struct ce_desc),
-					  GFP_KERNEL);
+	src_ring->shadow_base_unaligned = kcalloc(nentries,
+						  sizeof(struct ce_desc),
+						  GFP_KERNEL);
 
 	if (!src_ring->shadow_base_unaligned) {
 		dma_free_coherent(ar->dev,

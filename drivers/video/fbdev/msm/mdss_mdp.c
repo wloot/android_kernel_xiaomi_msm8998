@@ -3728,19 +3728,19 @@ static int mdss_mdp_parse_dt_mixer(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	mixer_offsets = kzalloc(sizeof(u32) * nmixers, GFP_KERNEL);
+	mixer_offsets = kcalloc(nmixers, sizeof(u32), GFP_KERNEL);
 	if (!mixer_offsets) {
 		pr_err("no mem assigned: kzalloc fail\n");
 		return -ENOMEM;
 	}
 
-	dspp_offsets = kzalloc(sizeof(u32) * mdata->ndspp, GFP_KERNEL);
+	dspp_offsets = kcalloc(mdata->ndspp, sizeof(u32), GFP_KERNEL);
 	if (!dspp_offsets) {
 		pr_err("no mem assigned: kzalloc fail\n");
 		rc = -ENOMEM;
 		goto dspp_alloc_fail;
 	}
-	pingpong_offsets = kzalloc(sizeof(u32) * npingpong, GFP_KERNEL);
+	pingpong_offsets = kcalloc(npingpong, sizeof(u32), GFP_KERNEL);
 	if (!pingpong_offsets) {
 		pr_err("no mem assigned: kzalloc fail\n");
 		rc = -ENOMEM;
@@ -3860,7 +3860,7 @@ static int mdss_mdp_parse_dt_cdm(struct platform_device *pdev)
 		goto end;
 	}
 	pr_debug("%s: cdm len == %d\n", __func__, mdata->ncdm);
-	cdm_offsets = kzalloc(sizeof(u32) * mdata->ncdm, GFP_KERNEL);
+	cdm_offsets = kcalloc(mdata->ncdm, sizeof(u32), GFP_KERNEL);
 	if (!cdm_offsets) {
 		pr_err("no more memory for cdm offsets\n");
 		rc = -ENOMEM;
@@ -3926,7 +3926,7 @@ static int mdss_mdp_parse_dt_dsc(struct platform_device *pdev)
 	}
 	pr_debug("dsc len == %d\n", mdata->ndsc);
 
-	dsc_offsets = kzalloc(sizeof(u32) * mdata->ndsc, GFP_KERNEL);
+	dsc_offsets = kcalloc(mdata->ndsc, sizeof(u32), GFP_KERNEL);
 	if (!dsc_offsets) {
 		pr_err("no more memory for dsc offsets\n");
 		rc = -ENOMEM;
@@ -3975,7 +3975,7 @@ static int mdss_mdp_parse_dt_wb(struct platform_device *pdev)
 	nwb_offsets =  mdss_mdp_parse_dt_prop_len(pdev,
 			"qcom,mdss-wb-off");
 
-	wb_offsets = kzalloc(sizeof(u32) * nwb_offsets, GFP_KERNEL);
+	wb_offsets = kcalloc(nwb_offsets, sizeof(u32), GFP_KERNEL);
 	if (!wb_offsets) {
 		pr_err("no more mem for writeback offsets\n");
 		return -ENOMEM;
@@ -4016,7 +4016,7 @@ static int mdss_mdp_parse_dt_ctl(struct platform_device *pdev)
 		goto parse_done;
 	}
 
-	ctl_offsets = kzalloc(sizeof(u32) * mdata->nctl, GFP_KERNEL);
+	ctl_offsets = kcalloc(mdata->nctl, sizeof(u32), GFP_KERNEL);
 	if (!ctl_offsets) {
 		pr_err("no more mem for ctl offsets\n");
 		return -ENOMEM;
@@ -4049,7 +4049,7 @@ static int mdss_mdp_parse_dt_video_intf(struct platform_device *pdev)
 	if (count == 0)
 		return -EINVAL;
 
-	offsets = kzalloc(sizeof(u32) * count, GFP_KERNEL);
+	offsets = kcalloc(count, sizeof(u32), GFP_KERNEL);
 	if (!offsets) {
 		pr_err("no mem assigned for video intf\n");
 		return -ENOMEM;
@@ -4255,8 +4255,9 @@ static void mdss_mdp_parse_vbif_qos(struct platform_device *pdev)
 	mdata->npriority_lvl = mdss_mdp_parse_dt_prop_len(pdev,
 			"qcom,mdss-vbif-qos-rt-setting");
 	if (mdata->npriority_lvl == MDSS_VBIF_QOS_REMAP_ENTRIES) {
-		mdata->vbif_rt_qos = kzalloc(sizeof(u32) *
-				mdata->npriority_lvl, GFP_KERNEL);
+		mdata->vbif_rt_qos = kcalloc(mdata->npriority_lvl,
+					     sizeof(u32),
+					     GFP_KERNEL);
 		if (!mdata->vbif_rt_qos) {
 			pr_err("no memory for real time qos_priority\n");
 			return;
@@ -4290,8 +4291,9 @@ static void mdss_mdp_parse_vbif_qos(struct platform_device *pdev)
 	}
 
 	if (mdata->npriority_lvl == MDSS_VBIF_QOS_REMAP_ENTRIES) {
-		mdata->vbif_nrt_qos = kzalloc(sizeof(u32) *
-				mdata->npriority_lvl, GFP_KERNEL);
+		mdata->vbif_nrt_qos = kcalloc(mdata->npriority_lvl,
+					      sizeof(u32),
+					      GFP_KERNEL);
 		if (!mdata->vbif_nrt_qos) {
 			pr_err("no memory for non real time qos_priority\n");
 			return;
@@ -4559,7 +4561,7 @@ static int mdss_mdp_parse_dt_misc(struct platform_device *pdev)
 					"qcom,mdss-clk-levels");
 
 	if (mdata->nclk_lvl) {
-		mdata->clock_levels = kzalloc(sizeof(u32) * mdata->nclk_lvl,
+		mdata->clock_levels = kcalloc(mdata->nclk_lvl, sizeof(u32),
 							GFP_KERNEL);
 		if (!mdata->clock_levels) {
 			pr_err("no mem assigned for mdata clock_levels\n");
@@ -4616,7 +4618,7 @@ static int mdss_mdp_parse_dt_ad_cfg(struct platform_device *pdev)
 	mdata->has_wb_ad = of_property_read_bool(pdev->dev.of_node,
 		"qcom,mdss-has-wb-ad");
 
-	ad_offsets = kzalloc(sizeof(u32) * mdata->nad_cfgs, GFP_KERNEL);
+	ad_offsets = kcalloc(mdata->nad_cfgs, sizeof(u32), GFP_KERNEL);
 	if (!ad_offsets) {
 		pr_err("no mem assigned: kzalloc fail\n");
 		return -ENOMEM;

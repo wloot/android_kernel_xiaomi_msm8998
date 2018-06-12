@@ -262,7 +262,7 @@ static int vfio_msi_enable(struct vfio_pci_device *vdev, int nvec, bool msix)
 	if (msix) {
 		int i;
 
-		vdev->msix = kzalloc(nvec * sizeof(struct msix_entry),
+		vdev->msix = kcalloc(nvec, sizeof(struct msix_entry),
 				     GFP_KERNEL);
 		if (!vdev->msix) {
 			kfree(vdev->ctx);

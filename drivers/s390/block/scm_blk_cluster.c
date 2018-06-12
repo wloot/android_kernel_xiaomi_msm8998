@@ -38,8 +38,8 @@ int __scm_alloc_rq_cluster(struct scm_request *scmrq)
 {
 	int i;
 
-	scmrq->cluster.buf = kzalloc(sizeof(void *) * 2 * write_cluster_size,
-				 GFP_KERNEL);
+	scmrq->cluster.buf = kzalloc(array3_size(sizeof(void *), 2, write_cluster_size),
+				     GFP_KERNEL);
 	if (!scmrq->cluster.buf)
 		return -ENOMEM;
 

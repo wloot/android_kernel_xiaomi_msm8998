@@ -4937,8 +4937,9 @@ static int  _qcrypto_probe(struct platform_device *pdev)
 	qce_hw_support(pengine->qce, &cp->ce_support);
 	pengine->ce_hw_instance = cp->ce_support.ce_hw_instance;
 	pengine->max_req = cp->ce_support.max_request;
-	pqcrypto_req_control = kzalloc(sizeof(struct qcrypto_req_control) *
-			pengine->max_req, GFP_KERNEL);
+	pqcrypto_req_control = kcalloc(pengine->max_req,
+				       sizeof(struct qcrypto_req_control),
+				       GFP_KERNEL);
 	if (pqcrypto_req_control == NULL) {
 		rc = -ENOMEM;
 		goto err;

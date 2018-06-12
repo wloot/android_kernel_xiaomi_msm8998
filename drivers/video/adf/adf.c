@@ -429,8 +429,8 @@ int adf_hotplug_notify_connected(struct adf_interface *intf,
 	if (n_modes > ADF_MAX_MODES)
 		return -ENOMEM;
 
-	modelist_copy = kzalloc(sizeof(modelist_copy[0]) * n_modes,
-			GFP_KERNEL);
+	modelist_copy = kcalloc(n_modes, sizeof(modelist_copy[0]),
+				GFP_KERNEL);
 	if (!modelist_copy)
 		return -ENOMEM;
 	memcpy(modelist_copy, modelist, sizeof(modelist_copy[0]) * n_modes);

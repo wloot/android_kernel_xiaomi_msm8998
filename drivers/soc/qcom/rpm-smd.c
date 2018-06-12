@@ -929,8 +929,8 @@ static struct msm_rpm_request *msm_rpm_create_request_common(
 	cdata->num_elements = num_elements;
 	cdata->write_idx = 0;
 
-	cdata->kvp = kzalloc(sizeof(struct msm_rpm_kvp_data) * num_elements,
-			GFP_FLAG(noirq));
+	cdata->kvp = kcalloc(num_elements, sizeof(struct msm_rpm_kvp_data),
+			     GFP_FLAG(noirq));
 
 	if (!cdata->kvp) {
 		pr_warn("%s(): Cannot allocate memory for key value data\n",

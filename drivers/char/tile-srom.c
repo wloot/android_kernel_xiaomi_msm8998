@@ -365,7 +365,7 @@ static int srom_init(void)
 	 * Start with a plausible number of partitions; the krealloc() call
 	 * below will yield about log(srom_devs) additional allocations.
 	 */
-	srom_devices = kzalloc(4 * sizeof(struct srom_dev), GFP_KERNEL);
+	srom_devices = kcalloc(4, sizeof(struct srom_dev), GFP_KERNEL);
 
 	/* Discover the number of srom partitions. */
 	for (i = 0; ; i++) {

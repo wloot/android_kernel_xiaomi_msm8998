@@ -852,14 +852,14 @@ static int mpm_init_irq_domain(struct device_node *node, int irq_domain)
 			MAX_DOMAIN_NAME);
 
 	unlisted_irqs[i].enabled_irqs =
-		kzalloc(BITS_TO_LONGS(size) * sizeof(unsigned long),
+		kcalloc(BITS_TO_LONGS(size), sizeof(unsigned long),
 				GFP_KERNEL);
 
 	if (!unlisted_irqs[i].enabled_irqs)
 		goto failed_malloc;
 
 	unlisted_irqs[i].wakeup_irqs =
-		kzalloc(BITS_TO_LONGS(size) * sizeof(unsigned long),
+		kcalloc(BITS_TO_LONGS(size), sizeof(unsigned long),
 				GFP_KERNEL);
 
 	if (!unlisted_irqs[i].wakeup_irqs)
@@ -940,36 +940,36 @@ static void __of_mpm_init(struct device_node *node)
 	 */
 	of_property_read_u32(node, "qcom,num-mpm-irqs", &num_mpm_irqs);
 
-	irq_hash = kzalloc(num_mpm_irqs * sizeof(*irq_hash), GFP_KERNEL);
+	irq_hash = kcalloc(num_mpm_irqs, sizeof(*irq_hash), GFP_KERNEL);
 	if (!irq_hash)
 		goto failed_malloc;
 
-	msm_mpm_irqs_m2a = kzalloc(num_mpm_irqs * sizeof(*msm_mpm_irqs_m2a),
-				GFP_KERNEL);
+	msm_mpm_irqs_m2a = kcalloc(num_mpm_irqs, sizeof(*msm_mpm_irqs_m2a),
+				   GFP_KERNEL);
 	if (!msm_mpm_irqs_m2a)
 		goto failed_malloc;
 
-	msm_mpm_enabled_irq = kzalloc(MSM_MPM_REG_WIDTH * sizeof(uint32_t),
-				GFP_KERNEL);
+	msm_mpm_enabled_irq = kcalloc(MSM_MPM_REG_WIDTH, sizeof(uint32_t),
+				      GFP_KERNEL);
 	if (!msm_mpm_enabled_irq)
 		goto failed_malloc;
-	msm_mpm_wake_irq = kzalloc(MSM_MPM_REG_WIDTH * sizeof(uint32_t),
-				GFP_KERNEL);
+	msm_mpm_wake_irq = kcalloc(MSM_MPM_REG_WIDTH, sizeof(uint32_t),
+				   GFP_KERNEL);
 	if (!msm_mpm_wake_irq)
 		goto failed_malloc;
 
-	msm_mpm_falling_edge = kzalloc(MSM_MPM_REG_WIDTH * sizeof(uint32_t),
-				GFP_KERNEL);
+	msm_mpm_falling_edge = kcalloc(MSM_MPM_REG_WIDTH, sizeof(uint32_t),
+				       GFP_KERNEL);
 	if (!msm_mpm_falling_edge)
 		goto failed_malloc;
 
-	msm_mpm_rising_edge = kzalloc(MSM_MPM_REG_WIDTH * sizeof(uint32_t),
-				GFP_KERNEL);
+	msm_mpm_rising_edge = kcalloc(MSM_MPM_REG_WIDTH, sizeof(uint32_t),
+				      GFP_KERNEL);
 	if (!msm_mpm_rising_edge)
 		goto failed_malloc;
 
-	msm_mpm_polarity = kzalloc(MSM_MPM_REG_WIDTH * sizeof(uint32_t),
-				GFP_KERNEL);
+	msm_mpm_polarity = kcalloc(MSM_MPM_REG_WIDTH, sizeof(uint32_t),
+				   GFP_KERNEL);
 	if (!msm_mpm_polarity)
 		goto failed_malloc;
 

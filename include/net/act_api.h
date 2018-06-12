@@ -56,7 +56,7 @@ static inline int tcf_hashinfo_init(struct tcf_hashinfo *hf, unsigned int mask)
 	spin_lock_init(&hf->lock);
 	hf->index = 0;
 	hf->hmask = mask;
-	hf->htab = kzalloc((mask + 1) * sizeof(struct hlist_head),
+	hf->htab = kcalloc(mask + 1, sizeof(struct hlist_head),
 			   GFP_KERNEL);
 	if (!hf->htab)
 		return -ENOMEM;

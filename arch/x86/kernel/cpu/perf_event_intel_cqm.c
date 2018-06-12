@@ -232,8 +232,8 @@ static int intel_cqm_setup_rmid_cache(void)
 	int r = 0;
 
 	nr_rmids = cqm_max_rmid + 1;
-	cqm_rmid_ptrs = kzalloc(sizeof(struct cqm_rmid_entry *) *
-				nr_rmids, GFP_KERNEL);
+	cqm_rmid_ptrs = kcalloc(nr_rmids, sizeof(struct cqm_rmid_entry *),
+				GFP_KERNEL);
 	if (!cqm_rmid_ptrs)
 		return -ENOMEM;
 

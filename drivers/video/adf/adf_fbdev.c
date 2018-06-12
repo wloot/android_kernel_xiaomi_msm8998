@@ -328,7 +328,7 @@ static void adf_fbdev_fill_modelist(struct adf_fbdev *fbdev)
 	int ret = 0;
 
 	n_modes = adf_interface_modelist(fbdev->intf, NULL, 0);
-	modelist = kzalloc(sizeof(modelist[0]) * n_modes, GFP_KERNEL);
+	modelist = kcalloc(n_modes, sizeof(modelist[0]), GFP_KERNEL);
 	if (!modelist) {
 		dev_warn(fbdev->info->dev, "allocating new modelist failed; keeping old modelist\n");
 		return;

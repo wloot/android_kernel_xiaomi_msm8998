@@ -74,7 +74,7 @@ int amd_cache_northbridges(void)
 	if (!i)
 		return -ENODEV;
 
-	nb = kzalloc(i * sizeof(struct amd_northbridge), GFP_KERNEL);
+	nb = kcalloc(i, sizeof(struct amd_northbridge), GFP_KERNEL);
 	if (!nb)
 		return -ENOMEM;
 

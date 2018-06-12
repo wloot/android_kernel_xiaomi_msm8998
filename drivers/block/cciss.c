@@ -1616,7 +1616,7 @@ static int cciss_bigpassthru(ctlr_info_t *h, void __user *argp)
 		status = -EINVAL;
 		goto cleanup1;
 	}
-	buff = kzalloc(MAXSGENTRIES * sizeof(char *), GFP_KERNEL);
+	buff = kcalloc(MAXSGENTRIES, sizeof(char *), GFP_KERNEL);
 	if (!buff) {
 		status = -ENOMEM;
 		goto cleanup1;
@@ -4851,8 +4851,9 @@ static int cciss_allocate_scatterlists(ctlr_info_t *h)
 	int i;
 
 	/* zero it, so that on free we need not know how many were alloc'ed */
-	h->scatter_list = kzalloc(h->max_commands *
-				sizeof(struct scatterlist *), GFP_KERNEL);
+	h->scatter_list = kcalloc(h->max_commands,
+				  sizeof(struct scatterlist *),
+				  GFP_KERNEL);
 	if (!h->scatter_list)
 		return -ENOMEM;
 

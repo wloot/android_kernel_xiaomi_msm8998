@@ -393,7 +393,7 @@ int slim_register_board_info(struct slim_boardinfo const *info, unsigned n)
 	struct sbi_boardinfo *bi;
 	int i;
 
-	bi = kzalloc(n * sizeof(*bi), GFP_KERNEL);
+	bi = kcalloc(n, sizeof(*bi), GFP_KERNEL);
 	if (!bi)
 		return -ENOMEM;
 
@@ -477,7 +477,7 @@ static int slim_register_controller(struct slim_controller *ctrl)
 							&ctrl->dev);
 
 	if (ctrl->nports) {
-		ctrl->ports = kzalloc(ctrl->nports * sizeof(struct slim_port),
+		ctrl->ports = kcalloc(ctrl->nports, sizeof(struct slim_port),
 					GFP_KERNEL);
 		if (!ctrl->ports) {
 			ret = -ENOMEM;
@@ -485,7 +485,7 @@ static int slim_register_controller(struct slim_controller *ctrl)
 		}
 	}
 	if (ctrl->nchans) {
-		ctrl->chans = kzalloc(ctrl->nchans * sizeof(struct slim_ich),
+		ctrl->chans = kcalloc(ctrl->nchans, sizeof(struct slim_ich),
 					GFP_KERNEL);
 		if (!ctrl->chans) {
 			ret = -ENOMEM;
@@ -493,16 +493,16 @@ static int slim_register_controller(struct slim_controller *ctrl)
 		}
 
 		ctrl->sched.chc1 =
-			kzalloc(ctrl->nchans * sizeof(struct slim_ich *),
-			GFP_KERNEL);
+			kcalloc(ctrl->nchans, sizeof(struct slim_ich *),
+				GFP_KERNEL);
 		if (!ctrl->sched.chc1) {
 			kfree(ctrl->chans);
 			ret = -ENOMEM;
 			goto err_chan_failed;
 		}
 		ctrl->sched.chc3 =
-			kzalloc(ctrl->nchans * sizeof(struct slim_ich *),
-			GFP_KERNEL);
+			kcalloc(ctrl->nchans, sizeof(struct slim_ich *),
+				GFP_KERNEL);
 		if (!ctrl->sched.chc3) {
 			kfree(ctrl->sched.chc1);
 			kfree(ctrl->chans);

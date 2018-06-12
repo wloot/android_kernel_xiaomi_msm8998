@@ -237,7 +237,7 @@ static int __init omap_hsmmc_pdata_init(struct omap2_hsmmc_info *c,
 {
 	char *hc_name;
 
-	hc_name = kzalloc(sizeof(char) * (HSMMC_NAME_LEN + 1), GFP_KERNEL);
+	hc_name = kzalloc(HSMMC_NAME_LEN + 1, GFP_KERNEL);
 	if (!hc_name) {
 		pr_err("Cannot allocate memory for controller slot name\n");
 		kfree(hc_name);

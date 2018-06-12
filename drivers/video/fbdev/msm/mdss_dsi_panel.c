@@ -1169,7 +1169,7 @@ static int mdss_dsi_parse_dcs_cmds(struct device_node *np,
 		return -ENOMEM;
 	}
 
-	buf = kzalloc(sizeof(char) * blen, GFP_KERNEL);
+	buf = kzalloc(blen, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
@@ -1200,7 +1200,7 @@ static int mdss_dsi_parse_dcs_cmds(struct device_node *np,
 		goto exit_free;
 	}
 
-	pcmds->cmds = kzalloc(cnt * sizeof(struct dsi_cmd_desc),
+	pcmds->cmds = kcalloc(cnt, sizeof(struct dsi_cmd_desc),
 						GFP_KERNEL);
 	if (!pcmds->cmds)
 		goto exit_free;
@@ -2135,8 +2135,8 @@ static void mdss_dsi_parse_esd_params(struct device_node *np,
 		goto error1;
 	}
 
-	ctrl->status_value = kzalloc(sizeof(u32) * status_len * ctrl->groups,
-				GFP_KERNEL);
+	ctrl->status_value = kzalloc(array3_size(sizeof(u32), status_len, ctrl->groups),
+				     GFP_KERNEL);
 	if (!ctrl->status_value)
 		goto error1;
 
@@ -2285,7 +2285,7 @@ static void mdss_dsi_parse_panel_horizintal_line_idle(struct device_node *np,
 
 	cnt = len / sizeof(u32);
 
-	kp = kzalloc(sizeof(*kp) * (cnt / 3), GFP_KERNEL);
+	kp = kcalloc(cnt / 3, sizeof(*kp), GFP_KERNEL);
 	if (kp == NULL) {
 		pr_err("%s: No memory\n", __func__);
 		return;

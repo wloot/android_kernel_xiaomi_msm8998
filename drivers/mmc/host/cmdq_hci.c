@@ -1367,8 +1367,9 @@ int cmdq_init(struct cmdq_host *cq_host, struct mmc_host *mmc,
 	mmc->num_cq_slots = NUM_SLOTS;
 	mmc->dcmd_cq_slot = DCMD_SLOT;
 
-	cq_host->mrq_slot = kzalloc(sizeof(cq_host->mrq_slot) *
-				    cq_host->num_slots, GFP_KERNEL);
+	cq_host->mrq_slot = kcalloc(cq_host->num_slots,
+				    sizeof(cq_host->mrq_slot),
+				    GFP_KERNEL);
 	if (!cq_host->mrq_slot)
 		return -ENOMEM;
 

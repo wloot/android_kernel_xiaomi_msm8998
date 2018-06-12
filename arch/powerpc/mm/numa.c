@@ -1443,7 +1443,7 @@ int arch_update_cpu_topology(void)
 	if (!weight)
 		return 0;
 
-	updates = kzalloc(weight * (sizeof(*updates)), GFP_KERNEL);
+	updates = kcalloc(weight, sizeof(*updates), GFP_KERNEL);
 	if (!updates)
 		return 0;
 

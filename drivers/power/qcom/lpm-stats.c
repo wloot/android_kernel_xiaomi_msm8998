@@ -445,8 +445,8 @@ static int config_level(const char *name, const char **levels,
 	INIT_LIST_HEAD(&stats->sibling);
 	INIT_LIST_HEAD(&stats->child);
 
-	stats->time_stats = kzalloc(sizeof(struct level_stats) *
-				num_levels, GFP_KERNEL);
+	stats->time_stats = kcalloc(num_levels, sizeof(struct level_stats),
+				    GFP_KERNEL);
 	if (!stats->time_stats) {
 		pr_err("%s: Insufficient memory for %s level time stats\n",
 			__func__, name);

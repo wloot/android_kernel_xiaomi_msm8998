@@ -121,8 +121,9 @@ static int adf_eng_get_data(struct adf_overlay_engine *eng,
 	data.n_supported_formats = eng->ops->n_supported_formats;
 
 	if (n_supported_formats) {
-		supported_formats = kzalloc(n_supported_formats *
-				sizeof(supported_formats[0]), GFP_KERNEL);
+		supported_formats = kcalloc(n_supported_formats,
+					    sizeof(supported_formats[0]),
+					    GFP_KERNEL);
 		if (!supported_formats)
 			return -ENOMEM;
 	}
@@ -271,7 +272,7 @@ static int adf_device_post_config(struct adf_device *dev,
 	}
 
 	if (data.n_bufs) {
-		bufs = kzalloc(sizeof(bufs[0]) * data.n_bufs, GFP_KERNEL);
+		bufs = kcalloc(data.n_bufs, sizeof(bufs[0]), GFP_KERNEL);
 		if (!bufs) {
 			ret = -ENOMEM;
 			goto err_get_user;
@@ -412,7 +413,7 @@ static int adf_copy_attachment_list_to_user(
 	if (!n)
 		return 0;
 
-	temp = kzalloc(n * sizeof(temp[0]), GFP_KERNEL);
+	temp = kcalloc(n, sizeof(temp[0]), GFP_KERNEL);
 	if (!temp)
 		return -ENOMEM;
 
@@ -451,16 +452,17 @@ static int adf_device_get_data(struct adf_device *dev,
 	strlcpy(data.name, dev->base.name, sizeof(data.name));
 
 	if (data.n_attachments) {
-		attach = kzalloc(data.n_attachments * sizeof(attach[0]),
-				GFP_KERNEL);
+		attach = kcalloc(data.n_attachments, sizeof(attach[0]),
+				 GFP_KERNEL);
 		if (!attach)
 			return -ENOMEM;
 	}
 	n_attach = adf_device_attachments(dev, attach, data.n_attachments);
 
 	if (data.n_allowed_attachments) {
-		allowed_attach = kzalloc(data.n_allowed_attachments *
-				sizeof(allowed_attach[0]), GFP_KERNEL);
+		allowed_attach = kcalloc(data.n_allowed_attachments,
+					 sizeof(allowed_attach[0]),
+					 GFP_KERNEL);
 		if (!allowed_attach) {
 			ret = -ENOMEM;
 			goto done;

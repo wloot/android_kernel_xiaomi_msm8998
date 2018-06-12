@@ -2196,10 +2196,9 @@ reinit:
 			 * that equals the num of packed requests
 			 * (1 to max_packed_writes)
 			 */
-			card->wr_pack_stats.packing_events = kzalloc(
-				(card->ext_csd.max_packed_writes + 1) *
-				sizeof(*card->wr_pack_stats.packing_events),
-				GFP_KERNEL);
+			card->wr_pack_stats.packing_events = kcalloc(card->ext_csd.max_packed_writes + 1,
+								     sizeof(*card->wr_pack_stats.packing_events),
+								     GFP_KERNEL);
 			if (!card->wr_pack_stats.packing_events) {
 				pr_err("%s: %s: no memory for packing events\n",
 						mmc_hostname(host), __func__);

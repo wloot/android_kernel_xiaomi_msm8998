@@ -771,9 +771,9 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 
 	/* history tracking */
 	for (i = 0; i < KGSL_PWREVENT_MAX; i++) {
-		pwrscale->history[i].events = kzalloc(
-				pwrscale->history[i].size *
-				sizeof(struct kgsl_pwr_event), GFP_KERNEL);
+		pwrscale->history[i].events = kcalloc(pwrscale->history[i].size,
+						      sizeof(struct kgsl_pwr_event),
+						      GFP_KERNEL);
 		pwrscale->history[i].type = i;
 	}
 
