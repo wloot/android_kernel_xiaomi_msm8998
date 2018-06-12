@@ -5329,8 +5329,8 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter)
 #endif /* CONFIG_IXGBE_DCB */
 #endif /* IXGBE_FCOE */
 
-	adapter->mac_table = kzalloc(sizeof(struct ixgbe_mac_addr) *
-				     hw->mac.num_rar_entries,
+	adapter->mac_table = kcalloc(hw->mac.num_rar_entries,
+				     sizeof(struct ixgbe_mac_addr),
 				     GFP_ATOMIC);
 
 	/* Set MAC specific capability flags and exceptions */

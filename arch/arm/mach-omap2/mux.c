@@ -274,8 +274,8 @@ omap_hwmod_mux_init(struct omap_device_pad *bpads, int nr_pads)
 
 	hmux->nr_pads = nr_pads;
 
-	hmux->pads = kzalloc(sizeof(struct omap_device_pad) *
-				nr_pads, GFP_KERNEL);
+	hmux->pads = kcalloc(nr_pads, sizeof(struct omap_device_pad),
+			     GFP_KERNEL);
 	if (!hmux->pads)
 		goto err2;
 
@@ -323,8 +323,9 @@ omap_hwmod_mux_init(struct omap_device_pad *bpads, int nr_pads)
 	 */
 
 	hmux->nr_pads_dynamic = nr_pads_dynamic;
-	hmux->pads_dynamic = kzalloc(sizeof(struct omap_device_pad *) *
-					nr_pads_dynamic, GFP_KERNEL);
+	hmux->pads_dynamic = kcalloc(nr_pads_dynamic,
+				     sizeof(struct omap_device_pad *),
+				     GFP_KERNEL);
 	if (!hmux->pads_dynamic) {
 		pr_err("%s: Could not allocate dynamic pads\n", __func__);
 		return hmux;

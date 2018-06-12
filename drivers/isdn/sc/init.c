@@ -318,7 +318,8 @@ static int __init sc_init(void)
 		/*
 		 * Allocate channels status structures
 		 */
-		sc_adapter[cinst]->channel = kzalloc(sizeof(bchan) * channels, GFP_KERNEL);
+		sc_adapter[cinst]->channel = kcalloc(channels, sizeof(bchan),
+						     GFP_KERNEL);
 		if (sc_adapter[cinst]->channel == NULL) {
 			/*
 			 * Oops, can't alloc memory for the channels

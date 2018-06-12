@@ -697,7 +697,7 @@ static int ep_pcie_get_resources(struct ep_pcie_dev_t *dev,
 	cnt = of_property_count_strings((&pdev->dev)->of_node,
 			"clock-names");
 	if (cnt > 0) {
-		clkfreq = kzalloc(cnt * sizeof(*clkfreq),
+		clkfreq = kcalloc(cnt, sizeof(*clkfreq),
 					GFP_KERNEL);
 		if (!clkfreq) {
 			EP_PCIE_ERR(dev, "PCIe V%d: memory alloc failed\n",

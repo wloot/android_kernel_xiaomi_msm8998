@@ -670,8 +670,8 @@ static int lmh_device_init(struct lmh_device_data *lmh_device,
 		goto dev_init_exit;
 	}
 	lmh_device->max_level = ret;
-	lmh_device->levels = kzalloc(lmh_device->max_level * sizeof(int),
-				GFP_KERNEL);
+	lmh_device->levels = kcalloc(lmh_device->max_level, sizeof(int),
+				     GFP_KERNEL);
 	if (!lmh_device->levels) {
 		pr_err("No memory\n");
 		ret = -ENOMEM;
@@ -914,8 +914,8 @@ static int lmh_parse_and_extract(const char __user *user_buf, size_t count,
 			ret = -EINVAL;
 			goto dfs_cfg_write_exit;
 		}
-		config_buf = kzalloc((++data_ct) * sizeof(uint32_t),
-				GFP_KERNEL);
+		config_buf = kcalloc(++data_ct, sizeof(uint32_t),
+				     GFP_KERNEL);
 		if (!config_buf) {
 			ret = -ENOMEM;
 			goto dfs_cfg_write_exit;

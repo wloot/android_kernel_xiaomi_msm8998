@@ -2580,8 +2580,9 @@ int msm_vfe47_get_regulators(struct vfe_device *vfe_dev)
 
 	vfe_dev->vfe_num_regulators = vfe_dev->hw_info->regulator_num;
 
-	vfe_dev->regulator_info = kzalloc(sizeof(struct msm_cam_regulator) *
-				vfe_dev->vfe_num_regulators, GFP_KERNEL);
+	vfe_dev->regulator_info = kcalloc(vfe_dev->vfe_num_regulators,
+					  sizeof(struct msm_cam_regulator),
+					  GFP_KERNEL);
 	if (!vfe_dev->regulator_info)
 		return -ENOMEM;
 

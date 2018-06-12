@@ -187,8 +187,8 @@ static ssize_t sps_set_info(struct file *file, const char __user *buf,
 	/* allocate new buffer */
 	debugfs_buf_size = new_buf_size;
 
-	debugfs_buf = kzalloc(sizeof(char) * debugfs_buf_size,
-			GFP_KERNEL);
+	debugfs_buf = kzalloc(debugfs_buf_size,
+			      GFP_KERNEL);
 	if (!debugfs_buf) {
 		debugfs_buf_size = 0;
 		pr_err("sps:fail to allocate memory for debug_fs.\n");

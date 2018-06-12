@@ -1001,7 +1001,7 @@ void bpf_jit_compile(struct bpf_prog *fp)
 	ctx.skf		= fp;
 	ctx.ret0_fp_idx = -1;
 
-	ctx.offsets = kzalloc(4 * (ctx.skf->len + 1), GFP_KERNEL);
+	ctx.offsets = kcalloc(4, (ctx.skf->len + 1), GFP_KERNEL);
 	if (ctx.offsets == NULL)
 		return;
 
@@ -1020,7 +1020,7 @@ void bpf_jit_compile(struct bpf_prog *fp)
 
 	ctx.idx += ctx.imm_count;
 	if (ctx.imm_count) {
-		ctx.imms = kzalloc(4 * ctx.imm_count, GFP_KERNEL);
+		ctx.imms = kcalloc(4, ctx.imm_count, GFP_KERNEL);
 		if (ctx.imms == NULL)
 			goto out;
 	}

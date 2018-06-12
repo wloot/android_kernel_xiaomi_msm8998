@@ -622,7 +622,9 @@ struct pipe_inode_info *alloc_pipe_info(void)
 		if (!too_many_pipe_buffers_hard(user)) {
 			if (too_many_pipe_buffers_soft(user))
 				pipe_bufs = 1;
-			pipe->bufs = kzalloc(sizeof(struct pipe_buffer) * pipe_bufs, GFP_KERNEL);
+			pipe->bufs = kcalloc(pipe_bufs,
+					     sizeof(struct pipe_buffer),
+					     GFP_KERNEL);
 		}
 
 		if (pipe->bufs) {

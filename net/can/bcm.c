@@ -1068,7 +1068,7 @@ static int bcm_rx_setup(struct bcm_msg_head *msg_head, struct msghdr *msg,
 			}
 
 			/* create and init array for received can_frames */
-			op->last_frames = kzalloc(msg_head->nframes * CFSIZ,
+			op->last_frames = kcalloc(msg_head->nframes, CFSIZ,
 						  GFP_KERNEL);
 			if (!op->last_frames) {
 				kfree(op->frames);

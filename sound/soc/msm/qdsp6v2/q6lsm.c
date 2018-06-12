@@ -1876,8 +1876,9 @@ int q6lsm_lab_buffer_alloc(struct lsm_client *client, bool alloc)
 				client->hw_params.buf_sz;
 		allocate_size = PAGE_ALIGN(allocate_size);
 		client->lab_buffer =
-			kzalloc(sizeof(struct lsm_lab_buffer) *
-			client->hw_params.period_count, GFP_KERNEL);
+			kcalloc(client->hw_params.period_count,
+				sizeof(struct lsm_lab_buffer),
+				GFP_KERNEL);
 		if (!client->lab_buffer) {
 			pr_err("%s: memory allocation for lab buffer failed count %d\n"
 				, __func__,

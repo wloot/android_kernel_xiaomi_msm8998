@@ -865,15 +865,15 @@ static int kvm_vm_ioctl_set_msix_nr(struct kvm *kvm,
 			goto msix_nr_out;
 		}
 
-		adev->host_msix_entries = kzalloc(sizeof(struct msix_entry) *
-						entry_nr->entry_nr,
-						GFP_KERNEL);
+		adev->host_msix_entries = kcalloc(entry_nr->entry_nr,
+						  sizeof(struct msix_entry),
+						  GFP_KERNEL);
 		if (!adev->host_msix_entries) {
 			r = -ENOMEM;
 			goto msix_nr_out;
 		}
 		adev->guest_msix_entries =
-			kzalloc(sizeof(struct msix_entry) * entry_nr->entry_nr,
+			kcalloc(entry_nr->entry_nr, sizeof(struct msix_entry),
 				GFP_KERNEL);
 		if (!adev->guest_msix_entries) {
 			kfree(adev->host_msix_entries);

@@ -214,7 +214,8 @@ static int sunxi_pctrl_dt_node_to_map(struct pinctrl_dev *pctldev,
 		if (of_find_property(node, "allwinner,pull", NULL))
 			configlen++;
 
-		pinconfig = kzalloc(configlen * sizeof(*pinconfig), GFP_KERNEL);
+		pinconfig = kcalloc(configlen, sizeof(*pinconfig),
+				    GFP_KERNEL);
 		if (!pinconfig) {
 			kfree(*map);
 			return -ENOMEM;

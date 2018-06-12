@@ -1381,7 +1381,7 @@ struct dw_cyclic_desc *dw_dma_cyclic_prep(struct dma_chan *chan,
 	if (!cdesc)
 		goto out_err;
 
-	cdesc->desc = kzalloc(sizeof(struct dw_desc *) * periods, GFP_KERNEL);
+	cdesc->desc = kcalloc(periods, sizeof(struct dw_desc *), GFP_KERNEL);
 	if (!cdesc->desc)
 		goto out_err_alloc;
 

@@ -705,7 +705,7 @@ int msm_spm_drv_init(struct msm_spm_driver_data *dev,
 	num_spm_entry = msm_spm_drv_get_num_spm_entry(dev);
 
 	dev->reg_seq_entry_shadow =
-		kzalloc(sizeof(*dev->reg_seq_entry_shadow) * num_spm_entry,
+		kcalloc(num_spm_entry, sizeof(*dev->reg_seq_entry_shadow),
 				GFP_KERNEL);
 
 	if (!dev->reg_seq_entry_shadow)

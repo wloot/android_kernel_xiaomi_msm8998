@@ -850,7 +850,7 @@ static struct ehca_qp *internal_create_qp(
 			 * for autodetect mode
 			 */
 			my_qp->mod_qp_parm =
-				kzalloc(EHCA_MOD_QP_PARM_MAX *
+				kcalloc(EHCA_MOD_QP_PARM_MAX,
 					sizeof(*my_qp->mod_qp_parm),
 					GFP_KERNEL);
 			if (!my_qp->mod_qp_parm) {

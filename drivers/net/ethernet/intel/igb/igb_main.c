@@ -3951,7 +3951,7 @@ static int igb_write_mc_addr_list(struct net_device *netdev)
 		return 0;
 	}
 
-	mta_list = kzalloc(netdev_mc_count(netdev) * 6, GFP_ATOMIC);
+	mta_list = kcalloc(netdev_mc_count(netdev), 6, GFP_ATOMIC);
 	if (!mta_list)
 		return -ENOMEM;
 

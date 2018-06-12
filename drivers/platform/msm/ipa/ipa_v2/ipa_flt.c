@@ -845,14 +845,14 @@ int __ipa_commit_flt_v2(enum ipa_ip_type ip)
 	u16 avail;
 	gfp_t flag = GFP_ATOMIC | (ipa_ctx->use_dma_zone ? GFP_DMA : 0);
 
-	desc = kzalloc(16 * sizeof(*desc), GFP_ATOMIC);
+	desc = kcalloc(16, sizeof(*desc), GFP_ATOMIC);
 	if (desc == NULL) {
 		IPAERR("fail to alloc desc blob ip %d\n", ip);
 		rc = -ENOMEM;
 		goto fail_desc;
 	}
 
-	cmd = kzalloc(16 * sizeof(*cmd), flag);
+	cmd = kcalloc(16, sizeof(*cmd), flag);
 	if (cmd == NULL) {
 		IPAERR("fail to alloc cmd blob ip %d\n", ip);
 		rc = -ENOMEM;

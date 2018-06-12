@@ -7419,7 +7419,7 @@ static int i40e_alloc_rings(struct i40e_vsi *vsi)
 	/* Set basic values in the rings to be used later during open() */
 	for (i = 0; i < vsi->alloc_queue_pairs; i++) {
 		/* allocate space for both Tx and Rx in one shot */
-		tx_ring = kzalloc(sizeof(struct i40e_ring) * 2, GFP_KERNEL);
+		tx_ring = kcalloc(2, sizeof(struct i40e_ring), GFP_KERNEL);
 		if (!tx_ring)
 			goto err_out;
 

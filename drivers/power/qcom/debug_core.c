@@ -107,8 +107,8 @@ static void add_to_ptable(unsigned int *arg)
 	}
 
 	if (!node->head) {
-		node->head = kzalloc(sizeof(struct cpu_pstate_pwr) *
-				     (MAX_PSTATES + 1),
+		node->head = kcalloc(MAX_PSTATES + 1,
+					sizeof(struct cpu_pstate_pwr),
 					GFP_KERNEL);
 		if (!node->head)
 			return;

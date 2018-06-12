@@ -218,7 +218,7 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 
 	array_size = max + need;
 
-	array = kzalloc(array_size * sizeof(struct dlm_slot), GFP_NOFS);
+	array = kcalloc(array_size, sizeof(struct dlm_slot), GFP_NOFS);
 	if (!array)
 		return -ENOMEM;
 
@@ -493,7 +493,7 @@ void dlm_lsop_recover_done(struct dlm_ls *ls)
 
 	num = ls->ls_num_nodes;
 
-	slots = kzalloc(num * sizeof(struct dlm_slot), GFP_KERNEL);
+	slots = kcalloc(num, sizeof(struct dlm_slot), GFP_KERNEL);
 	if (!slots)
 		return;
 

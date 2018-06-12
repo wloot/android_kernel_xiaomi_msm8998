@@ -424,7 +424,7 @@ static int ramoops_init_przs(struct device *dev, struct ramoops_context *cxt,
 	if (!cxt->max_dump_cnt)
 		return -ENOMEM;
 
-	cxt->przs = kzalloc(sizeof(*cxt->przs) * cxt->max_dump_cnt,
+	cxt->przs = kcalloc(cxt->max_dump_cnt, sizeof(*cxt->przs),
 			     GFP_KERNEL);
 	if (!cxt->przs) {
 		dev_err(dev, "failed to initialize a prz array for dumps\n");

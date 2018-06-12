@@ -1115,7 +1115,7 @@ static int srpt_map_sg_to_ib_sge(struct srpt_rdma_ch *ch,
 		nrdma = (count + SRPT_DEF_SG_PER_WQE - 1) / SRPT_DEF_SG_PER_WQE
 			+ ioctx->n_rbuf;
 
-		ioctx->rdma_ius = kzalloc(nrdma * sizeof *riu, GFP_KERNEL);
+		ioctx->rdma_ius = kcalloc(nrdma, sizeof(*riu), GFP_KERNEL);
 		if (!ioctx->rdma_ius)
 			goto free_mem;
 

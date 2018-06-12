@@ -2579,7 +2579,7 @@ iscsi_pool_init(struct iscsi_pool *q, int max, void ***items, int item_size)
 	 * the array. */
 	if (items)
 		num_arrays++;
-	q->pool = kzalloc(num_arrays * max * sizeof(void*), GFP_KERNEL);
+	q->pool = kcalloc(num_arrays * max, sizeof(void *), GFP_KERNEL);
 	if (q->pool == NULL)
 		return -ENOMEM;
 

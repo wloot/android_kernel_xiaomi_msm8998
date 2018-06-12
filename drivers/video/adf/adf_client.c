@@ -372,11 +372,11 @@ struct sync_fence *adf_device_post(struct adf_device *dev,
 	struct sync_fence *ret;
 	size_t i;
 
-	intfs_copy = kzalloc(sizeof(intfs_copy[0]) * n_intfs, GFP_KERNEL);
+	intfs_copy = kcalloc(n_intfs, sizeof(intfs_copy[0]), GFP_KERNEL);
 	if (!intfs_copy)
 		return ERR_PTR(-ENOMEM);
 
-	bufs_copy = kzalloc(sizeof(bufs_copy[0]) * n_bufs, GFP_KERNEL);
+	bufs_copy = kcalloc(n_bufs, sizeof(bufs_copy[0]), GFP_KERNEL);
 	if (!bufs_copy) {
 		ret = ERR_PTR(-ENOMEM);
 		goto err_alloc;
@@ -451,7 +451,7 @@ struct sync_fence *adf_device_post_nocopy(struct adf_device *dev,
 	if (!cfg)
 		return ERR_PTR(-ENOMEM);
 
-	mappings = kzalloc(sizeof(mappings[0]) * n_bufs, GFP_KERNEL);
+	mappings = kcalloc(n_bufs, sizeof(mappings[0]), GFP_KERNEL);
 	if (!mappings) {
 		ret = ERR_PTR(-ENOMEM);
 		goto err_alloc;

@@ -381,9 +381,9 @@ static int32_t msm_vpe_create_buff_queue(struct vpe_device *vpe_dev,
 					uint32_t num_buffq)
 {
 	struct msm_vpe_buff_queue_info_t *buff_queue;
-	buff_queue = kzalloc(
-		sizeof(struct msm_vpe_buff_queue_info_t) * num_buffq,
-		GFP_KERNEL);
+	buff_queue = kcalloc(num_buffq,
+			     sizeof(struct msm_vpe_buff_queue_info_t),
+			     GFP_KERNEL);
 	if (!buff_queue) {
 		pr_err("Buff queue allocation failure\n");
 		return -ENOMEM;
@@ -1329,8 +1329,9 @@ static long msm_vpe_subdev_ioctl(struct v4l2_subdev *sd,
 		k_stream_buff_info.num_buffs = u_stream_buff_info->num_buffs;
 		k_stream_buff_info.identity = u_stream_buff_info->identity;
 		k_stream_buff_info.buffer_info =
-			kzalloc(k_stream_buff_info.num_buffs *
-			sizeof(struct msm_vpe_buffer_info_t), GFP_KERNEL);
+			kcalloc(k_stream_buff_info.num_buffs,
+				sizeof(struct msm_vpe_buffer_info_t),
+				GFP_KERNEL);
 		if (!k_stream_buff_info.buffer_info) {
 			pr_err("%s:%d: malloc error\n", __func__, __LINE__);
 			kfree(u_stream_buff_info);
@@ -1530,8 +1531,9 @@ static int vpe_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	vpe_dev->vpe_clk = kzalloc(sizeof(struct clk *) *
-				ARRAY_SIZE(vpe_clk_info), GFP_KERNEL);
+	vpe_dev->vpe_clk = kcalloc(ARRAY_SIZE(vpe_clk_info),
+				   sizeof(struct clk *),
+				   GFP_KERNEL);
 	if (!vpe_dev->vpe_clk) {
 		pr_err("not enough memory\n");
 		rc = -ENOMEM;

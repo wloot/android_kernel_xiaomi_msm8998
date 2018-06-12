@@ -411,7 +411,7 @@ int diag_md_init(void)
 	for (i = 0; i < DIAG_MD_LOCAL_LAST; i++) {
 		ch = &diag_md[i];
 		ch->num_tbl_entries = diag_mempools[ch->mempool].poolsize;
-		ch->tbl = kzalloc(ch->num_tbl_entries *
+		ch->tbl = kcalloc(ch->num_tbl_entries,
 				  sizeof(struct diag_buf_tbl_t),
 				  GFP_KERNEL);
 		if (!ch->tbl)

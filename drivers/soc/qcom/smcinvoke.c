@@ -389,7 +389,7 @@ long smcinvoke_ioctl(struct file *filp, unsigned cmd, unsigned long arg)
 
 		if (nr_args) {
 
-			args_buf = kzalloc(nr_args * req.argsize, GFP_KERNEL);
+			args_buf = kcalloc(nr_args, req.argsize, GFP_KERNEL);
 			if (!args_buf) {
 				ret = -ENOMEM;
 				goto out;

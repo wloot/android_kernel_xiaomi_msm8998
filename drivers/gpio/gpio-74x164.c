@@ -38,8 +38,8 @@ static int __gen_74x164_write_config(struct gen_74x164_chip *chip)
 	struct spi_transfer *msg_buf;
 	int i, ret = 0;
 
-	msg_buf = kzalloc(chip->registers * sizeof(struct spi_transfer),
-			GFP_KERNEL);
+	msg_buf = kcalloc(chip->registers, sizeof(struct spi_transfer),
+			  GFP_KERNEL);
 	if (!msg_buf)
 		return -ENOMEM;
 

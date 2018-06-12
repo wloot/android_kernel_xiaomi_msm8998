@@ -503,7 +503,7 @@ static int32_t msm_sensor_get_pw_settings_compat(
 {
 	int32_t rc = 0, i = 0;
 	struct msm_sensor_power_setting32 *ps32 =
-		kzalloc(sizeof(*ps32) * size, GFP_KERNEL);
+		kcalloc(size, sizeof(*ps32), GFP_KERNEL);
 
 	if (!ps32) {
 		pr_err("failed: no memory ps32");

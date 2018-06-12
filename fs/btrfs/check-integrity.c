@@ -1656,8 +1656,7 @@ static int btrfsic_read_block(struct btrfsic_state *state,
 
 	num_pages = (block_ctx->len + (u64)PAGE_CACHE_SIZE - 1) >>
 		    PAGE_CACHE_SHIFT;
-	block_ctx->mem_to_free = kzalloc((sizeof(*block_ctx->datav) +
-					  sizeof(*block_ctx->pagev)) *
+	block_ctx->mem_to_free = kcalloc(sizeof(*block_ctx->datav) + sizeof(*block_ctx->pagev),
 					 num_pages, GFP_NOFS);
 	if (!block_ctx->mem_to_free)
 		return -ENOMEM;

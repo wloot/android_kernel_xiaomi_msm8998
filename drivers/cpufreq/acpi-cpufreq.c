@@ -765,8 +765,9 @@ static int acpi_cpufreq_cpu_init(struct cpufreq_policy *policy)
 		goto err_unreg;
 	}
 
-	data->freq_table = kzalloc(sizeof(*data->freq_table) *
-		    (perf->state_count+1), GFP_KERNEL);
+	data->freq_table = kcalloc(perf->state_count + 1,
+				   sizeof(*data->freq_table),
+				   GFP_KERNEL);
 	if (!data->freq_table) {
 		result = -ENOMEM;
 		goto err_unreg;

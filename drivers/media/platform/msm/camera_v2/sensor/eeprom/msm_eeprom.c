@@ -1007,8 +1007,8 @@ static int msm_eeprom_get_dt_data(struct msm_eeprom_ctrl_t *e_ctrl)
 	CDBG("%s gpio count %d\n", __func__, gpio_array_size);
 
 	if (gpio_array_size > 0) {
-		gpio_array = kzalloc(sizeof(uint16_t) * gpio_array_size,
-			GFP_KERNEL);
+		gpio_array = kcalloc(gpio_array_size, sizeof(uint16_t),
+				     GFP_KERNEL);
 		if (!gpio_array) {
 			pr_err("%s failed %d\n", __func__, __LINE__);
 			goto ERROR3;

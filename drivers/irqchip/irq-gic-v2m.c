@@ -351,7 +351,7 @@ static int __init gicv2m_init_one(struct device_node *node,
 	if (readl_relaxed(v2m->base + V2M_MSI_IIDR) == XGENE_GICV2M_MSI_IIDR)
 		v2m->flags |= GICV2M_NEEDS_SPI_OFFSET;
 
-	v2m->bm = kzalloc(sizeof(long) * BITS_TO_LONGS(v2m->nr_spis),
+	v2m->bm = kcalloc(BITS_TO_LONGS(v2m->nr_spis), sizeof(long),
 			  GFP_KERNEL);
 	if (!v2m->bm) {
 		ret = -ENOMEM;

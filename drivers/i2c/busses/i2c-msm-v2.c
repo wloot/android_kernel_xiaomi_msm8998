@@ -1201,7 +1201,7 @@ static int i2c_msm_dma_xfer_process(struct i2c_msm_ctrl *ctrl)
 		return ret;
 	}
 
-	sg_tx = kzalloc(sizeof(struct scatterlist) * tx->desc_cnt_cur,
+	sg_tx = kcalloc(tx->desc_cnt_cur, sizeof(struct scatterlist),
 								GFP_KERNEL);
 	if (!sg_tx) {
 		ret = -ENOMEM;
@@ -1210,7 +1210,7 @@ static int i2c_msm_dma_xfer_process(struct i2c_msm_ctrl *ctrl)
 	sg_init_table(sg_tx, tx->desc_cnt_cur);
 	sg_tx_itr = sg_tx;
 
-	sg_rx = kzalloc(sizeof(struct scatterlist) * rx->desc_cnt_cur,
+	sg_rx = kcalloc(rx->desc_cnt_cur, sizeof(struct scatterlist),
 								GFP_KERNEL);
 	if (!sg_rx) {
 		ret = -ENOMEM;

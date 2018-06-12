@@ -1539,7 +1539,7 @@ int diag_create_msg_mask_table_entry(struct diag_msg_mask_t *msg_mask,
 	msg_mask->range_tools = msg_mask->range;
 	mutex_init(&msg_mask->lock);
 	if (msg_mask->range > 0) {
-		msg_mask->ptr = kzalloc(msg_mask->range * sizeof(uint32_t),
+		msg_mask->ptr = kcalloc(msg_mask->range, sizeof(uint32_t),
 					GFP_KERNEL);
 		if (!msg_mask->ptr)
 			return -ENOMEM;

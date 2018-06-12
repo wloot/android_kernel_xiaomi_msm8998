@@ -1766,7 +1766,7 @@ static void register_cpu_lpm_stats(struct lpm_cpu *cpu,
 	const char **level_name;
 	int i;
 
-	level_name = kzalloc(cpu->nlevels * sizeof(*level_name), GFP_KERNEL);
+	level_name = kcalloc(cpu->nlevels, sizeof(*level_name), GFP_KERNEL);
 
 	if (!level_name)
 		return;
@@ -1790,7 +1790,7 @@ static void register_cluster_lpm_stats(struct lpm_cluster *cl,
 	if (!cl)
 		return;
 
-	level_name = kzalloc(cl->nlevels * sizeof(*level_name), GFP_KERNEL);
+	level_name = kcalloc(cl->nlevels, sizeof(*level_name), GFP_KERNEL);
 
 	if (!level_name)
 		return;

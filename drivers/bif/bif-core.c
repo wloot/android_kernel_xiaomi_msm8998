@@ -2926,9 +2926,9 @@ static int bif_initialize_slave_control_function(struct bif_slave_dev *sdev,
 
 	if (sdev->slave_ctrl_function->task_count > 0) {
 		sdev->slave_ctrl_function->irq_notifier_list =
-			kzalloc(sizeof(struct blocking_notifier_head)
-			    * sdev->slave_ctrl_function->task_count,
-			    GFP_KERNEL);
+			kcalloc(sdev->slave_ctrl_function->task_count,
+				sizeof(struct blocking_notifier_head),
+				GFP_KERNEL);
 		if (!sdev->slave_ctrl_function->irq_notifier_list) {
 			pr_err("out of memory\n");
 			kfree(sdev->slave_ctrl_function);
@@ -3135,8 +3135,9 @@ static int bif_parse_slave_data(struct bif_slave_dev *sdev)
 		return -ENOMEM;
 	}
 
-	sdev->function_directory = kzalloc(
-		function_count * sizeof(struct bif_ddb_l2_data), GFP_KERNEL);
+	sdev->function_directory = kcalloc(function_count,
+					   sizeof(struct bif_ddb_l2_data),
+					   GFP_KERNEL);
 	if (!sdev->function_directory) {
 		pr_err("out of memory\n");
 		return -ENOMEM;

@@ -36,8 +36,8 @@ int mhi_populate_event_cfg(struct mhi_device_ctxt *mhi_dev_ctxt)
 		return -EINVAL;
 	}
 	mhi_dev_ctxt->ev_ring_props =
-				kzalloc(sizeof(struct mhi_event_ring_cfg) *
-					mhi_dev_ctxt->mmio_info.nr_event_rings,
+				kcalloc(mhi_dev_ctxt->mmio_info.nr_event_rings,
+					sizeof(struct mhi_event_ring_cfg),
 					GFP_KERNEL);
 	if (!mhi_dev_ctxt->ev_ring_props)
 		return -ENOMEM;
@@ -111,15 +111,15 @@ int create_local_ev_ctxt(struct mhi_device_ctxt *mhi_dev_ctxt)
 	int r = 0;
 	int i;
 
-	mhi_dev_ctxt->mhi_local_event_ctxt = kzalloc(sizeof(struct mhi_ring)*
-					mhi_dev_ctxt->mmio_info.nr_event_rings,
-					GFP_KERNEL);
+	mhi_dev_ctxt->mhi_local_event_ctxt = kcalloc(mhi_dev_ctxt->mmio_info.nr_event_rings,
+						     sizeof(struct mhi_ring),
+						     GFP_KERNEL);
 	if (!mhi_dev_ctxt->mhi_local_event_ctxt)
 		return -ENOMEM;
 
-	mhi_dev_ctxt->counters.msi_counter = kzalloc(sizeof(u32) *
-				     mhi_dev_ctxt->mmio_info.nr_event_rings,
-				     GFP_KERNEL);
+	mhi_dev_ctxt->counters.msi_counter = kcalloc(mhi_dev_ctxt->mmio_info.nr_event_rings,
+						     sizeof(u32),
+						     GFP_KERNEL);
 	if (!mhi_dev_ctxt->counters.msi_counter) {
 		r = -ENOMEM;
 		goto free_local_ec_list;

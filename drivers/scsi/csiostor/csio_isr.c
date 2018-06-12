@@ -512,7 +512,7 @@ csio_enable_msix(struct csio_hw *hw)
 	if (hw->flags & CSIO_HWF_USING_SOFT_PARAMS || !csio_is_hw_master(hw))
 		cnt = min_t(uint8_t, hw->cfg_niq, cnt);
 
-	entries = kzalloc(sizeof(struct msix_entry) * cnt, GFP_KERNEL);
+	entries = kcalloc(cnt, sizeof(struct msix_entry), GFP_KERNEL);
 	if (!entries)
 		return -ENOMEM;
 

@@ -441,7 +441,7 @@ static void bcl_lmh_dcvs_enable(void)
 	struct scm_desc desc_arg;
 	uint32_t *payload = NULL;
 
-	payload = kzalloc(sizeof(uint32_t) * 5,	GFP_KERNEL);
+	payload = kcalloc(5, sizeof(uint32_t),	GFP_KERNEL);
 	if (!payload)
 		return;
 

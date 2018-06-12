@@ -867,7 +867,7 @@ int adreno_ringbuffer_submitcmd(struct adreno_device *adreno_dev,
 				adreno_is_preemption_enabled(adreno_dev))
 		dwords += 8;
 
-	link = kzalloc(sizeof(unsigned int) *  dwords, GFP_KERNEL);
+	link = kcalloc(dwords, sizeof(unsigned int), GFP_KERNEL);
 	if (!link) {
 		ret = -ENOMEM;
 		goto done;

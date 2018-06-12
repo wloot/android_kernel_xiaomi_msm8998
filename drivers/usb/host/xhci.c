@@ -1425,7 +1425,7 @@ int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
 	if (!urb_priv)
 		return -ENOMEM;
 
-	buffer = kzalloc(size * sizeof(struct xhci_td), mem_flags);
+	buffer = kcalloc(size, sizeof(struct xhci_td), mem_flags);
 	if (!buffer) {
 		kfree(urb_priv);
 		return -ENOMEM;

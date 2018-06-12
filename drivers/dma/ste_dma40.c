@@ -3285,18 +3285,18 @@ static struct d40_base * __init d40_hw_detect_init(struct platform_device *pdev)
 		base->gen_dmac.init_reg_size = ARRAY_SIZE(dma_init_reg_v4a);
 	}
 
-	base->phy_res = kzalloc(num_phy_chans * sizeof(struct d40_phy_res),
+	base->phy_res = kcalloc(num_phy_chans, sizeof(struct d40_phy_res),
 				GFP_KERNEL);
 	if (!base->phy_res)
 		goto failure;
 
-	base->lookup_phy_chans = kzalloc(num_phy_chans *
+	base->lookup_phy_chans = kcalloc(num_phy_chans,
 					 sizeof(struct d40_chan *),
 					 GFP_KERNEL);
 	if (!base->lookup_phy_chans)
 		goto failure;
 
-	base->lookup_log_chans = kzalloc(num_log_chans *
+	base->lookup_log_chans = kcalloc(num_log_chans,
 					 sizeof(struct d40_chan *),
 					 GFP_KERNEL);
 	if (!base->lookup_log_chans)
@@ -3309,8 +3309,8 @@ static struct d40_base * __init d40_hw_detect_init(struct platform_device *pdev)
 		goto failure;
 
 	base->lcla_pool.alloc_map =
-		kzalloc(num_phy_chans * sizeof(struct d40_desc *)
-			* D40_LCLA_LINK_PER_EVENT_GRP, GFP_KERNEL);
+		kzalloc(array3_size(num_phy_chans, D40_LCLA_LINK_PER_EVENT_GRP, sizeof(struct d40_desc *)),
+			GFP_KERNEL);
 	if (!base->lcla_pool.alloc_map)
 		goto failure;
 

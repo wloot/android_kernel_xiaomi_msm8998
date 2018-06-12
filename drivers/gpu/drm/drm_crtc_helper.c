@@ -501,13 +501,15 @@ int drm_crtc_helper_set_config(struct drm_mode_set *set)
 	 * Allocate space for the backup of all (non-pointer) encoder and
 	 * connector data.
 	 */
-	save_encoders = kzalloc(dev->mode_config.num_encoder *
-				sizeof(struct drm_encoder), GFP_KERNEL);
+	save_encoders = kcalloc(dev->mode_config.num_encoder,
+				sizeof(struct drm_encoder),
+				GFP_KERNEL);
 	if (!save_encoders)
 		return -ENOMEM;
 
-	save_connectors = kzalloc(dev->mode_config.num_connector *
-				sizeof(struct drm_connector), GFP_KERNEL);
+	save_connectors = kcalloc(dev->mode_config.num_connector,
+				  sizeof(struct drm_connector),
+				  GFP_KERNEL);
 	if (!save_connectors) {
 		kfree(save_encoders);
 		return -ENOMEM;

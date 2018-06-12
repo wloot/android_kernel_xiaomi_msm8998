@@ -1885,15 +1885,16 @@ static int blkfront_setup_indirect(struct blkfront_info *info)
 	}
 
 	for (i = 0; i < BLK_RING_SIZE(info); i++) {
-		info->shadow[i].grants_used = kzalloc(
-			sizeof(info->shadow[i].grants_used[0]) * grants,
-			GFP_NOIO);
-		info->shadow[i].sg = kzalloc(sizeof(info->shadow[i].sg[0]) * psegs, GFP_NOIO);
+		info->shadow[i].grants_used = kcalloc(grants,
+						      sizeof(info->shadow[i].grants_used[0]),
+						      GFP_NOIO);
+		info->shadow[i].sg = kcalloc(psegs,
+					     sizeof(info->shadow[i].sg[0]),
+					     GFP_NOIO);
 		if (info->max_indirect_segments)
-			info->shadow[i].indirect_grants = kzalloc(
-				sizeof(info->shadow[i].indirect_grants[0]) *
-				INDIRECT_GREFS(grants),
-				GFP_NOIO);
+			info->shadow[i].indirect_grants = kcalloc(INDIRECT_GREFS(grants),
+								  sizeof(info->shadow[i].indirect_grants[0]),
+								  GFP_NOIO);
 		if ((info->shadow[i].grants_used == NULL) ||
 			(info->shadow[i].sg == NULL) ||
 		     (info->max_indirect_segments &&

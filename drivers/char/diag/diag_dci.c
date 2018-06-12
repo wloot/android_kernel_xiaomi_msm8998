@@ -2976,7 +2976,7 @@ int diag_dci_register_client(struct diag_dci_reg_tbl_t *reg_entry)
 	}
 	create_dci_event_mask_tbl(new_entry->dci_event_mask);
 
-	new_entry->buffers = kzalloc(new_entry->num_buffers *
+	new_entry->buffers = kcalloc(new_entry->num_buffers,
 				     sizeof(struct diag_dci_buf_peripheral_t),
 					GFP_KERNEL);
 	if (!new_entry->buffers) {

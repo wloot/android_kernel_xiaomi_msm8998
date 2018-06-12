@@ -38,7 +38,7 @@ static int ad7879_spi_xfer(struct spi_device *spi,
 	u8 idx;
 	int ret;
 
-	xfers = spi_data = kzalloc(sizeof(*xfers) * (count + 2), GFP_KERNEL);
+	xfers = spi_data = kcalloc(count + 2, sizeof(*xfers), GFP_KERNEL);
 	if (!spi_data)
 		return -ENOMEM;
 

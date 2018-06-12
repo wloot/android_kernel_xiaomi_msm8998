@@ -86,7 +86,7 @@ static int pcie_port_enable_msix(struct pci_dev *dev, int *vectors, int mask)
 	if (nr_entries > PCIE_PORT_MAX_MSIX_ENTRIES)
 		nr_entries = PCIE_PORT_MAX_MSIX_ENTRIES;
 
-	msix_entries = kzalloc(sizeof(*msix_entries) * nr_entries, GFP_KERNEL);
+	msix_entries = kcalloc(nr_entries, sizeof(*msix_entries), GFP_KERNEL);
 	if (!msix_entries)
 		return -ENOMEM;
 

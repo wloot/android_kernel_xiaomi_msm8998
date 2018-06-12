@@ -338,7 +338,7 @@ static void *__test_alloc(struct nfit_test *t, size_t size, dma_addr_t *dma,
 		void *buf)
 {
 	struct device *dev = &t->pdev.dev;
-	struct resource *res = kzalloc(sizeof(*res) * 2, GFP_KERNEL);
+	struct resource *res = kcalloc(2, sizeof(*res), GFP_KERNEL);
 	struct nfit_test_resource *nfit_res = kzalloc(sizeof(*nfit_res),
 			GFP_KERNEL);
 	int rc;

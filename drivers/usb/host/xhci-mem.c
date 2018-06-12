@@ -679,9 +679,9 @@ struct xhci_stream_info *xhci_alloc_stream_info(struct xhci_hcd *xhci,
 	stream_info->num_stream_ctxs = num_stream_ctxs;
 
 	/* Initialize the array of virtual pointers to stream rings. */
-	stream_info->stream_rings = kzalloc(
-			sizeof(struct xhci_ring *)*num_streams,
-			mem_flags);
+	stream_info->stream_rings = kcalloc(num_streams,
+					    sizeof(struct xhci_ring *),
+					    mem_flags);
 	if (!stream_info->stream_rings)
 		goto cleanup_info;
 
@@ -1052,9 +1052,9 @@ int xhci_alloc_virt_device(struct xhci_hcd *xhci, int slot_id,
 		goto fail;
 
 	/* Allocate pointers to the ring cache */
-	dev->ring_cache = kzalloc(
-			sizeof(struct xhci_ring *)*XHCI_MAX_RINGS_CACHED,
-			flags);
+	dev->ring_cache = kcalloc(XHCI_MAX_RINGS_CACHED,
+				  sizeof(struct xhci_ring *),
+				  flags);
 	if (!dev->ring_cache)
 		goto fail;
 	dev->num_rings_cached = 0;
@@ -1715,12 +1715,12 @@ static int scratchpad_alloc(struct xhci_hcd *xhci, gfp_t flags)
 	if (!xhci->scratchpad->sp_array)
 		goto fail_sp2;
 
-	xhci->scratchpad->sp_buffers = kzalloc(sizeof(void *) * num_sp, flags);
+	xhci->scratchpad->sp_buffers = kcalloc(num_sp, sizeof(void *), flags);
 	if (!xhci->scratchpad->sp_buffers)
 		goto fail_sp3;
 
 	xhci->scratchpad->sp_dma_buffers =
-		kzalloc(sizeof(dma_addr_t) * num_sp, flags);
+		kcalloc(num_sp, sizeof(dma_addr_t), flags);
 
 	if (!xhci->scratchpad->sp_dma_buffers)
 		goto fail_sp4;
@@ -2369,11 +2369,12 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
 	}
 
 	num_ports = HCS_MAX_PORTS(xhci->hcs_params1);
-	xhci->port_array = kzalloc(sizeof(*xhci->port_array)*num_ports, flags);
+	xhci->port_array = kcalloc(num_ports, sizeof(*xhci->port_array),
+				   flags);
 	if (!xhci->port_array)
 		return -ENOMEM;
 
-	xhci->rh_bw = kzalloc(sizeof(*xhci->rh_bw)*num_ports, flags);
+	xhci->rh_bw = kcalloc(num_ports, sizeof(*xhci->rh_bw), flags);
 	if (!xhci->rh_bw)
 		return -ENOMEM;
 	for (i = 0; i < num_ports; i++) {
@@ -2405,7 +2406,7 @@ static int xhci_setup_port_arrays(struct xhci_hcd *xhci, gfp_t flags)
 		tmp_addr += tmp_offset;
 	} while (tmp_offset);
 
-	xhci->ext_caps = kzalloc(sizeof(*xhci->ext_caps) * cap_count, flags);
+	xhci->ext_caps = kcalloc(cap_count, sizeof(*xhci->ext_caps), flags);
 	if (!xhci->ext_caps)
 		return -ENOMEM;
 

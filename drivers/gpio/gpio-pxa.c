@@ -305,7 +305,7 @@ static int pxa_init_gpio_chip(int gpio_end,
 	int i, gpio, nbanks = gpio_to_bank(gpio_end) + 1;
 	struct pxa_gpio_chip *chips;
 
-	chips = kzalloc(nbanks * sizeof(struct pxa_gpio_chip), GFP_KERNEL);
+	chips = kcalloc(nbanks, sizeof(struct pxa_gpio_chip), GFP_KERNEL);
 	if (chips == NULL) {
 		pr_err("%s: failed to allocate GPIO chips\n", __func__);
 		return -ENOMEM;

@@ -403,7 +403,8 @@ static int multipath_run (struct mddev *mddev)
 		goto out;
 	}
 
-	conf->multipaths = kzalloc(sizeof(struct multipath_info)*mddev->raid_disks,
+	conf->multipaths = kcalloc(mddev->raid_disks,
+				   sizeof(struct multipath_info),
 				   GFP_KERNEL);
 	if (!conf->multipaths) {
 		printk(KERN_ERR

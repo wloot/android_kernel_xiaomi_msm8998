@@ -424,8 +424,8 @@ static void sde_mdp_parse_vbif_qos(struct platform_device *pdev,
 
 	mdata->npriority_lvl = sde_mdp_parse_dt_prop_len(pdev,
 			"qcom,mdss-rot-vbif-qos-setting");
-	mdata->vbif_nrt_qos = kzalloc(sizeof(u32) *
-			mdata->npriority_lvl, GFP_KERNEL);
+	mdata->vbif_nrt_qos = kcalloc(mdata->npriority_lvl, sizeof(u32),
+				      GFP_KERNEL);
 	if (!mdata->vbif_nrt_qos)
 		return;
 
@@ -450,8 +450,7 @@ static int sde_mdp_parse_vbif_xin_id(struct platform_device *pdev,
 		mdata->nxid = 2;
 		default_xin_id = true;
 	}
-	mdata->vbif_xin_id = kzalloc(sizeof(u32) *
-			mdata->nxid, GFP_KERNEL);
+	mdata->vbif_xin_id = kcalloc(mdata->nxid, sizeof(u32), GFP_KERNEL);
 	if (!mdata->vbif_xin_id) {
 		SDEROT_ERR("xin alloc failure\n");
 		return -ENOMEM;

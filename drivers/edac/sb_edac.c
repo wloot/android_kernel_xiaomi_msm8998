@@ -660,8 +660,8 @@ static struct sbridge_dev *alloc_sbridge_dev(u8 bus,
 	if (!sbridge_dev)
 		return NULL;
 
-	sbridge_dev->pdev = kzalloc(sizeof(*sbridge_dev->pdev) * table->n_devs,
-				   GFP_KERNEL);
+	sbridge_dev->pdev = kcalloc(table->n_devs, sizeof(*sbridge_dev->pdev),
+				    GFP_KERNEL);
 	if (!sbridge_dev->pdev) {
 		kfree(sbridge_dev);
 		return NULL;

@@ -1518,11 +1518,11 @@ static int qpnp_pin_probe(struct platform_device *pdev)
 	q_chip->pmic_pin_highest = highest_gpio;
 
 	/* allocate gpio lookup tables */
-	q_chip->pmic_pins = kzalloc(sizeof(struct qpnp_pin_spec *) *
-					(highest_gpio - lowest_gpio + 1),
+	q_chip->pmic_pins = kcalloc(highest_gpio - lowest_gpio + 1,
+					sizeof(struct qpnp_pin_spec *),
 					GFP_KERNEL);
-	q_chip->chip_gpios = kzalloc(sizeof(struct qpnp_pin_spec *) *
-					q_chip->gpio_chip.ngpio,
+	q_chip->chip_gpios = kcalloc(q_chip->gpio_chip.ngpio,
+					sizeof(struct qpnp_pin_spec *),
 					GFP_KERNEL);
 	if (!q_chip->pmic_pins || !q_chip->chip_gpios) {
 		dev_err(&pdev->dev, "%s: unable to allocate memory\n",

@@ -802,7 +802,7 @@ static u8 *hdcp_1x_swap_byte_order(u8 *bksv_in, int num_dev)
 		return NULL;
 	}
 
-	bksv_out = kzalloc(RECV_ID_SIZE * num_dev, GFP_KERNEL);
+	bksv_out = kcalloc(num_dev, RECV_ID_SIZE, GFP_KERNEL);
 
 	if (!bksv_out)
 		return NULL;

@@ -1903,7 +1903,7 @@ static int cpr_pvs_per_corner_init(struct device_node *of_node,
 			"fuse position for init voltages is invalid\n");
 		return -EINVAL;
 	}
-	fuse_sel = kzalloc(sizeof(u32) * size, GFP_KERNEL);
+	fuse_sel = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!fuse_sel) {
 		cpr_err(cpr_vreg, "memory alloc failed.\n");
 		return -ENOMEM;
@@ -1925,8 +1925,8 @@ static int cpr_pvs_per_corner_init(struct device_node *of_node,
 		return rc;
 	}
 
-	ref_uv = kzalloc((cpr_vreg->num_fuse_corners + 1) * sizeof(*ref_uv),
-			GFP_KERNEL);
+	ref_uv = kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(*ref_uv),
+			 GFP_KERNEL);
 	if (!ref_uv) {
 		cpr_err(cpr_vreg,
 			"Could not allocate memory for reference voltages\n");
@@ -2040,7 +2040,8 @@ static int cpr_pvs_single_bin_init(struct device_node *of_node,
 				((1 << pvs_fuse[2]) - 1);
 	pvs_bins = 1 << pvs_fuse[2];
 	stripe_size = cpr_vreg->num_fuse_corners;
-	tmp = kzalloc(sizeof(u32) * pvs_bins * stripe_size, GFP_KERNEL);
+	tmp = kzalloc(array3_size(pvs_bins, stripe_size, sizeof(u32)),
+		      GFP_KERNEL);
 	if (!tmp) {
 		cpr_err(cpr_vreg, "memory alloc failed\n");
 		return -ENOMEM;
@@ -2404,7 +2405,7 @@ static int cpr_get_open_loop_voltage(struct cpr_regulator *cpr_vreg,
 	}
 
 	max_factor
-	       = kzalloc(sizeof(*max_factor) * (cpr_vreg->num_fuse_corners + 1),
+	       = kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(*max_factor),
 			 GFP_KERNEL);
 	if (!max_factor) {
 		cpr_err(cpr_vreg, "Could not allocate memory for max_factor array\n");
@@ -2618,7 +2619,7 @@ static int cpr_get_fuse_quot_offset(struct cpr_regulator *cpr_vreg,
 		}
 	}
 
-	fuse_sel = kzalloc(sizeof(u32) * size, GFP_KERNEL);
+	fuse_sel = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!fuse_sel) {
 		cpr_err(cpr_vreg, "memory alloc failed.\n");
 		return -ENOMEM;
@@ -2653,9 +2654,9 @@ static int cpr_get_fuse_quot_offset(struct cpr_regulator *cpr_vreg,
 			return -EINVAL;
 		}
 
-		offset_multiplier = kzalloc(sizeof(*offset_multiplier)
-					* (cpr_vreg->num_fuse_corners + 1),
-					GFP_KERNEL);
+		offset_multiplier = kcalloc(cpr_vreg->num_fuse_corners + 1,
+					    sizeof(*offset_multiplier),
+					    GFP_KERNEL);
 		if (!offset_multiplier) {
 			cpr_err(cpr_vreg, "memory alloc failed.\n");
 			kfree(fuse_sel);
@@ -2898,7 +2899,7 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 	}
 
 	size = prop->length / sizeof(u32);
-	tmp = kzalloc(size * sizeof(u32), GFP_KERNEL);
+	tmp = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!tmp) {
 		cpr_err(cpr_vreg, "memory alloc failed\n");
 		return -ENOMEM;
@@ -2912,9 +2913,10 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 		return rc;
 	}
 
-	corner_max = kzalloc((cpr_vreg->num_fuse_corners + 1)
-				* sizeof(*corner_max), GFP_KERNEL);
-	freq_max = kzalloc((cpr_vreg->num_fuse_corners + 1) * sizeof(*freq_max),
+	corner_max = kcalloc(cpr_vreg->num_fuse_corners + 1,
+			     sizeof(*corner_max),
+			     GFP_KERNEL);
+	freq_max = kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(*freq_max),
 				GFP_KERNEL);
 	if (corner_max == NULL || freq_max == NULL) {
 		cpr_err(cpr_vreg, "Could not allocate memory for quotient scaling arrays\n");
@@ -2980,7 +2982,7 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 	}
 
 	size = prop->length / sizeof(u32);
-	tmp = kzalloc(sizeof(u32) * size, GFP_KERNEL);
+	tmp = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!tmp) {
 		cpr_err(cpr_vreg, "memory alloc failed\n");
 		rc = -ENOMEM;
@@ -2994,8 +2996,8 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 		kfree(tmp);
 		goto free_arrays;
 	}
-	freq_map = kzalloc(sizeof(u32) * (cpr_vreg->num_corners + 1),
-			GFP_KERNEL);
+	freq_map = kcalloc(cpr_vreg->num_corners + 1, sizeof(u32),
+			   GFP_KERNEL);
 	if (!freq_map) {
 		cpr_err(cpr_vreg, "memory alloc for freq_map failed!\n");
 		kfree(tmp);
@@ -3033,8 +3035,8 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 		goto free_arrays;
 	}
 
-	max_factor = kzalloc(sizeof(u32) * (cpr_vreg->num_fuse_corners + 1),
-			GFP_KERNEL);
+	max_factor = kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(u32),
+			     GFP_KERNEL);
 	if (!max_factor) {
 		cpr_err(cpr_vreg, "Could not allocate memory for max_factor array\n");
 		rc = -ENOMEM;
@@ -3079,8 +3081,8 @@ static int cpr_get_corner_quot_adjustment(struct cpr_regulator *cpr_vreg,
 			goto free_arrays;
 		}
 	}
-	scaling = kzalloc((cpr_vreg->num_fuse_corners + 1) * sizeof(*scaling),
-			GFP_KERNEL);
+	scaling = kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(*scaling),
+			  GFP_KERNEL);
 	if (!scaling) {
 		cpr_err(cpr_vreg, "Could not allocate memory for scaling array\n");
 		rc = -ENOMEM;
@@ -3238,8 +3240,8 @@ static int cpr_read_ro_select(struct platform_device *pdev,
 	int i;
 
 	bp_ro_sel
-		= kzalloc((cpr_vreg->num_fuse_corners + 1) * sizeof(*bp_ro_sel),
-			GFP_KERNEL);
+		= kcalloc(cpr_vreg->num_fuse_corners + 1, sizeof(*bp_ro_sel),
+			  GFP_KERNEL);
 	if (!bp_ro_sel) {
 		cpr_err(cpr_vreg, "could not allocate memory for temp array\n");
 		return -ENOMEM;
@@ -3391,7 +3393,7 @@ static int cpr_minimum_quot_difference_adjustment(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	min_diff_quot = kzalloc(cpr_vreg->num_fuse_corners * sizeof(u32),
+	min_diff_quot = kcalloc(cpr_vreg->num_fuse_corners, sizeof(u32),
 							GFP_KERNEL);
 	if (!min_diff_quot) {
 		cpr_err(cpr_vreg, "memory alloc failed\n");
@@ -3870,9 +3872,10 @@ static int cpr_init_cpr_efuse(struct platform_device *pdev,
 
 	len = cpr_vreg->num_fuse_corners + 1;
 
-	bp_target_quot = kzalloc(len * sizeof(*bp_target_quot), GFP_KERNEL);
-	target_quot_size = kzalloc(len * sizeof(*target_quot_size), GFP_KERNEL);
-	quot_scale = kzalloc(len * sizeof(*quot_scale), GFP_KERNEL);
+	bp_target_quot = kcalloc(len, sizeof(*bp_target_quot), GFP_KERNEL);
+	target_quot_size = kcalloc(len, sizeof(*target_quot_size),
+				   GFP_KERNEL);
+	quot_scale = kcalloc(len, sizeof(*quot_scale), GFP_KERNEL);
 
 	if (!bp_target_quot || !target_quot_size || !quot_scale) {
 		cpr_err(cpr_vreg,
@@ -4195,7 +4198,7 @@ static int cpr_fill_override_voltage(struct cpr_regulator *cpr_vreg,
 		goto use_fuse_corner_limits;
 	}
 
-	tmp = kzalloc(size * sizeof(u32), GFP_KERNEL);
+	tmp = kcalloc(size, sizeof(u32), GFP_KERNEL);
 	if (!tmp) {
 		cpr_err(cpr_vreg, "memory alloc failed\n");
 		return -ENOMEM;
@@ -4686,7 +4689,7 @@ static int cpr_parse_adj_cpus_init_voltage(struct cpr_regulator *cpr_vreg,
 	len = (cpr_vreg->num_adj_cpus + 1) * tuple_count
 		* cpr_vreg->num_corners;
 
-	temp = kzalloc(sizeof(int) * len, GFP_KERNEL);
+	temp = kcalloc(len, sizeof(int), GFP_KERNEL);
 	if (!temp) {
 		cpr_err(cpr_vreg, "Could not allocate memory\n");
 		return -ENOMEM;
@@ -4788,7 +4791,7 @@ static int cpr_parse_adj_cpus_target_quot(struct cpr_regulator *cpr_vreg,
 	len = (cpr_vreg->num_adj_cpus + 1) * tuple_count
 		* cpr_vreg->num_corners;
 
-	temp = kzalloc(sizeof(int) * len, GFP_KERNEL);
+	temp = kcalloc(len, sizeof(int), GFP_KERNEL);
 	if (!temp) {
 		cpr_err(cpr_vreg, "Could not allocate memory\n");
 		return -ENOMEM;
@@ -5361,7 +5364,7 @@ static int cpr_remap_efuse_data(struct platform_device *pdev,
 		return rc;
 	}
 
-	temp = kzalloc(sizeof(*temp) * size * 4, GFP_KERNEL);
+	temp = kzalloc(array3_size(sizeof(*temp), size, 4), GFP_KERNEL);
 	if (!temp) {
 		cpr_err(cpr_vreg, "temp memory allocation failed\n");
 		return -ENOMEM;

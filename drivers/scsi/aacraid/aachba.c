@@ -475,8 +475,8 @@ int aac_get_containers(struct aac_dev *dev)
 
 	if (maximum_num_containers < MAXIMUM_NUM_CONTAINERS)
 		maximum_num_containers = MAXIMUM_NUM_CONTAINERS;
-	fsa_dev_ptr = kzalloc(sizeof(*fsa_dev_ptr) * maximum_num_containers,
-			GFP_KERNEL);
+	fsa_dev_ptr = kcalloc(maximum_num_containers, sizeof(*fsa_dev_ptr),
+			      GFP_KERNEL);
 	if (!fsa_dev_ptr)
 		return -ENOMEM;
 

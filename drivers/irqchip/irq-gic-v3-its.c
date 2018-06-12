@@ -689,7 +689,7 @@ static int its_lpi_init(u32 id_bits)
 {
 	lpi_chunks = its_lpi_to_chunk(1UL << id_bits);
 
-	lpi_bitmap = kzalloc(BITS_TO_LONGS(lpi_chunks) * sizeof(long),
+	lpi_bitmap = kcalloc(BITS_TO_LONGS(lpi_chunks), sizeof(long),
 			     GFP_KERNEL);
 	if (!lpi_bitmap) {
 		lpi_chunks = 0;
@@ -723,7 +723,8 @@ static unsigned long *its_lpi_alloc_chunks(int nr_irqs, int *base, int *nr_ids)
 	if (!nr_chunks)
 		goto out;
 
-	bitmap = kzalloc(BITS_TO_LONGS(nr_chunks * IRQS_PER_CHUNK) * sizeof (long),
+	bitmap = kcalloc(BITS_TO_LONGS(nr_chunks * IRQS_PER_CHUNK),
+			 sizeof(long),
 			 GFP_ATOMIC);
 	if (!bitmap)
 		goto out;
@@ -992,7 +993,7 @@ out_free:
 
 static int its_alloc_collections(struct its_node *its)
 {
-	its->collections = kzalloc(nr_cpu_ids * sizeof(*its->collections),
+	its->collections = kcalloc(nr_cpu_ids, sizeof(*its->collections),
 				   GFP_KERNEL);
 	if (!its->collections)
 		return -ENOMEM;
@@ -1187,7 +1188,7 @@ static struct its_device *its_create_device(struct its_node *its, u32 dev_id,
 	itt = kzalloc(sz, GFP_KERNEL);
 	lpi_map = its_lpi_alloc_chunks(nvecs, &lpi_base, &nr_lpis);
 	if (lpi_map)
-		col_map = kzalloc(sizeof(*col_map) * nr_lpis, GFP_KERNEL);
+		col_map = kcalloc(nr_lpis, sizeof(*col_map), GFP_KERNEL);
 
 	if (!dev || !itt || !lpi_map || !col_map) {
 		kfree(dev);

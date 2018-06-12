@@ -882,7 +882,8 @@ static int zpci_mem_init(void)
 		goto error_zdev;
 
 	/* TODO: use realloc */
-	zpci_iomap_start = kzalloc(ZPCI_IOMAP_MAX_ENTRIES * sizeof(*zpci_iomap_start),
+	zpci_iomap_start = kcalloc(ZPCI_IOMAP_MAX_ENTRIES,
+				   sizeof(*zpci_iomap_start),
 				   GFP_KERNEL);
 	if (!zpci_iomap_start)
 		goto error_iomap;

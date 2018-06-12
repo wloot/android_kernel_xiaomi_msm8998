@@ -1996,7 +1996,7 @@ static void mmc_block_test_probe(void)
 
 	max_packed_reqs = mq->card->ext_csd.max_packed_writes;
 	mbtd->exp_packed_stats.packing_events =
-			kzalloc((max_packed_reqs + 1) *
+			kcalloc(max_packed_reqs + 1,
 				sizeof(*mbtd->exp_packed_stats.packing_events),
 				GFP_KERNEL);
 
