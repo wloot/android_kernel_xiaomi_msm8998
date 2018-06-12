@@ -2613,7 +2613,7 @@ static int ms_build_l2p_tbl(struct rtsx_chip *chip, int seg_no)
 	segment = &(ms_card->segment[seg_no]);
 
 	if (segment->l2p_table == NULL) {
-		segment->l2p_table = vmalloc(table_size * 2);
+		segment->l2p_table = vmalloc(array_size(table_size, 2));
 		if (segment->l2p_table == NULL) {
 			rtsx_trace(chip);
 			goto BUILD_FAIL;

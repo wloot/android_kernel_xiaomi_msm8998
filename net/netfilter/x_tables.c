@@ -500,7 +500,7 @@ int xt_compat_add_offset(u_int8_t af, unsigned int offset, int delta)
 	if (!xp->compat_tab) {
 		if (!xp->number)
 			return -EINVAL;
-		xp->compat_tab = vmalloc(sizeof(struct compat_delta) * xp->number);
+		xp->compat_tab = vmalloc(array_size(sizeof(struct compat_delta), xp->number));
 		if (!xp->compat_tab)
 			return -ENOMEM;
 		xp->cur = 0;
@@ -754,7 +754,7 @@ unsigned int *xt_alloc_entry_offsets(unsigned int size)
 		return off;
 
 	if (size < (SIZE_MAX / sizeof(unsigned int)))
-		off = vmalloc(size * sizeof(unsigned int));
+		off = vmalloc(array_size(size, sizeof(unsigned int)));
 
 	return off;
 }

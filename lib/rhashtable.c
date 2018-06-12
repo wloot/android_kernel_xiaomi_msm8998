@@ -80,7 +80,7 @@ static int alloc_bucket_locks(struct rhashtable *ht, struct bucket_table *tbl,
 #ifdef CONFIG_NUMA
 		if (size * sizeof(spinlock_t) > PAGE_SIZE &&
 		    gfp == GFP_KERNEL)
-			tbl->locks = vmalloc(size * sizeof(spinlock_t));
+			tbl->locks = vmalloc(array_size(size, sizeof(spinlock_t)));
 		else
 #endif
 		tbl->locks = kmalloc_array(size, sizeof(spinlock_t),

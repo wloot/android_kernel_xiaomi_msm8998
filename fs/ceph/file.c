@@ -76,7 +76,7 @@ dio_get_pages_alloc(const struct iov_iter *it, size_t nbytes,
 	npages = calc_pages_for(align, nbytes);
 	pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
 	if (!pages) {
-		pages = vmalloc(sizeof(*pages) * npages);
+		pages = vmalloc(array_size(npages, sizeof(*pages)));
 		if (!pages)
 			return ERR_PTR(-ENOMEM);
 	}

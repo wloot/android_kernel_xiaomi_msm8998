@@ -375,7 +375,7 @@ static struct ib_mr *c2_reg_phys_mr(struct ib_pd *ib_pd,
 				   BIT(page_shift)) >> page_shift;
 	}
 
-	page_list = vmalloc(sizeof(u64) * pbl_depth);
+	page_list = vmalloc(array_size(pbl_depth, sizeof(u64)));
 	if (!page_list) {
 		pr_debug("couldn't vmalloc page_list of size %zd\n",
 			(sizeof(u64) * pbl_depth));
