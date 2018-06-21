@@ -43,8 +43,8 @@ struct westwood {
 };
 
 /* TCP Westwood functions and constants */
-#define TCP_WESTWOOD_RTT_MIN   (HZ/20)	/* 50ms */
-#define TCP_WESTWOOD_INIT_RTT  (20*HZ)	/* maybe too conservative?! */
+int tcp_westwood_rtt_min __read_mostly = 50;
+int tcp_westwood_init_rtt __read_mostly = 2000;
 
 /*
  * @tcp_westwood_create
@@ -57,6 +57,7 @@ struct westwood {
  * way as soon as possible. It will reasonably happen within the first
  * RTT period of the connection lifetime.
  */
+
 static void tcp_westwood_init(struct sock *sk)
 {
 	struct westwood *w = inet_csk_ca(sk);
@@ -67,7 +68,7 @@ static void tcp_westwood_init(struct sock *sk)
 	w->accounted = 0;
 	w->cumul_ack = 0;
 	w->reset_rtt_min = 1;
-	w->rtt_min = w->rtt = TCP_WESTWOOD_INIT_RTT;
+	w->rtt_min = w->rtt = msecs_to_jiffies(tcp_westwood_init_rtt);
 	w->rtt_win_sx = tcp_jiffies32;
 	w->snd_una = tcp_sk(sk)->snd_una;
 	w->first_ack = 1;
@@ -136,7 +137,7 @@ static void westwood_update_window(struct sock *sk)
 	 * Obviously on a LAN we reasonably will always have
 	 * right_bound = left_bound + WESTWOOD_RTT_MIN
 	 */
-	if (w->rtt && delta > max_t(u32, w->rtt, TCP_WESTWOOD_RTT_MIN)) {
+	if (w->rtt && delta > max_t(u32, w->rtt, msecs_to_jiffies(tcp_westwood_rtt_min))) {
 		westwood_filter(w, delta);
 
 		w->bk = 0;
