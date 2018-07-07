@@ -918,14 +918,16 @@ static void zram_meta_free(struct zram *zram, u64 disksize)
 static bool zram_meta_alloc(struct zram *zram, u64 disksize)
 {
 	size_t num_pages;
-	char *backend;
+	char *backend = CONFIG_ZRAM_DEFAULT_POOL;
 
 	num_pages = disksize >> PAGE_SHIFT;
 	zram->table = vzalloc(num_pages * sizeof(*zram->table));
 	if (!zram->table)
 		return false;
 
-	backend = strlen(backend_par_buf) ? backend_par_buf : "zsmalloc";
+	if (strlen(backend_par_buf))
+		backend = backend_par_buf;
+
 	zram->mem_pool = zpool_create_pool(backend, zram->disk->disk_name,
 			GFP_NOIO, NULL);
 	if (!zram->mem_pool) {
