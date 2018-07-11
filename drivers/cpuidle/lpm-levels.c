@@ -1962,6 +1962,7 @@ static struct platform_driver lpm_driver = {
 	.driver = {
 		.name = "lpm-levels",
 		.owner = THIS_MODULE,
+		.suppress_bind_attrs = true,
 		.of_match_table = lpm_mtch_tbl,
 	},
 };
