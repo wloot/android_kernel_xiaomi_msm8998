@@ -270,9 +270,9 @@ tSirRetStatus cfg_set_int(tpAniSirGlobal pMac, uint16_t cfgId, uint32_t value)
 		mask = control & CFG_CTL_NTF_MASK;
 		if ((mask & CFG_CTL_NTF_HW) != 0)
 			pe_debug("CFG notify HW not supported!!!");
-			/* notify other modules if necessary */
-			if ((mask & CFG_CTL_NTF_MASK) != 0)
-				notify(pMac, cfgId, mask);
+		/* notify other modules if necessary */
+		if ((mask & CFG_CTL_NTF_MASK) != 0)
+			notify(pMac, cfgId, mask);
 	}
 	return status;
 } /*** end cfg_set_int ***/
