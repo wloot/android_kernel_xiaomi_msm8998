@@ -163,6 +163,7 @@
 	};
 
 	snd_934x: sound-tavil {
+		status = "disabled";
 		compatible = "qcom,msm8998-asoc-snd-tavil";
 		qcom,model = "msm8998-tavil-snd-card";
 		qcom,ext-disp-audio-rx;
@@ -427,6 +428,7 @@
 	};
 
 	wcd934x_cdc: tavil_codec {
+		status = "disabled";
 		compatible = "qcom,tavil-slim-pgd";
 		elemental-addr = [00 01 50 02 17 02];
 

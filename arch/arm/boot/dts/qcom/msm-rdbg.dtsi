@@ -74,6 +74,7 @@
 	};
 
 	smp2pgpio_rdbg_5_in: qcom,smp2pgpio-rdbg-5-in {
+		status = "disabled";
 		compatible = "qcom,smp2pgpio";
 		qcom,entry-name = "rdbg";
 		qcom,remote-pid = <5>;
@@ -90,6 +91,7 @@
 	};
 
 	smp2pgpio_rdbg_5_out: qcom,smp2pgpio-rdbg-5-out {
+		status = "disabled";
 		compatible = "qcom,smp2pgpio";
 		qcom,entry-name = "rdbg";
 		qcom,remote-pid = <5>;
