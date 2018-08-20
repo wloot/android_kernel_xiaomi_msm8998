@@ -140,9 +140,9 @@
 					#size-cells = <0>;
 					qcom,psci-mode-shift = <0>;
 					qcom,psci-mode-mask = <0xf>;
-					qcom,ref-stddev = <500>;
-					qcom,tmr-add = <1000>;
-					qcom,ref-premature-cnt = <1>;
+					qcom,ref-stddev = <300>;
+					qcom,tmr-add = <600>;
+					qcom,ref-premature-cnt = <2>;
 
 					qcom,pm-cpu-level@0 { /* C1 */
 						reg = <0>;
