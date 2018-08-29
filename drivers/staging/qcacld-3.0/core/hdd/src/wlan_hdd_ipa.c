@@ -5503,7 +5503,7 @@ int hdd_ipa_set_perf_level(hdd_context_t *hdd_ctx, uint64_t tx_packets,
 	return ret;
 }
 
-#ifdef QCA_CONFIG_SMP
+#ifdef PF_WAKE_UP_IDLE
 /**
  * hdd_ipa_get_wake_up_idle() - Get PF_WAKE_UP_IDLE flag in the task structure
  *
