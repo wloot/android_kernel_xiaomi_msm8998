@@ -1689,13 +1689,11 @@ int ipa3_put_rt_tbl(u32 rt_tbl_hdl)
 	entry = ipa3_id_find(rt_tbl_hdl);
 	if (entry == NULL) {
 		IPAERR_RL("lookup failed\n");
-		result = -EINVAL;
 		goto ret;
 	}
 
 	if ((entry->cookie != IPA_RT_TBL_COOKIE) || entry->ref_cnt == 0) {
 		IPAERR_RL("bad parms\n");
-		result = -EINVAL;
 		goto ret;
 	}
 
