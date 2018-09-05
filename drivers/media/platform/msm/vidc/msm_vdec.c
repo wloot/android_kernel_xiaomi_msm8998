@@ -1606,7 +1606,7 @@ static int set_max_internal_buffers_size(struct msm_vidc_inst *inst)
 	enum multi_stream stream_mode;
 	struct hfi_device *hdev;
 	struct hal_buffer_requirements *output_buf;
-	u32 output_count_actual;
+	u32 output_count_actual = 0;
 
 	struct {
 		enum hal_buffer type;
