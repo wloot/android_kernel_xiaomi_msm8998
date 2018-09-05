@@ -904,7 +904,7 @@ static int tas2559_load_coefficient(struct tas2559_priv *pTAS2559,
 {
 	int nResult = 0;
 	struct TPLL *pPLL;
-	struct TProgram *pProgram;
+	struct TProgram *pProgram = NULL;
 	struct TConfiguration *pPrevConfiguration;
 	struct TConfiguration *pNewConfiguration;
 	enum channel chl;

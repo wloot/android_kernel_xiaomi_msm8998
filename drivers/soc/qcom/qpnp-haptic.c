@@ -1654,7 +1654,7 @@ static ssize_t qpnp_hap_hi_z_period_show(struct device *dev,
 	struct timed_output_dev *timed_dev = dev_get_drvdata(dev);
 	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
 					 timed_dev);
-	char *str;
+	char *str = NULL;
 
 	switch (hap->ares_cfg.lra_high_z) {
 	case QPNP_HAP_LRA_HIGH_Z_NONE:

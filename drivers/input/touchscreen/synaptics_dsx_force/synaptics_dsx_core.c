@@ -1482,7 +1482,7 @@ static int synaptics_rmi4_f12_abs_report(struct synaptics_rmi4_data *rmi4_data,
 #if defined(REPORT_2D_PRESSURE) || defined(F51_DISCRETE_FORCE)
 	int pressure;
 #endif
-	int touchs;
+	int touchs = 0;
 #ifdef REPORT_2D_PRESSURE
 	unsigned char f_fingers;
 	unsigned char f_lsb;

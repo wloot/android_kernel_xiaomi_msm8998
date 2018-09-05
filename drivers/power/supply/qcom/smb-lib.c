@@ -3195,7 +3195,7 @@ int smblib_get_charge_current(struct smb_charger *chg,
 {
 	const struct apsd_result *apsd_result = smblib_get_apsd_result(chg);
 	union power_supply_propval val = {0, };
-	int rc = 0, typec_source_rd, current_ua;
+	int rc = 0, typec_source_rd, current_ua = 0;
 	bool non_compliant;
 	u8 stat5;
 
@@ -3696,7 +3696,7 @@ static void smblib_handle_hvdcp_3p0_auth_done(struct smb_charger *chg,
 {
 	const struct apsd_result *apsd_result;
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
-	int current_ua;
+	int current_ua = 0;
 #endif
 	int rc;
 
