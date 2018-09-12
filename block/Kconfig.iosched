@@ -43,20 +43,27 @@ config IOSCHED_CFQ
 
 	  This is the default I/O scheduler.
 
-config IOSCHED_ANXIETY
-	tristate "Anxiety I/O scheduler"
-	default y
-	---help---
-	  The Anxiety I/O scheduler prioritizes latency over everything
-		else. When a request comes in, it will use a lighweight
-		selection algorithm to swiftly process the current pending task.
-
 config CFQ_GROUP_IOSCHED
 	bool "CFQ Group Scheduling support"
 	depends on IOSCHED_CFQ && BLK_CGROUP
 	default n
 	---help---
 	  Enable group IO scheduling in CFQ.
+
+config IOSCHED_ANXIETY
+	tristate "Anxiety I/O Scheduler"
+	default y
+	---help---
+	  The purpose of Anxiety is to improve throughput on latency-sensitive
+	  tasks on embedded flash storage devices. On modern devices, embedded
+	  systems contain relatively fast storage, so spending too much time
+	  with complicated queue-shifting scheduling algorithms may end up
+	  bottlenecking the device. Similarly to the No-op I/O scheduler,
+	  Anxiety works with a FIFO queue; however, Anxiety includes basic
+	  request logic based on READ v. WRITE requests. WRITE requests are
+	  starved at a fixed ratio, defined as the `max_writes_starved` tunable.
+	  READ requests are given priority over WRITE requests due to their
+	  essentiality in determining load-time latency.
 
 choice
 	prompt "Default I/O scheduler"
@@ -71,11 +78,11 @@ choice
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
 
-	config DEFAULT_NOOP
-		bool "No-op" if IOSCHED_NOOP=y
-
 	config DEFAULT_ANXIETY
 		bool "Anxiety" if IOSCHED_ANXIETY=y
+
+	config DEFAULT_NOOP
+		bool "No-op" if IOSCHED_NOOP=y
 endchoice
 
 config DEFAULT_IOSCHED

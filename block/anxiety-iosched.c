@@ -1,15 +1,14 @@
 /*
- * Anxiety IO scheduler
+ * Copyright (c) 2019, Tyler Nijmeh <tylernij@gmail.com>.
  *
- * Anxiety is designed for mobile devices that are latency
- * sensitive. It is based on the no-op scheduler with additional
- * tweaks and changes. Using Anxiety on Android devices with
- * interactive and realtime workloads has proven significantly
- * faster R/W speeds in smaller buffer sizes (ie. databases,
- * journals, raw assets, etc).
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
  *
- * Copyright (C) 2018-2019 Tyler Nijmeh <tylernij@gmail.com>
- * Copyright (C) 2018 kdrag0n <dragon@khronodragon.com>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <linux/blkdev.h>
@@ -18,21 +17,16 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/init.h>
-#include <linux/fb.h>
 
 /* Default tunable values */
-#define	DEFAULT_MAX_WRITES_STARVED		2	/* Max times reads can starve a write */
-#define	DEFAULT_MAX_WRITES_STARVED_SUSPENDED	0	/* Ditto but during screen-off states */
+#define	DEFAULT_MAX_WRITES_STARVED (4)	/* Max times reads can starve a write */
 
 struct anxiety_data {
 	struct list_head queue[2];
 	uint16_t writes_starved;
-	struct notifier_block fb_notifier;
-	bool display_on;
 
 	/* Tunables */
 	uint8_t max_writes_starved;
-	uint8_t max_writes_starved_suspended;
 };
 
 static void anxiety_merged_requests(struct request_queue *q, struct request *rq, struct request *next)
@@ -40,10 +34,10 @@ static void anxiety_merged_requests(struct request_queue *q, struct request *rq,
 	rq_fifo_clear(next);
 }
 
-static __always_inline struct request *anxiety_choose_request(struct anxiety_data *adata)
+static inline struct request *anxiety_choose_request(struct anxiety_data *adata)
 {
 	/* Prioritize reads unless writes are exceedingly starved */
-	bool starved = adata->writes_starved > (adata->display_on ? adata->max_writes_starved_suspended : adata->max_writes_starved);
+	bool starved = adata->writes_starved > adata->max_writes_starved;
 
 	/* Handle a read request */
 	if (!starved && !list_empty(&adata->queue[READ])) {
@@ -102,31 +96,6 @@ static struct request *anxiety_latter_request(struct request_queue *q, struct re
 	return list_next_entry(rq, queuelist);
 }
 
-static int fb_notifier_callback(struct notifier_block *self,
-				unsigned long event, void *data)
-{
-	struct anxiety_data *adata = container_of(self, struct anxiety_data, fb_notifier);
-	struct fb_event *evdata = data;
-	int *blank;
-
-	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
-		blank = evdata->data;
-		switch (*blank) {
-			case FB_BLANK_UNBLANK:
-				adata->display_on = true;
-				break;
-			case FB_BLANK_POWERDOWN:
-			case FB_BLANK_HSYNC_SUSPEND:
-			case FB_BLANK_VSYNC_SUSPEND:
-			case FB_BLANK_NORMAL:
-				adata->display_on = false;
-				break;
-		}
-	}
-
-	return 0;
-}
-
 static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv)
 {
 	struct anxiety_data *adata;
@@ -150,10 +119,6 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 	INIT_LIST_HEAD(&adata->queue[WRITE]);
 	adata->writes_starved = 0;
 	adata->max_writes_starved = DEFAULT_MAX_WRITES_STARVED;
-	adata->max_writes_starved_suspended = DEFAULT_MAX_WRITES_STARVED_SUSPENDED;
-
-	adata->fb_notifier.notifier_call = fb_notifier_callback;
-	fb_register_client(&adata->fb_notifier);
 
 	/* Set elevator to Anxiety */
 	spin_lock_irq(q->queue_lock);
@@ -161,15 +126,6 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 	spin_unlock_irq(q->queue_lock);
 
 	return 0;
-}
-
-static void anxiety_exit_queue(struct elevator_queue *e)
-{
-	struct anxiety_data *adata = e->elevator_data;
-
-	fb_unregister_client(&adata->fb_notifier);
-
-	kfree(adata);
 }
 
 /* Sysfs access */
@@ -192,28 +148,8 @@ static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const 
 	return count;
 }
 
-static ssize_t anxiety_max_writes_starved_suspended_show(struct elevator_queue *e, char *page)
-{
-	struct anxiety_data *adata = e->elevator_data;
-
-	return snprintf(page, PAGE_SIZE, "%u\n", adata->max_writes_starved_suspended);
-}
-
-static ssize_t anxiety_max_writes_starved_suspended_store(struct elevator_queue *e, const char *page, size_t count)
-{
-	struct anxiety_data *adata = e->elevator_data;
-	int ret;
-
-	ret = kstrtou8(page, 0, &adata->max_writes_starved_suspended);
-	if (ret < 0)
-		return ret;
-
-	return count;
-}
-
 static struct elv_fs_entry anxiety_attrs[] = {
 	__ATTR(max_writes_starved, 0644, anxiety_max_writes_starved_show, anxiety_max_writes_starved_store),
-	__ATTR(max_writes_starved_suspended, 0644, anxiety_max_writes_starved_suspended_show, anxiety_max_writes_starved_suspended_store),
 	__ATTR_NULL
 };
 
@@ -225,7 +161,6 @@ static struct elevator_type elevator_anxiety = {
 		.elevator_former_req_fn	= anxiety_former_request,
 		.elevator_latter_req_fn	= anxiety_latter_request,
 		.elevator_init_fn	= anxiety_init_queue,
-		.elevator_exit_fn	= anxiety_exit_queue,
 	},
 	.elevator_name = "anxiety",
 	.elevator_attrs = anxiety_attrs,
