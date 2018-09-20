@@ -1544,7 +1544,7 @@ void free_task_load_ptrs(struct task_struct *p)
 	p->ravg.prev_window_cpu = NULL;
 }
 
-void init_new_task_load(struct task_struct *p, bool idle_task)
+void init_new_task_load(struct task_struct *p)
 {
 	int i;
 	u32 init_load_windows = sched_init_task_load_windows;
