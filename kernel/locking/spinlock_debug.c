@@ -12,8 +12,6 @@
 #include <linux/debug_locks.h>
 #include <linux/delay.h>
 #include <linux/export.h>
-#include <linux/bug.h>
-#include <soc/qcom/watchdog.h>
 
 void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
 			  struct lock_class_key *key)
@@ -66,11 +64,6 @@ static void spin_dump(raw_spinlock_t *lock, const char *msg)
 		owner ? owner->comm : "<none>",
 		owner ? task_pid_nr(owner) : -1,
 		lock->owner_cpu);
-#ifdef CONFIG_DEBUG_SPINLOCK_BITE_ON_BUG
-	msm_trigger_wdog_bite();
-#elif defined(CONFIG_DEBUG_SPINLOCK_PANIC_ON_BUG)
-	BUG();
-#endif
 	dump_stack();
 }
 
@@ -174,11 +167,6 @@ static void rwlock_bug(rwlock_t *lock, const char *msg)
 	printk(KERN_EMERG "BUG: rwlock %s on CPU#%d, %s/%d, %p\n",
 		msg, raw_smp_processor_id(), current->comm,
 		task_pid_nr(current), lock);
-#ifdef CONFIG_DEBUG_SPINLOCK_BITE_ON_BUG
-	msm_trigger_wdog_bite();
-#elif defined(CONFIG_DEBUG_SPINLOCK_PANIC_ON_BUG)
-	BUG();
-#endif
 	dump_stack();
 }
 
