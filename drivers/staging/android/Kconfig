@@ -47,6 +47,45 @@ config ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
 	  /sys/module/lowmemorykiller/parameters/adj and convert them
 	  to oom_score_adj values.
 
+config ANDROID_SIMPLE_LMK
+	bool "Simple Android Low Memory Killer"
+	depends on !ANDROID_LOW_MEMORY_KILLER
+	---help---
+	  This is a replacement for the Android Low Memory Killer driver that
+	  simply targets a predefined number of pages to be freed every time a
+	  memory allocation attempt is about to utilize direct reclaim, or
+	  whenever it seems like kswapd is having trouble freeing enough memory
+	  in a timely manner. Processes are killed according to the priorities
+	  that Android gives them; in other words, the least important processes
+	  are always killed first.
+
+if ANDROID_SIMPLE_LMK
+
+config ANDROID_SIMPLE_LMK_MINFREE
+	int "Minimum MiB of memory to free per reclaim"
+	default "64"
+	help
+	  Simple LMK will free at least this many MiB of memory per reclaim.
+
+config ANDROID_SIMPLE_LMK_KSWAPD_TIMEOUT
+	int "Kill timeout in milliseconds for kswapd"
+	default "100"
+	help
+	  Simple LMK caps the frequency of kswapd-invoked memory reclaims to
+	  this value. It also begins reclaiming after kswapd has not had a
+	  chance to sleep for this amount of time; this is used as an indicator
+	  that memory pressure is high and something needs to be killed.
+
+config ANDROID_SIMPLE_LMK_OOM_TIMEOUT
+	int "Kill timeout in milliseconds for OOM'd allocations"
+	default "50"
+	help
+	  Simple LMK caps the frequency of OOM-invoked memory reclaims to
+	  this value. When a memory allocation fails and is waiting for pages
+	  to be freed, it can invoke memory reclaim at a maximum of this rate.
+
+endif
+
 config SYNC
 	bool "Synchronization framework"
 	default n
