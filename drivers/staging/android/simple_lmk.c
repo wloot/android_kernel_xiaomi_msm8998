@@ -13,6 +13,8 @@
 
 #define pr_fmt(fmt) "simple_lmk: " fmt
 
+#include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 #include <linux/mm.h>
 #include <linux/moduleparam.h>
 #include <linux/oom.h>
@@ -20,6 +22,9 @@
 #include <linux/simple_lmk.h>
 
 #define MIN_FREE_PAGES (CONFIG_ANDROID_SIMPLE_LMK_MINFREE * SZ_1M / PAGE_SIZE)
+
+/* Duration to boost CPU and DDR bus to the max per memory reclaim event */
+#define BOOST_DURATION_MS (250)
 
 /* Pulled from the Android framework */
 static const short int adj_prio[] = {
@@ -107,6 +112,9 @@ static unsigned long do_lmk_reclaim(unsigned long pages_needed)
 {
 	unsigned long pages_freed = 0;
 	int i;
+
+	cpu_input_boost_kick_max(BOOST_DURATION_MS);
+	devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, BOOST_DURATION_MS);
 
 	for (i = 1; i < ARRAY_SIZE(adj_prio); i++) {
 		pages_freed += scan_and_kill(adj_prio[i], adj_prio[i - 1],
