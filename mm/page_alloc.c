@@ -62,6 +62,7 @@
 #include <linux/sched/rt.h>
 #include <linux/page_owner.h>
 #include <linux/kthread.h>
+#include <linux/simple_lmk.h>
 
 #include <asm/sections.h>
 #include <asm/tlbflush.h>
@@ -117,6 +118,22 @@ unsigned long totalcma_pages __read_mostly;
 
 int percpu_pagelist_fraction;
 gfp_t gfp_allowed_mask __read_mostly = GFP_BOOT_MASK;
+
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+struct page_alloc_req {
+	gfp_t gfp_mask;
+	unsigned int order;
+	int alloc_flags;
+	struct alloc_context *ac;
+	struct list_head list;
+	struct page *new_page;
+	struct completion *alloc_done;
+};
+
+static LIST_HEAD(oom_reqs_queue);
+static DEFINE_SPINLOCK(oom_queue_lock);
+static atomic_t simple_lmk_refcnt = ATOMIC_INIT(0);
+#endif
 
 /*
  * A cached value of the page's pageblock's migratetype, used when the page is
@@ -2741,6 +2758,11 @@ try_this_zone:
 		page = buffered_rmqueue(ac->preferred_zone, zone, order,
 				gfp_mask, alloc_flags, ac->migratetype);
 		if (page) {
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+			if (page->reserved_for_lmk && !ac->is_lmk_alloc)
+				goto try_this_zone;
+#endif
+
 			if (prep_new_page(page, order, gfp_mask, alloc_flags))
 				goto try_this_zone;
 
@@ -3138,6 +3160,11 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 	enum migrate_mode migration_mode = MIGRATE_ASYNC;
 	bool deferred_compaction = false;
 	int contended_compaction = COMPACT_CONTENDED_NONE;
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	DECLARE_COMPLETION_ONSTACK(alloc_done);
+	struct page_alloc_req pg_req;
+	unsigned long flags;
+#endif
 
 	/*
 	 * In the slowpath, we sanity check order to avoid ever trying to
@@ -3276,6 +3303,48 @@ retry:
 	 */
 	if (!is_thp_gfp_mask(gfp_mask) || (current->flags & PF_KTHREAD))
 		migration_mode = MIGRATE_SYNC_LIGHT;
+
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	if (gfp_mask & __GFP_NORETRY)
+		goto noretry;
+
+	ac->is_lmk_alloc = true;
+	pg_req.gfp_mask = gfp_mask;
+	pg_req.order = order;
+	pg_req.alloc_flags = alloc_flags | ALLOC_NO_WATERMARKS;
+	pg_req.ac = ac;
+	pg_req.new_page = NULL;
+	pg_req.alloc_done = &alloc_done;
+
+	spin_lock_irqsave(&oom_queue_lock, flags);
+	list_add_tail(&pg_req.list, &oom_reqs_queue);
+	spin_unlock_irqrestore(&oom_queue_lock, flags);
+
+	atomic_inc(&simple_lmk_refcnt);
+
+	/* Keep performing memory reclaim until we get our memory */
+	while (1) {
+		long ret;
+
+		simple_lmk_force_reclaim();
+		ret = wait_for_completion_killable_timeout(&alloc_done,
+							LMK_OOM_TIMEOUT);
+		if (ret) {
+			if (ret == -ERESTARTSYS) {
+				/* Give up since this process is dying */
+				spin_lock_irqsave(&oom_queue_lock, flags);
+				if (!pg_req.new_page)
+					list_del(&pg_req.list);
+				spin_unlock_irqrestore(&oom_queue_lock, flags);
+			}
+			break;
+		}
+	}
+
+	atomic_dec(&simple_lmk_refcnt);
+	page = pg_req.new_page;
+	goto got_pg;
+#endif
 
 	/* Try direct reclaim and then allocating */
 	page = __alloc_pages_direct_reclaim(gfp_mask, order, alloc_flags, ac,
@@ -3438,13 +3507,53 @@ unsigned long get_zeroed_page(gfp_t gfp_mask)
 }
 EXPORT_SYMBOL(get_zeroed_page);
 
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+static void simple_lmk_fulfill_reqs(void)
+{
+	struct page_alloc_req *pg_req, *tmp;
+	unsigned long flags;
+
+	spin_lock_irqsave(&oom_queue_lock, flags);
+	list_for_each_entry_safe(pg_req, tmp, &oom_reqs_queue, list) {
+		struct page *new_page;
+
+		new_page = get_page_from_freelist(pg_req->gfp_mask,
+							pg_req->order,
+							pg_req->alloc_flags,
+							pg_req->ac);
+		if (!new_page)
+			continue;
+
+		pg_req->new_page = new_page;
+		list_del(&pg_req->list);
+		complete(pg_req->alloc_done);
+	}
+	spin_unlock_irqrestore(&oom_queue_lock, flags);
+}
+#endif
+
 void __free_pages(struct page *page, unsigned int order)
 {
 	if (put_page_testzero(page)) {
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+		bool is_system_oom = atomic_read(&simple_lmk_refcnt);
+
+		/* Reserve this page to see if it'll fulfill an OOM'd request */
+		if (is_system_oom)
+			page->reserved_for_lmk = true;
+#endif
+
 		if (order == 0)
 			free_hot_cold_page(page, false);
 		else
 			__free_pages_ok(page, order);
+
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+		if (is_system_oom) {
+			simple_lmk_fulfill_reqs();
+			page->reserved_for_lmk = false;
+		}
+#endif
 	}
 }
 
