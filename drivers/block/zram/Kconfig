@@ -67,3 +67,7 @@ config ZRAM_DEFAULT_POOL
 	default "zsmalloc" if ZRAM_DEFAULT_ZSMALLOC
 
 endif
+
+config ZRAM_DEFAULT_COMP_ALGORITHM
+	string "Default ZRAM algorithm"
+	default "lzo"
