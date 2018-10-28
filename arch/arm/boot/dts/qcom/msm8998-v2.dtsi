@@ -333,7 +333,7 @@
 	compatible = "qcom,gfxcc-8998-v2";
 	qcom,gfxfreq-speedbin0 =
 		<         0 0                           0 >,
-		< 180000000 1 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		< 171000000 1 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 257000000 2 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 342000000 3 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 414000000 4 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -343,7 +343,7 @@
 		< 710000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 	qcom,gfxfreq-mx-speedbin0 =
 		<         0                           0 >,
-		< 180000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		< 171000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 257000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 342000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 414000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -1199,7 +1199,7 @@
 &msm_gpu {
 	/* Updated chip ID */
 	qcom,chipid = <0x05040001>;
-	qcom,initial-pwrlevel = <6>;
+	qcom,initial-pwrlevel = <7>;
 
 	qcom,gpu-pwrlevels {
 		#address-cells = <1>;
@@ -1265,6 +1265,14 @@
 
 		qcom,gpu-pwrlevel@7 {
 			reg = <7>;
+			qcom,gpu-freq = <171000000>;
+			qcom,bus-freq = <3>;
+			qcom,bus-min = <2>;
+			qcom,bus-max = <5>;
+		};
+
+		qcom,gpu-pwrlevel@8 {
+			reg = <8>;
 			qcom,gpu-freq = <27000000>;
 			qcom,bus-freq = <0>;
 			qcom,bus-min = <0>;
