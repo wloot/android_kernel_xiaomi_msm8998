@@ -81,8 +81,7 @@ config ANDROID_SIMPLE_LMK_OOM_TIMEOUT
 	default "50"
 	help
 	  Simple LMK caps the frequency of OOM-invoked memory reclaims to
-	  this value. When a memory allocation fails and is waiting for pages
-	  to be freed, it can invoke memory reclaim at a maximum of this rate.
+	  this value.
 
 endif
 
