@@ -3322,23 +3322,14 @@ retry:
 
 	atomic_inc(&simple_lmk_refcnt);
 
-	/* Keep performing memory reclaim until we get our memory */
-	while (1) {
-		long ret;
-
-		simple_lmk_force_reclaim();
-		ret = wait_for_completion_killable_timeout(&alloc_done,
-							LMK_OOM_TIMEOUT);
-		if (ret) {
-			if (ret == -ERESTARTSYS) {
-				/* Give up since this process is dying */
-				spin_lock_irqsave(&oom_queue_lock, flags);
-				if (!pg_req.new_page)
-					list_del(&pg_req.list);
-				spin_unlock_irqrestore(&oom_queue_lock, flags);
-			}
-			break;
-		}
+	/* Perform memory reclaim and then wait until we get memory */
+	simple_lmk_force_reclaim();
+	if (wait_for_completion_killable(&alloc_done) == -ERESTARTSYS) {
+		/* This process is dying, so remove this req from the queue */
+		spin_lock_irqsave(&oom_queue_lock, flags);
+		if (!pg_req.new_page)
+			list_del(&pg_req.list);
+		spin_unlock_irqrestore(&oom_queue_lock, flags);
 	}
 
 	atomic_dec(&simple_lmk_refcnt);
