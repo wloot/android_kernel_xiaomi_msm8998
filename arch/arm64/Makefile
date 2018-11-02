@@ -24,6 +24,9 @@ KBUILD_DEFCONFIG := defconfig
 # Check for binutils support for specific extensions
 lseinstr := $(call as-instr,.arch_extension lse,-DCONFIG_AS_LSE=1)
 
+KBUILD_CFLAGS	+= $(call cc-option,-march=armv8-a+crypto+crc,) \
+	$(call cc-option,-mcpu=cortex-a53+crypto+crc,)
+
 ifeq ($(CONFIG_ARM64_LSE_ATOMICS), y)
   ifeq ($(lseinstr),)
 $(warning LSE atomics not supported by binutils)
@@ -59,13 +62,21 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
   endif
 endif
 
-KBUILD_CFLAGS	+= $(call cc-option,-march=armv8-a+crypto+crc,) $(call cc-option,-mcpu=cortex-a53+crypto+crc,)
-
 ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= $(call clang-ifversion, -ge, 0600, -mgeneral-regs-only, -mno-implicit-float)
 else
 KBUILD_CFLAGS	+= -mgeneral-regs-only
 endif
+KBUILD_CFLAGS	+= -mllvm -polly \
+					-mllvm -polly-run-dce \
+					-mllvm -polly-run-inliner \
+					-mllvm -polly-opt-fusion=max \
+					-mllvm -polly-ast-use-context \
+					-mllvm -polly-vectorizer=stripmine \
+					-mllvm -polly-detect-keep-going
+
+KBUILD_CFLAGS	+= -O3
+
 KBUILD_CFLAGS	+= $(lseinstr) $(vdso32)
 KBUILD_CFLAGS	+= -fno-pic
 KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
