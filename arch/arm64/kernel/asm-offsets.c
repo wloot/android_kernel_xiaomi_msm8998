@@ -109,6 +109,11 @@ int main(void)
   DEFINE(DMA_TO_DEVICE,		DMA_TO_DEVICE);
   DEFINE(DMA_FROM_DEVICE,	DMA_FROM_DEVICE);
   BLANK();
+#ifdef CONFIG_THREAD_INFO_IN_TASK
+	 DEFINE(CPU_BOOT_STACK,	offsetof(struct secondary_data, stack));
+	 DEFINE(CPU_BOOT_TASK,		offsetof(struct secondary_data, task));
+	 BLANK();
+#endif  
 #ifdef CONFIG_KVM_ARM_HOST
   DEFINE(VCPU_CONTEXT,		offsetof(struct kvm_vcpu, arch.ctxt));
   DEFINE(CPU_GP_REGS,		offsetof(struct kvm_cpu_context, gp_regs));
