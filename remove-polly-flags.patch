@@ -1,0 +1,30 @@
+From c235e307561ddb85fe9ee4a9e23b561664b4604f Mon Sep 17 00:00:00 2001
+From: wloot <wlootlxt123@gmail.com>
+Date: Mon, 5 Nov 2018 00:35:20 +0800
+Subject: [PATCH] arm64: remove polly flags
+
+---
+ arch/arm64/Makefile | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 7786ced6a467..750b73884d62 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -71,13 +71,6 @@ KBUILD_CFLAGS	+= $(call clang-ifversion, -ge, 0600, -mgeneral-regs-only, -mno-im
+ else
+ KBUILD_CFLAGS	+= -mgeneral-regs-only
+ endif
+-KBUILD_CFLAGS	+= -mllvm -polly \
+-					-mllvm -polly-run-dce \
+-					-mllvm -polly-run-inliner \
+-					-mllvm -polly-opt-fusion=max \
+-					-mllvm -polly-ast-use-context \
+-					-mllvm -polly-vectorizer=stripmine \
+-					-mllvm -polly-detect-keep-going
+ 
+ KBUILD_CFLAGS	+= -O3
+ 
+-- 
+2.19.1
+
