@@ -1374,7 +1374,7 @@ static int msm_spi_process_transfer(struct msm_spi *dd)
 	u32 max_speed = 0;
 	u32 read_count;
 	u32 timeout;
-	u32 spi_ioc;
+	u32 spi_ioc = 0;
 	u32 int_loopback = 0;
 	int ret;
 	int status = 0;
