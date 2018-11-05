@@ -30,7 +30,7 @@
 #include <linux/qdsp6v2/apr_tal.h>
 #include <sound/q6core.h>
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
+#ifdef CONFIG_MACH_CHIRON
 #include <sound/apr_elliptic.h>
 #endif
 
@@ -583,7 +583,7 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 		if (!ret) {
 			return ret;
 		}
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
+#ifdef CONFIG_MACH_CHIRON
 	} else if (data->opcode == ULTRASOUND_OPCODE) {
 		if (data->payload != NULL)
 			elliptic_process_apr_payload(data->payload);
