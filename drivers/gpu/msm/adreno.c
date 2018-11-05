@@ -54,7 +54,7 @@ MODULE_PARM_DESC(nopreempt, "Disable GPU preemption");
 /* Number of times to try hard reset */
 #define NUM_TIMES_RESET_RETRY 5
 
-#define KGSL_LOG_LEVEL_DEFAULT 3
+#define KGSL_LOG_LEVEL_DEFAULT 0
 
 static void adreno_pwr_on_work(struct work_struct *work);
 static unsigned int counter_delta(struct kgsl_device *device,
