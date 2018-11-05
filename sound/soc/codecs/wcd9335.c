@@ -135,7 +135,7 @@
 
 #define CALCULATE_VOUT_D(req_mv) (((req_mv - 650) * 10) / 25)
 
-static int cpe_debug_mode;
+static int cpe_debug_mode = 0;
 
 #define TASHA_MAX_MICBIAS 4
 #define DAPM_MICBIAS1_STANDALONE "MIC BIAS1 Standalone"
