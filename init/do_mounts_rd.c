@@ -263,7 +263,7 @@ int __init rd_load_image(char *from)
 		if (i && (i % devblocks == 0)) {
 			printk("done disk #%d.\n", disk++);
 			rotate = 0;
-			if (ksys_close(in_fd)) {
+			if (sys_close(in_fd)) {
 				printk("Error closing the disk.\n");
 				goto noclose_input;
 			}
@@ -289,9 +289,9 @@ int __init rd_load_image(char *from)
 successful_load:
 	res = 1;
 done:
-	ksys_close(in_fd);
+	sys_close(in_fd);
 noclose_input:
-	ksys_close(out_fd);
+	sys_close(out_fd);
 out:
 	kfree(buf);
 	sys_unlink("/dev/ram");

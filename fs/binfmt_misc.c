@@ -228,7 +228,7 @@ ret:
 	return retval;
 error:
 	if (fd_binary > 0)
-		ksys_close(fd_binary);
+		sys_close(fd_binary);
 	bprm->interp_flags = 0;
 	bprm->interp_data = 0;
 	goto ret;

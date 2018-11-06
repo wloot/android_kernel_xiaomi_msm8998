@@ -110,7 +110,7 @@ static void __init handle_initrd(void)
 			error = fd;
 		} else {
 			error = sys_ioctl(fd, BLKFLSBUF, 0);
-			ksys_close(fd);
+			sys_close(fd);
 		}
 		printk(!error ? "okay\n" : "failed\n");
 	}
