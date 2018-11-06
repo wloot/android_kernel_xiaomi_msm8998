@@ -71,6 +71,7 @@ KBUILD_CFLAGS	+= $(call clang-ifversion, -ge, 0600, -mgeneral-regs-only, -mno-im
 else
 KBUILD_CFLAGS	+= -mgeneral-regs-only
 endif
+ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= -mllvm -polly \
 					-mllvm -polly-run-dce \
 					-mllvm -polly-run-inliner \
@@ -78,8 +79,7 @@ KBUILD_CFLAGS	+= -mllvm -polly \
 					-mllvm -polly-ast-use-context \
 					-mllvm -polly-vectorizer=stripmine \
 					-mllvm -polly-detect-keep-going
-
-KBUILD_CFLAGS	+= -O3
+endif
 
 KBUILD_CFLAGS	+= $(lseinstr) $(vdso32)
 KBUILD_CFLAGS	+= -fno-pic
