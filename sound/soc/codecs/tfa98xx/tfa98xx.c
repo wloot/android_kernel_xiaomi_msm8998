@@ -208,9 +208,9 @@ void tfa98xx_dump_register(struct tfa98xx *tfa98xx, int level, char *msg)
 }
 
 /* Wrapper for tfa start */
-static enum tfa_error tfa98xx_tfa_start(struct tfa98xx *tfa98xx, int next_profile, int *vstep)
+static enum Tfa98xx_Error tfa98xx_tfa_start(struct tfa98xx *tfa98xx, int next_profile, int *vstep)
 {
-	enum tfa_error err;
+	enum Tfa98xx_Error err;
 
 	pr_info("tfa98xx_tfa_start()   begin   next_profile=%d\n", next_profile);
 	tfa98xx_dump_register(tfa98xx, 1, "tfa98xx_tfa_start begin");
@@ -826,7 +826,7 @@ static ssize_t tfa98xx_dbgfs_dsp_state_set(struct file *file,
 {
 	struct i2c_client *i2c = file->private_data;
 	struct tfa98xx *tfa98xx = i2c_get_clientdata(i2c);
-	enum tfa_error ret;
+	enum Tfa98xx_Error ret;
 	char buf[32];
 	const char start_cmd[] = "start";
 	const char stop_cmd[] = "stop";
