@@ -186,6 +186,7 @@ void __read_overflow(void) __compiletime_error("detected read beyond size of obj
 void __read_overflow2(void) __compiletime_error("detected read beyond size of object passed as 2nd parameter");
 void __write_overflow(void) __compiletime_error("detected write beyond size of object passed as 1st parameter");
 
+#if defined(__clang__) || GCC_VERSION > 40904
 #if !defined(__NO_FORTIFY) && defined(__OPTIMIZE__) && defined(CONFIG_FORTIFY_SOURCE)
 __FORTIFY_INLINE char *strncpy(char *p, const char *q, __kernel_size_t size)
 {
@@ -377,6 +378,7 @@ __FORTIFY_INLINE char *strcpy(char *p, const char *q)
 	return p;
 }
 
+#endif
 #endif
 
 #endif /* _LINUX_STRING_H_ */
