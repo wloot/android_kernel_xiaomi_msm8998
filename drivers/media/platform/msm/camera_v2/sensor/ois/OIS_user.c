@@ -70,7 +70,7 @@ void WR_I2C(OIS_UBYTE slvadr, OIS_UBYTE size, OIS_UBYTE *dat)
 OIS_UWORD RD_I2C(OIS_UBYTE slvadr, OIS_UBYTE size, OIS_UBYTE *dat)
 {
 	OIS_UWORD read_data = 0;
-	OIS_UWORD addr = ((dat[0] << 8) | dat[1]);
+	OIS_UWORD addr = ((dat[0] << 8) | dat[size-1]);
 
 	g_i2c_ctrl->i2c_client.addr_type = MSM_CAMERA_I2C_WORD_ADDR;
 	g_i2c_ctrl->i2c_client.i2c_func_tbl->i2c_read(&g_i2c_ctrl->i2c_client, addr, &read_data, MSM_CAMERA_I2C_WORD_DATA);
