@@ -2568,13 +2568,19 @@ int security_fs_use(struct super_block *sb)
 		}
 		sbsec->sid = c->sid[0];
 	} else {
-		rc = __security_genfs_sid(fstype, "/", SECCLASS_DIR,
-					  &sbsec->sid);
-		if (rc) {
-			sbsec->behavior = SECURITY_FS_USE_NONE;
-			rc = 0;
+		if (!strcmp(fstype, "overlay")){
+			pr_info("selinux: security_fs_use trick for overlay\n");
+			sbsec->behavior = SECURITY_FS_USE_XATTR;
+			sbsec->sid = 4;
 		} else {
-			sbsec->behavior = SECURITY_FS_USE_GENFS;
+			rc = __security_genfs_sid(fstype, "/", SECCLASS_DIR,
+						  &sbsec->sid);
+			if (rc) {
+				sbsec->behavior = SECURITY_FS_USE_NONE;
+				rc = 0;
+			} else {
+				sbsec->behavior = SECURITY_FS_USE_GENFS;
+			}
 		}
 	}
 
