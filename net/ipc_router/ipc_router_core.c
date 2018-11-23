@@ -4204,8 +4204,9 @@ void msm_ipc_router_xprt_notify(struct msm_ipc_router_xprt *xprt,
 {
 	struct msm_ipc_router_xprt_info *xprt_info = xprt->priv;
 	struct msm_ipc_router_xprt_work *xprt_work;
-	struct msm_ipc_router_remote_port *rport_ptr = NULL;
+	struct msm_ipc_router_remote_port *rport_ptr;
 	struct rr_packet *pkt;
+	bool is_sensor_pkt = false;
 	int ret;
 
 	ret = ipc_router_core_init();
@@ -4273,16 +4274,21 @@ void msm_ipc_router_xprt_notify(struct msm_ipc_router_xprt *xprt,
 
 	pkt->ws_need = false;
 
-	if (pkt->hdr.type == IPC_ROUTER_CTRL_CMD_DATA)
+	if (pkt->hdr.type == IPC_ROUTER_CTRL_CMD_DATA) {
 		rport_ptr = ipc_router_get_rport_ref(pkt->hdr.src_node_id,
 						     pkt->hdr.src_port_id);
+		if (rport_ptr) {
+			is_sensor_pkt = is_sensor_port(rport_ptr);
+			kref_put(&rport_ptr->ref, ipc_router_release_rport);
+		}
+	}
 
 	mutex_lock(&xprt_info->rx_lock_lhb2);
 	list_add_tail(&pkt->list, &xprt_info->pkt_list);
 	/* check every pkt is from SENSOR services or not and
 	 * avoid holding both edge and port specific wake-up sources
 	 */
-	if (!is_sensor_port(rport_ptr)) {
+	if (!is_sensor_pkt) {
 		if (!xprt_info->dynamic_ws) {
 			__pm_stay_awake(&xprt_info->ws);
 			pkt->ws_need = true;
