@@ -1,4 +1,4 @@
-CONFIG_LOCALVERSION="-LoverOriented-2.x"
+CONFIG_LOCALVERSION="-LoverOriented"
 # CONFIG_USELIB is not set
 CONFIG_AUDIT=y
 # CONFIG_AUDITSYSCALL is not set
