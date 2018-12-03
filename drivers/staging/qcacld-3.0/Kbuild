@@ -701,7 +701,6 @@ DFS_INC :=	-I$(WLAN_ROOT)/$(DFS_INC_DIR) \
 
 DFS_OBJS :=	$(DFS_SRC_DIR)/dfs_bindetects.o \
 		$(DFS_SRC_DIR)/dfs.o \
-		$(DFS_SRC_DIR)/dfs_debug.o\
 		$(DFS_SRC_DIR)/dfs_fcc_bin5.o\
 		$(DFS_SRC_DIR)/dfs_init.o\
 		$(DFS_SRC_DIR)/dfs_misc.o\
@@ -710,6 +709,10 @@ DFS_OBJS :=	$(DFS_SRC_DIR)/dfs_bindetects.o \
 		$(DFS_SRC_DIR)/dfs_process_phyerr.o\
 		$(DFS_SRC_DIR)/dfs_process_radarevent.o\
 		$(DFS_SRC_DIR)/dfs_staggered.o
+
+ifdef CONFIG_DEBUG_KERNEL
+DFS_OBJS += 	$(DFS_SRC_DIR)/dfs_debug.o
+endif
 
 ############ SME ############
 SME_DIR :=	core/sme
