@@ -3323,7 +3323,7 @@ retry:
 	atomic_inc(&simple_lmk_refcnt);
 
 	/* Perform memory reclaim and then wait until we get memory */
-	simple_lmk_force_reclaim();
+	simple_lmk_one_reclaim();
 	if (wait_for_completion_killable(&alloc_done) == -ERESTARTSYS) {
 		/* This process is dying, so remove this req from the queue */
 		spin_lock_irqsave(&oom_queue_lock, flags);
