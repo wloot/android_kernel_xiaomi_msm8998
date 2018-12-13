@@ -177,7 +177,8 @@ static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
 		return 0;
 
 	simple_lmk_wq = alloc_workqueue("simple_lmk",
-				WQ_HIGHPRI | WQ_UNBOUND | WQ_FREEZABLE, 0);
+					WQ_HIGHPRI | WQ_FREEZABLE |
+					WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
 	BUG_ON(!simple_lmk_wq);
 
 	atomic_set(&simple_lmk_ready, 1);
