@@ -225,7 +225,7 @@ static int devfreq_memlat_get_freq(struct devfreq *df,
 					unsigned long *freq,
 					u32 *flag)
 {
-	int i, lat_dev;
+	int i, lat_dev = 0;
 	struct memlat_node *node = df->data;
 	struct memlat_hwmon *hw = node->hw;
 	unsigned long max_freq = 0;
