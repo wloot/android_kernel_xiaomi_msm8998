@@ -23,6 +23,7 @@
 #include "msm8998-blsp.dtsi"
 #include "msm8998-audio.dtsi"
 #include "msm8998-mdss.dtsi"
+#include "msm8998-common-mtp.dtsi"
 
 #include "sagit-camera-sensor-mtp.dtsi"
 
@@ -419,14 +420,6 @@
 
 &mem_client_3_size {
 	qcom,peripheral-size = <0x500000>;
-};
-
-&pmi8998_haptics {
-	status = "okay";
-	qcom,wave-play-rate-us = <5000>;
-	qcom,vmax-mv = <2830>;
-	qcom,wave-shape = "sine";
-	qcom,brake-pattern = [03 02 00 00];
 };
 
 &pm8998_vadc {
