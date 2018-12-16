@@ -23,6 +23,7 @@
 #include "msm8998-blsp.dtsi"
 #include "msm8998-audio.dtsi"
 #include "msm8998-mdss.dtsi"
+#include "msm8998-common-mtp.dtsi"
 
 #include "chiron-camera-sensor-mtp.dtsi"
 
@@ -392,15 +393,6 @@
 
 &mem_client_3_size {
 	qcom,peripheral-size = <0x500000>;
-};
-
-&pmi8998_haptics {
-	qcom,wave-play-rate-us = <4878>;
-	qcom,vmax-mv = <2552>;
-	qcom,wave-shape = "sine";
-	qcom,brake-pattern = [03 02 00 00];
-
-	status = "okay";
 };
 
 &pm8998_vadc {
