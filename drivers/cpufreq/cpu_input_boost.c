@@ -186,7 +186,8 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 
 	/* Boost CPU to max frequency for max boost */
 	if (state & MAX_BOOST) {
-		policy->min = policy->max;
+		if (cpu_rq(policy->cpu)->nr_running > 1)
+			policy->min = policy->max;
 		return NOTIFY_OK;
 	}
 
