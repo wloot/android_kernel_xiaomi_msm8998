@@ -641,6 +641,7 @@ include arch/$(SRCARCH)/Makefile
 
 ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= -O3 $(call cc-option, -fsanitize=local-init)
+KBUILD_CFLAGS	+= $(call cc-option, -ftrivial-auto-var-init=pattern)
 else
 KBUILD_CFLAGS	+= -O2
 endif
