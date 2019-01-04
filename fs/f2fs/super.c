@@ -3364,7 +3364,7 @@ skip_recovery:
 	if (test_opt(sbi, DISABLE_CHECKPOINT)) {
 		err = f2fs_disable_checkpoint(sbi);
 		if (err)
-			goto free_meta;
+			goto sync_free_meta;
 	} else if (is_set_ckpt_flags(sbi, CP_DISABLED_FLAG)) {
 		f2fs_enable_checkpoint(sbi);
 	}
@@ -3377,7 +3377,7 @@ skip_recovery:
 		/* After POR, we can run background GC thread.*/
 		err = f2fs_start_gc_thread(sbi);
 		if (err)
-			goto free_meta;
+			goto sync_free_meta;
 	}
 	kvfree(options);
 
@@ -3398,6 +3398,10 @@ skip_recovery:
 	f2fs_update_time(sbi, CP_TIME);
 	f2fs_update_time(sbi, REQ_TIME);
 	return 0;
+
+sync_free_meta:
+	/* safe to flush all the data */
+	sync_filesystem(sbi->sb);
 
 free_meta:
 #ifdef CONFIG_QUOTA
