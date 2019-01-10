@@ -70,4 +70,4 @@ endif
 
 config ZRAM_DEFAULT_COMP_ALGORITHM
 	string "Default ZRAM algorithm"
-	default "lzo"
+	default "lz4"
