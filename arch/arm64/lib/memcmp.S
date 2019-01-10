@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017 ARM Ltd. All rights reserved.
- * Copyright (c) 2013, 2018 Linaro Limited. All rights reserved.
+ * Copyright (c) 2017 ARM Ltd
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,11 +53,20 @@
 #define tmp1		x7
 #define tmp2		x8
 
-.p2align 6
+/* Small inputs of less than 8 bytes are handled separately.  This allows the
+   main code to be speed up using unaligned loads since there are now at least
+   8 bytes to be compared.  If the first 8 bytes are equal, align src1.
+   This ensures each iteration does at most one unaligned access even if both
+   src1 and src2 are unaligned, and mutually aligned inputs behave as if
+   aligned.  After the main loop, process the last 16 bytes using unaligned
+   accesses.  */
+
 ENTRY(memcmp)
+.p2align 6
 	subs	limit, limit, 8
 	b.lo	L(less8)
 
+	/* Limit >= 8, so check first 8 bytes using unaligned loads.  */
 	ldr	data1, [src1], 8
 	ldr	data2, [src2], 8
 	cmp	data1, data2
@@ -133,7 +142,7 @@ L(return):
 L(ret_eq):
 	cset	result, ne
 	cneg	result, result, lo
-        ret
+	ret
 
 	.p2align 4
 	/* Compare up to 8 bytes.  Limit is [-8..-1].  */
