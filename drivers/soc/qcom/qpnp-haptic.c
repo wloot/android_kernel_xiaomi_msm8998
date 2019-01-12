@@ -1803,19 +1803,19 @@ static ssize_t qpnp_hap_vmax_default(struct device *dev,
 	struct qpnp_hap *hap = container_of(timed_dev, struct qpnp_hap,
 					 timed_dev);
 
-	return scnprintf(buf, PAGE_SIZE, "%d\n", hap->vmax_default_mv);
+	return snprintf(buf, PAGE_SIZE, "%d\n", hap->vmax_default_mv);
 }
 
 static ssize_t qpnp_hap_vmax_max(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	return scnprintf(buf, PAGE_SIZE, "%d\n", QPNP_HAP_VMAX_MAX_MV);
+	return snprintf(buf, PAGE_SIZE, "%d\n", QPNP_HAP_VMAX_MAX_MV);
 }
 
 static ssize_t qpnp_hap_vmax_min(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	return scnprintf(buf, PAGE_SIZE, "%d\n", QPNP_HAP_VMAX_MIN_MV);
+	return snprintf(buf, PAGE_SIZE, "%d\n", QPNP_HAP_VMAX_MIN_MV);
 }
 
 /* sysfs attributes */
