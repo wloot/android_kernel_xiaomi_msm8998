@@ -60,12 +60,12 @@ config ANDROID_SIMPLE_LMK
 	depends on !ANDROID_LOW_MEMORY_KILLER
 	---help---
 	  This is a replacement for the Android Low Memory Killer driver that
-	  simply targets a predefined number of pages to be freed every time a
-	  memory allocation attempt is about to utilize direct reclaim, or
-	  whenever it seems like kswapd is having trouble freeing enough memory
-	  in a timely manner. Processes are killed according to the priorities
-	  that Android gives them; in other words, the least important processes
-	  are always killed first.
+	  simply targets a predefined number of pages to be freed every time
+	  direct reclaim fails to satisfy a memory allocation, or whenever it
+	  seems like kswapd is having trouble freeing enough memory in a timely
+	  manner. Processes are killed according to the priorities that Android
+	  gives them; in other words, the least important processes are always
+	  killed first.
 
 if ANDROID_SIMPLE_LMK
 

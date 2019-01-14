@@ -3304,10 +3304,17 @@ retry:
 	if (!is_thp_gfp_mask(gfp_mask) || (current->flags & PF_KTHREAD))
 		migration_mode = MIGRATE_SYNC_LIGHT;
 
-#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	/* Try direct reclaim and then allocating */
+	page = __alloc_pages_direct_reclaim(gfp_mask, order, alloc_flags, ac,
+							&did_some_progress);
+	if (page)
+		goto got_pg;
+
+	/* Do not loop if specifically requested */
 	if (gfp_mask & __GFP_NORETRY)
 		goto noretry;
 
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
 	ac->is_lmk_alloc = true;
 	pg_req.gfp_mask = gfp_mask;
 	pg_req.order = order;
@@ -3336,16 +3343,6 @@ retry:
 	page = pg_req.new_page;
 	goto got_pg;
 #endif
-
-	/* Try direct reclaim and then allocating */
-	page = __alloc_pages_direct_reclaim(gfp_mask, order, alloc_flags, ac,
-							&did_some_progress);
-	if (page)
-		goto got_pg;
-
-	/* Do not loop if specifically requested */
-	if (gfp_mask & __GFP_NORETRY)
-		goto noretry;
 
 	/* Keep reclaiming pages as long as there is reasonable progress */
 	pages_reclaimed += did_some_progress;
