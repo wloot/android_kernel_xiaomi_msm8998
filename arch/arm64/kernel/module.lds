@@ -1,3 +1,3 @@
 SECTIONS {
-	.plt : { BYTE(0) }
+	.plt (NOLOAD) : { BYTE(0) }
 }
