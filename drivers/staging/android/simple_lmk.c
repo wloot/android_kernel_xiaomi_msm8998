@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (C) 2018 Sultan Alsawaf <sultan@kerneltoast.com>.
+ * Copyright (C) 2018-2019 Sultan Alsawaf <sultan@kerneltoast.com>.
  */
 
 #define pr_fmt(fmt) "simple_lmk: " fmt
@@ -17,6 +17,12 @@
 	msecs_to_jiffies(CONFIG_ANDROID_SIMPLE_LMK_KSWAPD_TIMEOUT)
 #define OOM_LMK_EXPIRES \
 	msecs_to_jiffies(CONFIG_ANDROID_SIMPLE_LMK_OOM_TIMEOUT)
+
+enum {
+	DISABLED,
+	STARTING,
+	READY
+};
 
 /* Pulled from the Android framework */
 static const short int adj_prio[] = {
@@ -38,7 +44,9 @@ static DECLARE_DELAYED_WORK(reclaim_work, simple_lmk_reclaim_work);
 static DEFINE_MUTEX(reclaim_lock);
 static struct workqueue_struct *simple_lmk_wq;
 static unsigned long last_reclaim_jiffies;
-static atomic_t simple_lmk_ready = ATOMIC_INIT(0);
+static atomic_t simple_lmk_state = ATOMIC_INIT(DISABLED);
+
+#define simple_lmk_is_ready() (atomic_read(&simple_lmk_state) == READY)
 
 static unsigned long scan_and_kill(int min_adj, int max_adj,
 				   unsigned long pages_needed)
@@ -136,7 +144,7 @@ void simple_lmk_one_reclaim(void)
 {
 	unsigned long mib_freed = 0;
 
-	if (!atomic_read(&simple_lmk_ready))
+	if (!simple_lmk_is_ready())
 		return;
 
 	/* Only one memory reclaim event can occur at a time */
@@ -153,7 +161,7 @@ void simple_lmk_one_reclaim(void)
 
 void simple_lmk_start_reclaim(void)
 {
-	if (!atomic_read(&simple_lmk_ready))
+	if (!simple_lmk_is_ready())
 		return;
 
 	queue_delayed_work(simple_lmk_wq, &reclaim_work, KSWAPD_LMK_EXPIRES);
@@ -161,7 +169,7 @@ void simple_lmk_start_reclaim(void)
 
 void simple_lmk_stop_reclaim(void)
 {
-	if (!atomic_read(&simple_lmk_ready))
+	if (!simple_lmk_is_ready())
 		return;
 
 	cancel_delayed_work_sync(&reclaim_work);
@@ -170,7 +178,7 @@ void simple_lmk_stop_reclaim(void)
 /* Initialize Simple LMK when LMKD in Android writes to the minfree parameter */
 static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
 {
-	if (atomic_read(&simple_lmk_ready))
+	if (atomic_cmpxchg(&simple_lmk_state, DISABLED, STARTING) != DISABLED)
 		return 0;
 
 	simple_lmk_wq = alloc_workqueue("simple_lmk",
@@ -178,7 +186,7 @@ static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
 					WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
 	BUG_ON(!simple_lmk_wq);
 
-	atomic_set(&simple_lmk_ready, 1);
+	atomic_set(&simple_lmk_state, READY);
 	return 0;
 }
 
