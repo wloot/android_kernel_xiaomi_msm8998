@@ -57,6 +57,7 @@ struct kcal_lut_data {
 	int cont;
 };
 
+/*
 static uint32_t igc_Table_Inverted[IGC_LUT_ENTRIES] = {
 	267390960, 266342368, 265293776, 264245184,
 	263196592, 262148000, 261099408, 260050816,
@@ -148,6 +149,7 @@ static uint32_t igc_Table_RGB[IGC_LUT_ENTRIES] = {
 	240, 224, 208, 192, 176, 160, 144, 128, 112, 96, 80, 64,
 	48, 32, 16, 0
 };
+*/
 
 struct mdss_mdp_ctl *fb0_ctl = 0;
 
@@ -293,6 +295,7 @@ static void mdss_mdp_kcal_update_pa(struct kcal_lut_data *lut_data)
 	}
 }
 
+/*
 static void mdss_mdp_kcal_update_igc(struct kcal_lut_data *lut_data)
 {
 	u32 copyback = 0, copy_from_kernel = 1;
@@ -322,6 +325,7 @@ static void mdss_mdp_kcal_update_igc(struct kcal_lut_data *lut_data)
 	mdss_mdp_igc_lut_config(fb0_ctl->mfd, &igc_config, &copyback, copy_from_kernel);
 	kfree(payload);
 }
+*/
 
 static ssize_t kcal_store(struct device *dev, struct device_attribute *attr,
 						const char *buf, size_t count)
