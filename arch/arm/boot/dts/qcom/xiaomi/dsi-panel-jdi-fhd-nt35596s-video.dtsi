@@ -47,7 +47,7 @@
 		qcom,mdss-pan-physical-height-dimension = <136>;
 		qcom,cont-splash-enabled;
 		qcom,mdss-dsi-tx-eot-append;
-		qcom,mdss-dsi-min-refresh-rate = <48>;
+		qcom,mdss-dsi-min-refresh-rate = <55>;
 		qcom,mdss-dsi-max-refresh-rate = <60>;
 		qcom,mdss-dsi-pan-enable-dynamic-fps;
 		qcom,mdss-dsi-pan-fps-update = "dfps_immediate_porch_mode_vfp";
