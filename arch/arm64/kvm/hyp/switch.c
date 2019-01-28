@@ -42,7 +42,7 @@ static void __hyp_text __activate_traps(struct kvm_vcpu *vcpu)
 
 static void __hyp_text __deactivate_traps(struct kvm_vcpu *vcpu)
 {
-	write_sysreg(HCR_RW, hcr_el2);
+	write_sysreg(HCR_HOST_NVHE_FLAGS, hcr_el2);
 	write_sysreg(0, hstr_el2);
 	write_sysreg(read_sysreg(mdcr_el2) & MDCR_EL2_HPMN_MASK, mdcr_el2);
 	write_sysreg(0, cptr_el2);
