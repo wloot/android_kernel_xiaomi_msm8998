@@ -1061,7 +1061,11 @@ static int nqx_probe(struct i2c_client *client,
 	wake_lock_init(&fieldon_wl, WAKE_LOCK_SUSPEND, "nfc_locker");
 #endif
 	nqx_dev->nqx_device.minor = MISC_DYNAMIC_MINOR;
+#ifdef CONFIG_MIUI
+	nqx_dev->nqx_device.name = "pn553";
+#else
 	nqx_dev->nqx_device.name = "nq-nci";
+#endif
 	nqx_dev->nqx_device.fops = &nfc_dev_fops;
 
 	r = misc_register(&nqx_dev->nqx_device);
