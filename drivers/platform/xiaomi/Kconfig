@@ -28,3 +28,9 @@ config MACH_CHIRON
 	 Support for Xiaomi Mi Mix2, codenamed chiron.
 
 endmenu
+
+config MIUI
+        bool "MIUI for MSM8998 boards"
+        depends on MACH_XIAOMI_MSM8998
+        help
+         Support for MIUI
