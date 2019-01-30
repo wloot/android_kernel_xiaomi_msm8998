@@ -27,6 +27,11 @@ enum {
 /* Pulled from the Android framework */
 static const short int adj_prio[] = {
 	906, /* CACHED_APP_MAX_ADJ */
+	905, /* Cached app */
+	904, /* Cached app */
+	903, /* Cached app */
+	902, /* Cached app */
+	901, /* Cached app */
 	900, /* CACHED_APP_MIN_ADJ */
 	800, /* SERVICE_B_ADJ */
 	700, /* PREVIOUS_APP_ADJ */
