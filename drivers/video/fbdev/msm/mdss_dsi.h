@@ -66,6 +66,10 @@
 
 #define NONE_PANEL "none"
 
+#ifdef CONFIG_MIUI
+#define BUF_LEN_MAX    256
+#endif
+
 enum {		/* mipi dsi panel */
 	DSI_VIDEO_MODE,
 	DSI_CMD_MODE,
@@ -500,6 +504,9 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds lp_on_cmds;
 	struct dsi_panel_cmds lp_off_cmds;
 	struct dsi_panel_cmds status_cmds;
+#ifdef CONFIG_MIUI
+	char panel_read_data[BUF_LEN_MAX];
+#endif
 	u32 *status_valid_params;
 	u32 *status_cmds_rlen;
 	u32 *status_value;

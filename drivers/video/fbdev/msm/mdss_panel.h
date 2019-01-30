@@ -292,6 +292,9 @@ enum mdss_intf_events {
 	MDSS_EVENT_PANEL_CLK_CTRL,
 	MDSS_EVENT_DSI_CMDLIST_KOFF,
 	MDSS_EVENT_ENABLE_PARTIAL_ROI,
+#ifdef CONFIG_MIUI
+	MDSS_EVENT_DISPPARAM,
+#endif
 	MDSS_EVENT_DSC_PPS_SEND,
 	MDSS_EVENT_DSI_STREAM_SIZE,
 	MDSS_EVENT_DSI_UPDATE_PANEL_DATA,
@@ -893,6 +896,10 @@ struct mdss_panel_info {
 	struct mdss_mdp_pp_tear_check te;
 	struct mdss_mdp_pp_tear_check te_cached;
 
+#ifdef CONFIG_MIUI
+	uint32_t panel_paramstatus;
+#endif
+
 	/*
 	 * Value of 2 only when single DSI is configured with 2 DSC
 	 * encoders. When 2 encoders are used, currently both use
@@ -923,6 +930,19 @@ struct mdss_panel_info {
 
 	/* debugfs structure for the panel */
 	struct mdss_panel_debugfs_info *debugfs_info;
+
+#ifdef CONFIG_MIUI
+	u64 panel_active;
+	u64 kickoff_count;
+	u64 boottime;
+	u64 bootRTCtime;
+	u64 bootdays;
+
+	u64 bl_duration;
+	u64 bl_level_integral;
+	u64 bl_highlevel_duration;
+	u64 bl_lowlevel_duration;
+#endif
 
 	/* persistence mode on/off */
 	bool persist_mode;
