@@ -179,11 +179,11 @@ static struct elv_fs_entry anxiety_attrs[] = {
 static struct elevator_type elevator_anxiety = {
 	.ops = {
 		.elevator_merge_req_fn	= anxiety_merged_requests,
-		.elevator_dispatch_fn		= anxiety_dispatch,
-		.elevator_add_req_fn		= anxiety_add_request,
+		.elevator_dispatch_fn	= anxiety_dispatch,
+		.elevator_add_req_fn	= anxiety_add_request,
 		.elevator_former_req_fn	= anxiety_former_request,
 		.elevator_latter_req_fn	= anxiety_latter_request,
-		.elevator_init_fn				= anxiety_init_queue,
+		.elevator_init_fn	= anxiety_init_queue,
 	},
 	.elevator_name = "anxiety",
 	.elevator_attrs = anxiety_attrs,
