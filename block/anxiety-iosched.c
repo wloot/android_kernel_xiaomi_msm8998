@@ -8,9 +8,11 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/init.h>
+#include <linux/state_notifier.h>
 
 /* default tunable values */
 static const unsigned int max_writes_starved = 8; /* max amount of times reads can starve pending writes */
+static const unsigned int max_writes_starved_suspended = 0; /* max amount of times reads can starve pending writes during screen-off states */
 
 struct anxiety_data {
 	struct list_head queue[2];
@@ -18,6 +20,7 @@ struct anxiety_data {
 
 	/* tunables */
 	unsigned int max_writes_starved;
+	unsigned int max_writes_starved_suspended;
 };
 
 static void anxiety_merged_requests(struct request_queue *q, struct request *rq, struct request *next)
@@ -28,7 +31,7 @@ static void anxiety_merged_requests(struct request_queue *q, struct request *rq,
 static __always_inline struct request *anxiety_choose_request(struct anxiety_data *mdata)
 {
 	/* prioritize reads unless writes are exceedingly starved */
-	bool starved = mdata->writes_starved > mdata->max_writes_starved;
+	bool starved = mdata->writes_starved > (state_suspended ? mdata->max_writes_starved_suspended : mdata->max_writes_starved);
 
 	/* read */
 	if (!starved && !list_empty(&mdata->queue[READ])) {
@@ -108,6 +111,7 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 	INIT_LIST_HEAD(&data->queue[WRITE]);
 	data->writes_starved = 0;
 	data->max_writes_starved = max_writes_starved;
+	data->max_writes_starved_suspended = max_writes_starved_suspended;
 
 	/* set the elevator to us */
 	spin_lock_irq(q->queue_lock);
@@ -137,8 +141,28 @@ static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const 
 	return count;
 }
 
+static ssize_t anxiety_max_writes_starved_suspended_show(struct elevator_queue *e, char *page)
+{
+	struct anxiety_data *ad = e->elevator_data;
+
+	return snprintf(page, PAGE_SIZE, "%d\n", ad->max_writes_starved_suspended);
+}
+
+static ssize_t anxiety_max_writes_starved_suspended_store(struct elevator_queue *e, const char *page, size_t count)
+{
+	struct anxiety_data *ad = e->elevator_data;
+	int ret;
+
+	ret = kstrtouint(page, 0, &ad->max_writes_starved_suspended);
+	if (ret < 0)
+		return ret;
+
+	return count;
+}
+
 static struct elv_fs_entry anxiety_attrs[] = {
 	__ATTR(max_writes_starved, 0644, anxiety_max_writes_starved_show, anxiety_max_writes_starved_store),
+	__ATTR(max_writes_starved_suspended, 0644, anxiety_max_writes_starved_suspended_show, anxiety_max_writes_starved_suspended_store),
 	__ATTR_NULL
 };
 
