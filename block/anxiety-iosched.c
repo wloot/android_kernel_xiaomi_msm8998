@@ -1,7 +1,17 @@
 /*
  * Anxiety IO scheduler
- * Copyright (C) 2018 Draco (Tyler Nijmeh) <tylernij@gmail.com>
+ *
+ * Anxiety is designed for mobile devices that are latency
+ * sensitive. It is based on the no-op scheduler with additional
+ * tweaks and changes. Using Anxiety on Android devices with
+ * interactive and realtime workloads has proven significantly
+ * faster R/W speeds in smaller buffer sizes (ie. databases,
+ * journals, raw assets, etc).
+ *
+ * Copyright (C) 2018-2019 Draco (Tyler Nijmeh) <tylernij@gmail.com>
+ * Copyright (C) 2018 kdrag0n <dragon@khronodragon.com>
  */
+
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
 #include <linux/bio.h>
