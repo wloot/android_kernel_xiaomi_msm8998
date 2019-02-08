@@ -21,16 +21,16 @@
 #include <linux/state_notifier.h>
 
 /* default tunable values */
-static const unsigned int max_writes_starved = 8; /* max amount of times reads can starve pending writes */
-static const unsigned int max_writes_starved_suspended = 0; /* max amount of times reads can starve pending writes during screen-off states */
+static const uint8_t max_writes_starved = 8; /* max amount of times reads can starve pending writes */
+static const uint8_t max_writes_starved_suspended = 0; /* max amount of times reads can starve pending writes during screen-off states */
 
 struct anxiety_data {
 	struct list_head queue[2];
-	unsigned int writes_starved;
+	uint16_t writes_starved;
 
 	/* tunables */
-	unsigned int max_writes_starved;
-	unsigned int max_writes_starved_suspended;
+	uint8_t max_writes_starved;
+	uint8_t max_writes_starved_suspended;
 };
 
 static void anxiety_merged_requests(struct request_queue *q, struct request *rq, struct request *next)
@@ -136,7 +136,7 @@ static ssize_t anxiety_max_writes_starved_show(struct elevator_queue *e, char *p
 {
 	struct anxiety_data *ad = e->elevator_data;
 
-	return snprintf(page, PAGE_SIZE, "%d\n", ad->max_writes_starved);
+	return snprintf(page, PAGE_SIZE, "%u\n", ad->max_writes_starved);
 }
 
 static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const char *page, size_t count)
@@ -144,7 +144,7 @@ static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const 
 	struct anxiety_data *ad = e->elevator_data;
 	int ret;
 
-	ret = kstrtouint(page, 0, &ad->max_writes_starved);
+	ret = kstrtou8(page, 0, &ad->max_writes_starved);
 	if (ret < 0)
 		return ret;
 
@@ -155,7 +155,7 @@ static ssize_t anxiety_max_writes_starved_suspended_show(struct elevator_queue *
 {
 	struct anxiety_data *ad = e->elevator_data;
 
-	return snprintf(page, PAGE_SIZE, "%d\n", ad->max_writes_starved_suspended);
+	return snprintf(page, PAGE_SIZE, "%u\n", ad->max_writes_starved_suspended);
 }
 
 static ssize_t anxiety_max_writes_starved_suspended_store(struct elevator_queue *e, const char *page, size_t count)
@@ -163,7 +163,7 @@ static ssize_t anxiety_max_writes_starved_suspended_store(struct elevator_queue 
 	struct anxiety_data *ad = e->elevator_data;
 	int ret;
 
-	ret = kstrtouint(page, 0, &ad->max_writes_starved_suspended);
+	ret = kstrtou8(page, 0, &ad->max_writes_starved_suspended);
 	if (ret < 0)
 		return ret;
 
