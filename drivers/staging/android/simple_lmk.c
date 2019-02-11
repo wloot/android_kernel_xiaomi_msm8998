@@ -50,6 +50,7 @@ static DEFINE_MUTEX(reclaim_lock);
 static struct workqueue_struct *simple_lmk_wq;
 static unsigned long last_reclaim_jiffies;
 static atomic_t simple_lmk_state = ATOMIC_INIT(DISABLED);
+static cputime_t kswapd_start_time;
 
 #define simple_lmk_is_ready() (atomic_read(&simple_lmk_state) == READY)
 
@@ -130,9 +131,27 @@ static unsigned long do_lmk_reclaim(unsigned long pages_needed)
 	return pages_freed * PAGE_SIZE / SZ_1M;
 }
 
+static cputime_t get_kswapd_cputime(void)
+{
+	struct task_struct *kswapd = NODE_DATA(0)->kswapd;
+	cputime_t stime, unused;
+
+	task_cputime_adjusted(kswapd, &unused, &stime);
+	return stime;
+}
+
 static void simple_lmk_reclaim_work(struct work_struct *work)
 {
 	unsigned long mib_freed = 0;
+	cputime_t kswapd_time_now;
+	u64 delta_us;
+
+	/* Check kswapd's actual system run-time */
+	kswapd_time_now = get_kswapd_cputime();
+	delta_us = cputime_to_usecs(kswapd_time_now - kswapd_start_time);
+	if (delta_us / USEC_PER_MSEC < CONFIG_ANDROID_SIMPLE_LMK_KSWAPD_TIMEOUT)
+		goto reschedule;
+	kswapd_start_time = kswapd_time_now;
 
 	mutex_lock(&reclaim_lock);
 	if (time_after_eq(jiffies, last_reclaim_jiffies + KSWAPD_LMK_EXPIRES))
@@ -142,6 +161,7 @@ static void simple_lmk_reclaim_work(struct work_struct *work)
 	if (mib_freed)
 		pr_info("kswapd: freed %lu MiB\n", mib_freed);
 
+reschedule:
 	queue_delayed_work(simple_lmk_wq, &reclaim_work, KSWAPD_LMK_EXPIRES);
 }
 
@@ -169,6 +189,7 @@ void simple_lmk_start_reclaim(void)
 	if (!simple_lmk_is_ready())
 		return;
 
+	kswapd_start_time = get_kswapd_cputime();
 	queue_delayed_work(simple_lmk_wq, &reclaim_work, KSWAPD_LMK_EXPIRES);
 }
 
