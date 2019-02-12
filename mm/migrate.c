@@ -1156,6 +1156,7 @@ put_new:
 			put_page(newpage);
 	}
 
+
 	if (result) {
 		if (rc)
 			*result = rc;
