@@ -5,7 +5,6 @@
  * agnostic related functions.
  *
  * (c) Copyright 2003-2013 Datera, Inc.
- * Copyright (C) 2018 XiaoMi, Inc.
  *
  * Nicholas A. Bellinger <nab@kernel.org>
  *
@@ -747,7 +746,7 @@ static void scsi_dump_inquiry(struct se_device *dev)
 		else
 			buf[i] = ' ';
 	buf[i] = '\0';
-	pr_debug("  Model: %s\n", scsi_device_name(buf));
+	pr_debug("  Model: %s\n", buf);
 
 	for (i = 0; i < 4; i++)
 		if (wwn->revision[i] >= 0x20)
