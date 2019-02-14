@@ -54,6 +54,7 @@
 static const char * const pctl_names[] = {
 	"fpc1020_reset_reset",
 	"fpc1020_reset_active",
+	"fpc1020_irq_active",
 };
 
 struct vreg_config {
@@ -123,12 +124,11 @@ found:
 			vreg = NULL;
 		}
 		fpc1020->vreg[i] = vreg;
-		dev_err(dev, "fp_vdd_vreg is enabled!\n");
 	} else {
 		if (vreg) {
 			if (regulator_is_enabled(vreg)) {
 				regulator_disable(vreg);
-				dev_err(dev, "disabled %s\n", name);
+				dev_dbg(dev, "disabled %s\n", name);
 			}
 			regulator_put(vreg);
 			fpc1020->vreg[i] = NULL;
@@ -214,22 +214,23 @@ static ssize_t regulator_enable_set(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct fpc1020_data *fpc1020 = dev_get_drvdata(dev);
-	int rc = 0;
+	char op;
+	char name[16];
+	int rc;
+	bool enable;
 
-	if (!strncmp(buf, "e", strlen("e"))) {
-		mutex_lock(&fpc1020->lock);
-		rc = vreg_setup(fpc1020, "fp_vdd_vreg", true);
-		mutex_unlock(&fpc1020->lock);
-		dev_err(dev, "enable fp_vdd_vreg!, rc = %d\n", rc);
-	} else if (!strncmp(buf, "d", strlen("d"))) {
-		mutex_lock(&fpc1020->lock);
-		rc = vreg_setup(fpc1020, "fp_vdd_vreg", false);
-		mutex_unlock(&fpc1020->lock);
-		dev_err(dev, "disable fp_vdd_vreg!, rc = %d\n", rc);
-	} else {
-		dev_err(dev, "operation disable!\n");
-		rc = 1;
-	}
+	if (NUM_PARAMS_REG_ENABLE_SET != sscanf(buf, "%15[^,],%c", name, &op))
+		return -EINVAL;
+	if (op == 'e')
+		enable = true;
+	else if (op == 'd')
+		enable = false;
+	else
+		return -EINVAL;
+
+	mutex_lock(&fpc1020->lock);
+	rc = vreg_setup(fpc1020, name, enable);
+	mutex_unlock(&fpc1020->lock);
 
 	return rc ? rc : count;
 }
@@ -299,6 +300,11 @@ static int device_prepare(struct fpc1020_data *fpc1020, bool enable)
 
 	mutex_lock(&fpc1020->lock);
 	if (enable && !fpc1020->prepared) {
+		rc = select_pin_ctl(fpc1020, "fpc1020_irq_active");
+		if (rc) {
+			pr_err("irq gpio set active failed\n");
+			goto exit;
+		}
 
 		rc = fpc1020_request_named_gpio(fpc1020, "fpc,gpio_irq",
 					&fpc1020->irq_gpio);
@@ -306,7 +312,12 @@ static int device_prepare(struct fpc1020_data *fpc1020, bool enable)
 			pr_err("irq gpio request failed\n");
 			goto exit;
 		}
-
+		rc = fpc1020_request_named_gpio(fpc1020, "fpc,gpio_rst",
+					&fpc1020->rst_gpio);
+		if (rc) {
+			pr_err("reset gpio request failed\n");
+			goto irq_gpio_exit;
+		}
 		rc = devm_request_threaded_irq(dev, gpio_to_irq(fpc1020->irq_gpio),
 				NULL, fpc1020_irq_handler, fpc1020->irqf,
 				dev_name(dev), fpc1020);
@@ -346,7 +357,8 @@ free_irq_exit:
 		disable_irq(gpio_to_irq(fpc1020->irq_gpio));
 		devm_free_irq(dev, gpio_to_irq(fpc1020->irq_gpio), fpc1020);
 rst_gpio_exit:
-
+		devm_gpio_free(dev, fpc1020->rst_gpio);
+irq_gpio_exit:
 		devm_gpio_free(dev, fpc1020->irq_gpio);
 exit:
 		fpc1020->prepared = false;
@@ -391,7 +403,6 @@ static ssize_t wakeup_enable_set(struct device *dev,
 	ssize_t ret = count;
 
 	mutex_lock(&fpc1020->lock);
-
 	mutex_unlock(&fpc1020->lock);
 
 	return ret;
@@ -561,7 +572,7 @@ static int fpc1020_probe(struct platform_device *pdev)
 	atomic_set(&fpc1020->wakeup_enabled, 1);
 
 	fpc1020->irqf = IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_PERF_CRITICAL | IRQF_NO_SUSPEND;
-
+	device_init_wakeup(dev, 1);
 	mutex_init(&fpc1020->lock);
 
 	wake_lock_init(&fpc1020->ttw_wl, WAKE_LOCK_SUSPEND, "fpc_ttw_wl");
@@ -576,9 +587,7 @@ static int fpc1020_probe(struct platform_device *pdev)
 		dev_info(dev, "Enabling hardware\n");
 		(void)device_prepare(fpc1020, true);
 	}
-
 	dev_info(dev, "%s: ok\n", __func__);
-
 exit:
 	return rc;
 }
@@ -591,7 +600,6 @@ static int fpc1020_remove(struct platform_device *pdev)
 	mutex_destroy(&fpc1020->lock);
 	wake_lock_destroy(&fpc1020->ttw_wl);
 	(void)vreg_setup(fpc1020, "vdd_ana", false);
-
 	dev_info(&pdev->dev, "%s\n", __func__);
 
 	return 0;
