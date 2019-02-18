@@ -645,7 +645,7 @@ endif
 ifeq ($(cc-name),clang)
 ifeq ($(ld-name),lld)
 KBUILD_CFLAGS	+= -fuse-ld=lld
-KBUILD_LDFLAGS	+= -O2
+LDFLAGS		+= -O2
 endif
 KBUILD_CPPFLAGS	+= -Qunused-arguments
 endif
