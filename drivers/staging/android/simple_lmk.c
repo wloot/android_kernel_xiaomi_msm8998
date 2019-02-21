@@ -41,8 +41,8 @@ static const short int adj_prio[] = {
 	900, /* CACHED_APP_MIN_ADJ */
 	800, /* SERVICE_B_ADJ */
 	700, /* PREVIOUS_APP_ADJ */
-	600, /* HOME_APP_ADJ */
 	500, /* SERVICE_ADJ */
+	600, /* HOME_APP_ADJ */
 	400, /* HEAVY_WEIGHT_APP_ADJ */
 	300, /* BACKUP_APP_ADJ */
 	200, /* PERCEPTIBLE_APP_ADJ */
