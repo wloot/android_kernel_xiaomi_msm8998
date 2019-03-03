@@ -10,6 +10,7 @@
 #include <linux/oom.h>
 #include <linux/sched.h>
 #include <linux/simple_lmk.h>
+#include <linux/sort.h>
 
 #define MIN_FREE_PAGES (CONFIG_ANDROID_SIMPLE_LMK_MINFREE * SZ_1M / PAGE_SIZE)
 
@@ -22,6 +23,11 @@ enum {
 	DISABLED,
 	STARTING,
 	READY
+};
+
+struct victim_info {
+	struct task_struct *victim;
+	unsigned long size;
 };
 
 /* Pulled from the Android framework */
@@ -52,17 +58,32 @@ static unsigned long last_reclaim_jiffies;
 static atomic_t simple_lmk_state = ATOMIC_INIT(DISABLED);
 static cputime_t kswapd_start_time;
 
+/* Make sure that PID_MAX_DEFAULT isn't too big, or these arrays will be huge */
+static struct victim_info victim_array[PID_MAX_DEFAULT];
+static struct victim_info *victim_ptr_array[ARRAY_SIZE(victim_array)];
+
 #define simple_lmk_is_ready() (atomic_read(&simple_lmk_state) == READY)
+
+static int victim_info_cmp(const void *lhs, const void *rhs)
+{
+	const struct victim_info **lhs_ptr = (typeof(lhs_ptr))lhs;
+	const struct victim_info **rhs_ptr = (typeof(rhs_ptr))rhs;
+
+	if ((*lhs_ptr)->size > (*rhs_ptr)->size)
+		return -1;
+
+	if ((*lhs_ptr)->size < (*rhs_ptr)->size)
+		return 1;
+
+	return 0;
+}
 
 static unsigned long scan_and_kill(int min_adj, int max_adj,
 				   unsigned long pages_needed)
 {
-	/* Boost priority of victim tasks so they can die quickly */
-	static const struct sched_param param = {
-		.sched_priority = MAX_RT_PRIO - 1
-	};
-	struct task_struct *tsk;
 	unsigned long pages_freed = 0;
+	unsigned int i, vcount = 0;
+	struct task_struct *tsk;
 
 	rcu_read_lock();
 	for_each_process(tsk) {
@@ -96,21 +117,45 @@ static unsigned long scan_and_kill(int min_adj, int max_adj,
 		if (!tasksize)
 			continue;
 
+		/* Store this potential victim away for later */
 		get_task_struct(victim);
-		if (do_send_sig_info(SIGKILL, SEND_SIG_FORCED, victim, true)) {
+		victim_array[vcount].victim = victim;
+		victim_array[vcount].size = tasksize;
+		victim_ptr_array[vcount] = &victim_array[vcount];
+		vcount++;
+
+		/* The victim array is so big that this should never happen */
+		if (unlikely(vcount == ARRAY_SIZE(victim_array)))
+			break;
+	}
+	rcu_read_unlock();
+
+	/* No potential victims for this adj range means no pages freed */
+	if (!vcount)
+		return 0;
+
+	/*
+	 * Sort the victims in descending order of size in order to kill as few
+	 * processes as possible while satisfying memory needs.
+	 */
+	sort(victim_ptr_array, vcount, sizeof(victim_ptr_array[0]),
+	     victim_info_cmp, NULL);
+
+	for (i = 0; i < vcount; i++) {
+		struct victim_info *vinfo = victim_ptr_array[i];
+		struct task_struct *victim = vinfo->victim;
+
+		if (pages_freed >= pages_needed) {
 			put_task_struct(victim);
 			continue;
 		}
 
-		victim->lmk_sigkill_sent = true;
-		sched_setscheduler_nocheck(victim, SCHED_FIFO, &param);
-		put_task_struct(victim);
+		if (!do_send_sig_info(SIGKILL, SEND_SIG_FORCED, victim, true))
+			victim->lmk_sigkill_sent = true;
 
-		pages_freed += tasksize;
-		if (pages_freed >= pages_needed)
-			break;
+		put_task_struct(victim);
+		pages_freed += vinfo->size;
 	}
-	rcu_read_unlock();
 
 	return pages_freed;
 }
