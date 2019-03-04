@@ -23,7 +23,6 @@
 #include <linux/qpnp/pwm.h>
 #include <linux/err.h>
 #include <linux/string.h>
-#include <linux/hwinfo.h>
 #include <linux/mdss_io_util.h>
 
 #include "mdss_dsi.h"
@@ -3789,7 +3788,6 @@ int mdss_dsi_panel_init(struct device_node *node,
 	static const char *panel_name;
 	struct mdss_panel_info *pinfo;
 	bool dispparam_enabled;
-	int panel_id = -1;
 	static const char *panel_model;
 
 	if (!node || !ctrl_pdata) {
@@ -3831,13 +3829,6 @@ int mdss_dsi_panel_init(struct device_node *node,
 		pr_info("Panel on dimming delay disabled\n");
 	} else
 		pr_info("Panel on dimming delay %d ms\n", pinfo->panel_on_dimming_delay);
-
-	rc = of_property_read_u32(node, "qcom,mdss-dsi-panel-id", &panel_id);
-	if (rc) {
-		pr_info("%s: panel id parse failed\n", __func__);
-		panel_id = -1;
-	}
-	update_hardware_info(TYPE_PANEL, panel_id);
 
 	panel_model = of_get_property(node, "qcom,mdss-dsi-panel-model", NULL);
 
