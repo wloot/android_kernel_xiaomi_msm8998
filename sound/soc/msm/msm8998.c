@@ -4576,8 +4576,8 @@ static int msm_set_pinctrl(struct msm_pinctrl_info *pinctrl_info,
 	}
 
 	if (pinctrl_info->pinctrl == NULL) {
-		pr_err("%s: pinctrl_info->pinctrl is NULL\n", __func__);
-		ret = -EINVAL;
+		pr_debug("%s: pinctrl_info->pinctrl is NULL\n", __func__);
+//		ret = -EINVAL;
 		goto err;
 	}
 
