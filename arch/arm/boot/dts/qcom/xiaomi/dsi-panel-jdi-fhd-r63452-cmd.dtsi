@@ -1,5 +1,5 @@
 /* Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 XiaoMi, Inc.
+ * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -20,6 +20,7 @@
 	dsi_jdi_fhd_r63452_cmd: qcom,mdss_dsi_jdi_fhd_r63452_cmd {
 		qcom,mdss-dsi-panel-name = "jdi fhd cmd incell dsi panel";
 		qcom,mdss-dsi-panel-id = <0>;
+		qcom,mdss-dsi-panel-model = "JDI FHD R63452 CMD PANEL";
 		qcom,mdss-dsi-panel-sleepwrmod = <0>;
 		qcom,mdss-dsi-panel-type = "dsi_cmd_mode";
 		qcom,mdss-dsi-panel-framerate = <60>;
@@ -72,8 +73,12 @@
 				29 00 00 00 00 00 02 b0 03
 				05 01 00 00 02 00 02 28 00
 				05 01 00 00 78 00 02 10 00];
+		qcom,mdss-dsi-displayoff-command = [05 01 00 00 20 00 02 28 00];
+		qcom,mdss-dsi-displayon-command = [05 01 00 00 20 00 02 29 00];
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-displayoff-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-displayon-command-state = "dsi_hs_mode";
 		qcom,mdss-dsi-h-sync-pulse = <0>;
 		qcom,mdss-dsi-traffic-mode = "burst_mode";
 		qcom,mdss-dsi-bllp-eof-power-mode;
