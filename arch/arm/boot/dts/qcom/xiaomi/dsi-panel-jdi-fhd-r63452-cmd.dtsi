@@ -106,6 +106,8 @@
 		qcom,mdss-dsi-te-check-enable;
 		qcom,mdss-dsi-te-using-te-pin;
 		qcom,mdss-dsi-tx-eot-append;
+		qcom,ulps-enabled;
+		qcom,suspend-ulps-enabled;
 		qcom,panel-allow-phy-poweroff;
 		qcom,mdss-panel-on-dimming-delay = <120>;
 		qcom,dispblnotify-enabled;

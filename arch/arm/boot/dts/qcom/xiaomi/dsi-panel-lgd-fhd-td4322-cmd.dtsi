@@ -77,6 +77,8 @@
 		qcom,mdss-dsi-panel-mcap-off-cmds-state = "dsi_lp_mode";
 		qcom,mdss-dsi-panel-mcap-on-cmds-state = "dsi_lp_mode";
 		qcom,mdss-dsi-tx-eot-append;
+		qcom,ulps-enabled;
+		qcom,suspend-ulps-enabled;		
 		qcom,panel-allow-phy-poweroff;
 		qcom,mdss-dsi-h-sync-pulse = <0>;
 		qcom,mdss-dsi-traffic-mode = "burst_mode";
