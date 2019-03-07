@@ -10758,11 +10758,6 @@ enum restart_beaconing_on_ch_avoid_rule {
 #define CFG_CRASH_FW_TIMEOUT_ENABLE     (1)
 #define CFG_CRASH_FW_TIMEOUT_DEFAULT    (1)
 
-/* Hold wakelock for unicast RX packets for the specified duration  */
-#define CFG_RX_WAKELOCK_TIMEOUT_NAME     "rx_wakelock_timeout"
-#define CFG_RX_WAKELOCK_TIMEOUT_DEFAULT  (7)
-#define CFG_RX_WAKELOCK_TIMEOUT_MIN      (0)
-#define CFG_RX_WAKELOCK_TIMEOUT_MAX      (100)
 
 /*
  * <ini>
@@ -11971,7 +11966,6 @@ enum hw_filter_mode {
 #define CFG_ARP_AC_CATEGORY_MAX            (3)
 #define CFG_ARP_AC_CATEGORY_DEFAULT        (3)
 
-
 /*
  * <ini>
  * g_enable_probereq_whitelist_ies - Enable IE white listing
@@ -12003,7 +11997,7 @@ enum hw_filter_mode {
  * corresponding IE needs to be included in probe request.
  *
  * Example:
- * ========
+ * =====
  * If IE 221 needs to be in the probe request, set the corresponding bit
  * as follows:
  * a= IE/32 = 221/32 = 6 = g_probe_req_ie_bitmap_6
@@ -15962,7 +15956,6 @@ struct hdd_config {
 	/* beacon count before channel switch */
 	uint8_t sap_chanswitch_beacon_cnt;
 	uint8_t sap_chanswitch_mode;
-	uint32_t rx_wakelock_timeout;
 #ifdef WLAN_FEATURE_WOW_PULSE
 	bool wow_pulse_support;
 	uint8_t wow_pulse_pin;
