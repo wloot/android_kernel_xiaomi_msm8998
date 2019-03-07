@@ -115,8 +115,6 @@ int mdss_i2c_byte_write(struct i2c_client *client, uint8_t slave_addr,
 bool mdss_panel_is_prim(void *fbinfo);
 bool mdss_prim_panel_is_dead(void);
 void mdss_panel_reset_skip_enable(bool enable);
-void mdss_dsi_ulps_enable(bool enable);
-void mdss_dsi_ulps_suspend_enable(bool enable);
 int mdss_prim_panel_fb_unblank(int timeout);
 
 #endif /* __MDSS_IO_UTIL_H__ */
