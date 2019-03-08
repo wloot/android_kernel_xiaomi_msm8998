@@ -12,13 +12,6 @@
  * GNU General Public License for more details.
  */
 
-&pmi8998_haptics {
-	status = "okay";
-	qcom,wave-play-rate-us = <5000>;
-	qcom,wave-shape = "sine";
-	qcom,brake-pattern = [03 02 00 00];
-};
-
 &red_led { /* Notification LED */
 	linux,name = "white";
 	qcom,start-idx = <1>;
