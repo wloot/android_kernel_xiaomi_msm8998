@@ -10,6 +10,9 @@
 #include <linux/fb.h>
 #include <linux/input.h>
 #include <linux/slab.h>
+#include "../../kernel/sched/sched.h"
+
+static unsigned short first_big_core;
 
 /* Available bits for boost_drv state */
 #define SCREEN_AWAKE		BIT(0)
@@ -173,6 +176,7 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 	struct boost_drv *b = container_of(nb, typeof(*b), cpu_notif);
 	struct cpufreq_policy *policy = data;
 	u32 boost_freq, state;
+	bool reject_boost = false;
 
 	if (action != CPUFREQ_ADJUST)
 		return NOTIFY_OK;
@@ -185,11 +189,19 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 		return NOTIFY_OK;
 	}
 
+	/* Don't boost big cores if there are no tasks on it */
+	if (policy->cpu >= first_big_core) {
+		if (!cpu_rq(first_big_core)->nr_running)
+			reject_boost = true;
+		pr_debug("reject_boost: %s, core: %i, first big: %i",
+				reject_boost ? "true" : "false", policy->cpu, first_big_core);
+	}
+
 	/*
 	 * Boost to policy->max if the boost frequency is higher. When
 	 * unboosting, set policy->min to the absolute min freq for the CPU.
 	 */
-	if (state & INPUT_BOOST) {
+	if (state & INPUT_BOOST && !reject_boost) {
 		boost_freq = get_boost_freq(b, policy->cpu);
 		policy->min = min(policy->max, boost_freq);
 	} else {
@@ -353,6 +365,9 @@ static int __init cpu_input_boost_init(void)
 		pr_err("Failed to register fb notifier, err: %d\n", ret);
 		goto unregister_handler;
 	}
+
+	/* Register first big core */
+	first_big_core = cpumask_first_and(cpu_perf_mask, cpu_online_mask);
 
 	boost_drv_g = b;
 
