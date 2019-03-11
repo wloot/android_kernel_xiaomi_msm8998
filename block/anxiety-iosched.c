@@ -8,7 +8,7 @@
  * faster R/W speeds in smaller buffer sizes (ie. databases,
  * journals, raw assets, etc).
  *
- * Copyright (C) 2018-2019 Draco (Tyler Nijmeh) <tylernij@gmail.com>
+ * Copyright (C) 2018-2019 Tyler Nijmeh <tylernij@gmail.com>
  * Copyright (C) 2018 kdrag0n <dragon@khronodragon.com>
  */
 
@@ -205,6 +205,6 @@ static void __exit anxiety_exit(void)
 module_init(anxiety_init);
 module_exit(anxiety_exit);
 
-MODULE_AUTHOR("Draco (Tyler Nijmeh)");
+MODULE_AUTHOR("Tyler Nijmeh");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Anxiety IO scheduler");
