@@ -62,6 +62,7 @@
 #include <linux/sched/rt.h>
 #include <linux/page_owner.h>
 #include <linux/kthread.h>
+#include <linux/simple_lmk.h>
 
 #include <asm/sections.h>
 #include <asm/tlbflush.h>
@@ -808,6 +809,11 @@ done_merging:
 			goto out;
 		}
 	}
+
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	if (simple_lmk_page_in(page, order, migratetype))
+		return;
+#endif
 
 	list_add(&page->lru, &zone->free_area[order].free_list[migratetype]);
 out:
@@ -3286,6 +3292,13 @@ retry:
 	/* Do not loop if specifically requested */
 	if (gfp_mask & __GFP_NORETRY)
 		goto noretry;
+
+#ifdef CONFIG_ANDROID_SIMPLE_LMK
+	page = simple_lmk_oom_alloc(order, ac->migratetype);
+	if (page)
+		prep_new_page(page, order, gfp_mask, alloc_flags);
+	goto got_pg;
+#endif
 
 	/* Keep reclaiming pages as long as there is reasonable progress */
 	pages_reclaimed += did_some_progress;
