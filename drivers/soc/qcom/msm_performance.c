@@ -25,7 +25,9 @@
 #include <linux/module.h>
 #include <linux/input.h>
 #include <linux/kthread.h>
+#include "../../kernel/sched/sched.h"
 
+static unsigned short first_lp_core;
 static unsigned int use_input_evts_with_hi_slvt_detect;
 static struct mutex managed_cpus_lock;
 
@@ -404,6 +406,12 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 	cpumask_var_t limit_mask;
 	int ret;
 
+        static const char *reset = "0:0 4:0";
+        bool reject_boost = !cpu_rq(first_lp_core)->nr_running;
+
+	if (reject_boost)
+		cp = reset;
+
 	while ((cp = strpbrk(cp + 1, " :")))
 		ntokens++;
 
@@ -411,7 +419,10 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 	if (!(ntokens % 2))
 		return -EINVAL;
 
-	cp = buf;
+	if (reject_boost)
+		cp = reset;
+	else
+		cp = buf;
 	cpumask_clear(limit_mask);
 	for (i = 0; i < ntokens; i += 2) {
 		if (sscanf(cp, "%u:%u", &cpu, &val) != 2)
@@ -2787,6 +2798,8 @@ static int __init msm_performance_init(void)
 	register_cpu_notifier(&msm_performance_cpu_notifier);
 
 	init_events_group();
+
+	first_lp_core = cpumask_first_and(cpu_lp_mask, cpu_online_mask);
 
 	return 0;
 }
