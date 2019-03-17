@@ -7617,10 +7617,6 @@ static int msm_init_wsa_dev(struct platform_device *pdev,
 	int found = 0;
 	int ret = 0;
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	return ret;
-#endif
-
 	/* Get maximum WSA device count for this platform */
 	ret = of_property_read_u32(pdev->dev.of_node,
 				   "qcom,wsa-max-devs", &wsa_max_devs);
@@ -7628,6 +7624,9 @@ static int msm_init_wsa_dev(struct platform_device *pdev,
 		dev_dbg(&pdev->dev,
 			 "%s: wsa-max-devs property missing in DT %s, ret = %d\n",
 			 __func__, pdev->dev.of_node->full_name, ret);
+#ifdef CONFIG_MACH_XIAOMI_MSM8998
+		ret = 0;
+#endif
 		goto err_dt;
 	}
 	if (wsa_max_devs == 0) {
