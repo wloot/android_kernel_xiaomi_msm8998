@@ -40,25 +40,25 @@ static void anxiety_merged_requests(struct request_queue *q, struct request *rq,
 	rq_fifo_clear(next);
 }
 
-static __always_inline struct request *anxiety_choose_request(struct anxiety_data *mdata)
+static __always_inline struct request *anxiety_choose_request(struct anxiety_data *adata)
 {
 	/* Prioritize reads unless writes are exceedingly starved */
-	bool starved = mdata->writes_starved > (mdata->display_on ? mdata->max_writes_starved_suspended : mdata->max_writes_starved);
+	bool starved = adata->writes_starved > (adata->display_on ? adata->max_writes_starved_suspended : adata->max_writes_starved);
 
 	/* Handle a read request */
-	if (!starved && !list_empty(&mdata->queue[READ])) {
-		mdata->writes_starved++;
-		return rq_entry_fifo(mdata->queue[READ].next);
+	if (!starved && !list_empty(&adata->queue[READ])) {
+		adata->writes_starved++;
+		return rq_entry_fifo(adata->queue[READ].next);
 	}
 
 	/* Handle a write request */
-	if (!list_empty(&mdata->queue[WRITE])) {
-		mdata->writes_starved = 0;
-		return rq_entry_fifo(mdata->queue[WRITE].next);
+	if (!list_empty(&adata->queue[WRITE])) {
+		adata->writes_starved = 0;
+		return rq_entry_fifo(adata->queue[WRITE].next);
 	}
 
 	/* If there are no requests, then there is nothing to starve */
-	mdata->writes_starved = 0;
+	adata->writes_starved = 0;
 	return NULL;
 }
 
@@ -105,7 +105,7 @@ static struct request *anxiety_latter_request(struct request_queue *q, struct re
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data)
 {
-	struct anxiety_data *data = container_of(self, struct anxiety_data, fb_notifier);
+	struct anxiety_data *adata = container_of(self, struct anxiety_data, fb_notifier);
 	struct fb_event *evdata = data;
 	int *blank;
 
@@ -113,13 +113,13 @@ static int fb_notifier_callback(struct notifier_block *self,
 		blank = evdata->data;
 		switch (*blank) {
 			case FB_BLANK_UNBLANK:
-				data->display_on = true;
+				adata->display_on = true;
 				break;
 			case FB_BLANK_POWERDOWN:
 			case FB_BLANK_HSYNC_SUSPEND:
 			case FB_BLANK_VSYNC_SUSPEND:
 			case FB_BLANK_NORMAL:
-				data->display_on = false;
+				adata->display_on = false;
 				break;
 		}
 	}
@@ -129,31 +129,31 @@ static int fb_notifier_callback(struct notifier_block *self,
 
 static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv)
 {
-	struct anxiety_data *data;
+	struct anxiety_data *adata;
 	struct elevator_queue *eq = elevator_alloc(q, elv);
 
 	if (!eq)
 		return -ENOMEM;
 
 	/* Allocate the data */
-	data = kmalloc_node(sizeof(*data), GFP_KERNEL, q->node);
-	if (!data) {
+	adata = kmalloc_node(sizeof(*adata), GFP_KERNEL, q->node);
+	if (!adata) {
 		kobject_put(&eq->kobj);
 		return -ENOMEM;
 	}
 
 	/* Set the elevator data */
-	eq->elevator_data = data;
+	eq->elevator_data = adata;
 
 	/* Initialize */
-	INIT_LIST_HEAD(&data->queue[READ]);
-	INIT_LIST_HEAD(&data->queue[WRITE]);
-	data->writes_starved = 0;
-	data->max_writes_starved = DEFAULT_MAX_WRITES_STARVED;
-	data->max_writes_starved_suspended = DEFAULT_MAX_WRITES_STARVED_SUSPENDED;
+	INIT_LIST_HEAD(&adata->queue[READ]);
+	INIT_LIST_HEAD(&adata->queue[WRITE]);
+	adata->writes_starved = 0;
+	adata->max_writes_starved = DEFAULT_MAX_WRITES_STARVED;
+	adata->max_writes_starved_suspended = DEFAULT_MAX_WRITES_STARVED_SUSPENDED;
 
-	data->fb_notifier.notifier_call = fb_notifier_callback;
-	fb_register_client(&data->fb_notifier);
+	adata->fb_notifier.notifier_call = fb_notifier_callback;
+	fb_register_client(&adata->fb_notifier);
 
 	/* Set elevator to Anxiety */
 	spin_lock_irq(q->queue_lock);
@@ -175,17 +175,17 @@ static void anxiety_exit_queue(struct elevator_queue *e)
 /* Sysfs access */
 static ssize_t anxiety_max_writes_starved_show(struct elevator_queue *e, char *page)
 {
-	struct anxiety_data *ad = e->elevator_data;
+	struct anxiety_data *adata = e->elevator_data;
 
-	return snprintf(page, PAGE_SIZE, "%u\n", ad->max_writes_starved);
+	return snprintf(page, PAGE_SIZE, "%u\n", adata->max_writes_starved);
 }
 
 static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const char *page, size_t count)
 {
-	struct anxiety_data *ad = e->elevator_data;
+	struct anxiety_data *adata = e->elevator_data;
 	int ret;
 
-	ret = kstrtou8(page, 0, &ad->max_writes_starved);
+	ret = kstrtou8(page, 0, &adata->max_writes_starved);
 	if (ret < 0)
 		return ret;
 
@@ -194,17 +194,17 @@ static ssize_t anxiety_max_writes_starved_store(struct elevator_queue *e, const 
 
 static ssize_t anxiety_max_writes_starved_suspended_show(struct elevator_queue *e, char *page)
 {
-	struct anxiety_data *ad = e->elevator_data;
+	struct anxiety_data *adata = e->elevator_data;
 
-	return snprintf(page, PAGE_SIZE, "%u\n", ad->max_writes_starved_suspended);
+	return snprintf(page, PAGE_SIZE, "%u\n", adata->max_writes_starved_suspended);
 }
 
 static ssize_t anxiety_max_writes_starved_suspended_store(struct elevator_queue *e, const char *page, size_t count)
 {
-	struct anxiety_data *ad = e->elevator_data;
+	struct anxiety_data *adata = e->elevator_data;
 	int ret;
 
-	ret = kstrtou8(page, 0, &ad->max_writes_starved_suspended);
+	ret = kstrtou8(page, 0, &adata->max_writes_starved_suspended);
 	if (ret < 0)
 		return ret;
 
