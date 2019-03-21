@@ -133,6 +133,13 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 	return 0;
 }
 
+static void anxiety_exit_queue(struct elevator_queue *e)
+{
+	struct anxiety_data *mdata = e->elevator_data;
+
+	kfree(mdata);
+}
+
 /* Sysfs access */
 static ssize_t anxiety_max_writes_starved_show(struct elevator_queue *e, char *page)
 {
@@ -186,6 +193,7 @@ static struct elevator_type elevator_anxiety = {
 		.elevator_former_req_fn	= anxiety_former_request,
 		.elevator_latter_req_fn	= anxiety_latter_request,
 		.elevator_init_fn	= anxiety_init_queue,
+		.elevator_exit_fn	= anxiety_exit_queue,
 	},
 	.elevator_name = "anxiety",
 	.elevator_attrs = anxiety_attrs,
