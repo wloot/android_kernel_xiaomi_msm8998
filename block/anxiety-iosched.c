@@ -18,7 +18,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/init.h>
-#include <linux/state_notifier.h>
+#include <linux/fb.h>
 
 /* Default tunable values */
 #define	DEFAULT_MAX_WRITES_STARVED		2	/* Max times reads can starve a write */
@@ -27,6 +27,8 @@
 struct anxiety_data {
 	struct list_head queue[2];
 	uint16_t writes_starved;
+	struct notifier_block fb_notifier;
+	bool display_on;
 
 	/* Tunables */
 	uint8_t max_writes_starved;
@@ -41,7 +43,7 @@ static void anxiety_merged_requests(struct request_queue *q, struct request *rq,
 static __always_inline struct request *anxiety_choose_request(struct anxiety_data *mdata)
 {
 	/* Prioritize reads unless writes are exceedingly starved */
-	bool starved = mdata->writes_starved > (state_suspended ? mdata->max_writes_starved_suspended : mdata->max_writes_starved);
+	bool starved = mdata->writes_starved > (mdata->display_on ? mdata->max_writes_starved_suspended : mdata->max_writes_starved);
 
 	/* Handle a read request */
 	if (!starved && !list_empty(&mdata->queue[READ])) {
@@ -100,6 +102,31 @@ static struct request *anxiety_latter_request(struct request_queue *q, struct re
 	return list_next_entry(rq, queuelist);
 }
 
+static int fb_notifier_callback(struct notifier_block *self,
+				unsigned long event, void *data)
+{
+	struct anxiety_data *data = container_of(self, struct anxiety_data, fb_notifier);
+	struct fb_event *evdata = data;
+	int *blank;
+
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+				data->display_on = true;
+				break;
+			case FB_BLANK_POWERDOWN:
+			case FB_BLANK_HSYNC_SUSPEND:
+			case FB_BLANK_VSYNC_SUSPEND:
+			case FB_BLANK_NORMAL:
+				data->display_on = false;
+				break;
+		}
+	}
+
+	return 0;
+}
+
 static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv)
 {
 	struct anxiety_data *data;
@@ -125,6 +152,9 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 	data->max_writes_starved = DEFAULT_MAX_WRITES_STARVED;
 	data->max_writes_starved_suspended = DEFAULT_MAX_WRITES_STARVED_SUSPENDED;
 
+	data->fb_notifier.notifier_call = fb_notifier_callback;
+	fb_register_client(&data->fb_notifier);
+
 	/* Set elevator to Anxiety */
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
@@ -135,9 +165,11 @@ static int anxiety_init_queue(struct request_queue *q, struct elevator_type *elv
 
 static void anxiety_exit_queue(struct elevator_queue *e)
 {
-	struct anxiety_data *mdata = e->elevator_data;
+	struct anxiety_data *adata = e->elevator_data;
 
-	kfree(mdata);
+	fb_unregister_client(&adata->fb_notifier);
+
+	kfree(adata);
 }
 
 /* Sysfs access */
