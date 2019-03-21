@@ -21,7 +21,7 @@
 #include <linux/state_notifier.h>
 
 /* Default tunable values */
-#define	DEFAULT_MAX_WRITES_STARVED		8	/* Max times reads can starve a write */
+#define	DEFAULT_MAX_WRITES_STARVED		2	/* Max times reads can starve a write */
 #define	DEFAULT_MAX_WRITES_STARVED_SUSPENDED	0	/* Ditto but during screen-off states */
 
 struct anxiety_data {
