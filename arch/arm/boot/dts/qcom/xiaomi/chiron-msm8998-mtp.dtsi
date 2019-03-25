@@ -612,6 +612,22 @@
 	};
 };
 
+&wsa881x_0211 {
+        status = "disabled";
+};
+
+&wsa881x_0212 {
+        status = "disabled";
+};
+
+&wsa881x_0213 {
+        status = "disabled";
+};
+
+&wsa881x_0214 {
+        status = "disabled";
+};
+
 &soc {
 	smp2pgpio_rdbg_5_in: qcom,smp2pgpio-rdbg-5-in {
 		status = "disabled";
