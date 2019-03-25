@@ -639,11 +639,7 @@ ARCH_AFLAGS :=
 ARCH_CFLAGS :=
 include arch/$(SRCARCH)/Makefile
 
-ifeq ($(cc-name),clang)
-KBUILD_CFLAGS	+= -O3 $(call cc-option, -fsanitize=local-init)
-else
-KBUILD_CFLAGS	+= -O2
-endif
+KBUILD_CFLAGS	+= -O3
 
 KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
@@ -739,6 +735,8 @@ KBUILD_CFLAGS += $(call cc-disable-warning, tautological-compare)
 # See modpost pattern 2
 KBUILD_CFLAGS += $(call cc-option, -mno-global-merge,)
 KBUILD_CFLAGS += $(call cc-option, -fcatch-undefined-behavior)
+
+KBUILD_CFLAGS	+= $(call cc-option, -fsanitize=local-init)
 else
 
 # These warnings generated too much noise in a regular build.
