@@ -127,27 +127,3 @@
 		};
 	};
 };
-
-&dsi_jdi_fhd_r63452_cmd {
-	qcom,mdss-dsi-panel-timings = [00 1a 07 06 0a 11 07 07 05 03 04 00];
-	qcom,mdss-dsi-t-clk-post = <0x07>;
-	qcom,mdss-dsi-t-clk-pre = <0x28>;
-};
-
-&dsi_lgd_fhd_td4322_cmd {
-	qcom,mdss-dsi-panel-timings = [00 1a 07 06 0a 11 07 07 05 03 04 00];
-	qcom,mdss-dsi-t-clk-post = <0x07>;
-	qcom,mdss-dsi-t-clk-pre = <0x28>;
-};
-
-&dsi_jdi_fhd_nt35596s_video {
-	qcom,mdss-dsi-panel-timings = [00 22 08 08 24 24 08 08 05 03 04 00];
-	qcom,mdss-dsi-t-clk-post = <0x0E>;
-	qcom,mdss-dsi-t-clk-pre = <0x34>;
-};
-
-&dsi_jdi_fhd_nt35596s_pro_video {
-	qcom,mdss-dsi-panel-timings = [00 1F 08 08 24 22 08 08 05 03 04 00];
-	qcom,mdss-dsi-t-clk-post = <0x0D>;
-	qcom,mdss-dsi-t-clk-pre = <0x30>;
-};
