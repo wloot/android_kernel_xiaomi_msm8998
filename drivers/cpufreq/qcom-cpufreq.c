@@ -27,6 +27,7 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
+#include <linux/delay.h>
 #include <trace/events/power.h>
 
 static DEFINE_MUTEX(l2bw_lock);
@@ -74,8 +75,11 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 	int ret = 0;
 	int index;
 	struct cpufreq_frequency_table *table;
+	struct clk *c = cpu_clk[policy->cpu];
+	s64 delta_us;
 
 	mutex_lock(&per_cpu(suspend_data, policy->cpu).suspend_mutex);
+	mutex_lock(&c->update_lock);
 
 	if (target_freq == policy->cur)
 		goto done;
@@ -105,9 +109,16 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 		policy->cpu, target_freq, relation,
 		policy->min, policy->max, table[index].frequency);
 
+	/* The old rate needs time to settle before it can be changed again */
+	delta_us = ktime_us_delta(ktime_get_boottime(), c->last_update);
+	if (delta_us < 10000)
+		usleep_range(10000 - delta_us, 11000 - delta_us);
+	c->last_update = ktime_get_boottime();
+
 	ret = set_cpu_freq(policy, table[index].frequency,
 			   table[index].driver_data);
 done:
+	mutex_unlock(&c->update_lock);
 	mutex_unlock(&per_cpu(suspend_data, policy->cpu).suspend_mutex);
 	return ret;
 }
