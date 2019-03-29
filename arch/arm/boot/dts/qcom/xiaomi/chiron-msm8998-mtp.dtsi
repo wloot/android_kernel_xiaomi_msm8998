@@ -23,6 +23,7 @@
 #include "msm8998-blsp.dtsi"
 #include "msm8998-audio.dtsi"
 #include "msm8998-mdss.dtsi"
+#include "msm8998-common-mtp.dtsi"
 
 #include "chiron-camera-sensor-mtp.dtsi"
 
