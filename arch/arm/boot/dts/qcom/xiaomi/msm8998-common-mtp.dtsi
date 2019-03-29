@@ -36,3 +36,11 @@
 &uartblsp2dm1 {
 	status = "disabled";
 };
+
+&soc {
+	sn_fuse: snfuse@0x786134 {
+	    compatible = "qcom,sn-fuse";
+	    reg = <0x786134 0x4>;
+	    reg-names = "sn-base";
+	};
+};
