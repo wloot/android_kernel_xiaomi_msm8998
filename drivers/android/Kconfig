@@ -41,34 +41,6 @@ config ANDROID_BINDER_IPC_SELFTEST
 	  exhaustively with combinations of various buffer sizes and
 	  alignments.
 
-config ANDROID_SIMPLE_LMK
-	bool "Simple Android Low Memory Killer"
-	depends on !MEMCG
-	---help---
-	  This is a complete low memory killer solution for Android that is
-	  small and simple. It is integrated deeply into the page allocator to
-	  know exactly when a page allocation hits OOM and exactly when a page
-	  is freed. Processes are killed according to the priorities that
-	  Android gives them, so that the least important processes are always
-	  killed first.
-
-if ANDROID_SIMPLE_LMK
-
-config ANDROID_SIMPLE_LMK_MINFREE
-	int "Minimum MiB of memory to free per reclaim"
-	default "64"
-	help
-	  Simple LMK will free at least this many MiB of memory per reclaim.
-
-config ANDROID_SIMPLE_LMK_KILL_TIMEOUT
-	int "Kill timeout in milliseconds"
-	default "20"
-	help
-	  Simple LMK will only perform memory reclaim at most once per this
-	  amount of time.
-
-endif # if ANDROID_SIMPLE_LMK
-
 endif # if ANDROID
 
 endmenu
