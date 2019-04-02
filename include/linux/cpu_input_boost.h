@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (C) 2018 Sultan Alsawaf <sultan@kerneltoast.com>.
+ * Copyright (C) 2018-2019 Sultan Alsawaf <sultan@kerneltoast.com>.
  */
 #ifndef _CPU_INPUT_BOOST_H_
 #define _CPU_INPUT_BOOST_H_
