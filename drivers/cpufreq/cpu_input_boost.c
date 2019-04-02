@@ -12,6 +12,7 @@
 #include <linux/kthread.h>
 #include <linux/slab.h>
 #include <linux/version.h>
+#include "../../kernel/sched/sched.h"
 
 /* The sched_param struct is located elsewhere in newer kernels */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
@@ -35,12 +36,17 @@ struct boost_drv {
 
 static struct boost_drv *boost_drv_g __read_mostly;
 
+static __read_mostly unsigned int CONSERVATIVE_BOOST_FREQ_LP = 825600;
+
 static u32 get_input_boost_freq(struct cpufreq_policy *policy)
 {
 	u32 freq;
 
 	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
-		freq = CONFIG_INPUT_BOOST_FREQ_LP;
+		if (cpu_rq(policy->cpu)->nr_running < 1)
+			return CONSERVATIVE_BOOST_FREQ_LP;
+		else
+			freq = CONFIG_INPUT_BOOST_FREQ_LP;
 	else
 		freq = CONFIG_INPUT_BOOST_FREQ_PERF;
 
