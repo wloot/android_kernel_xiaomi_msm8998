@@ -402,7 +402,6 @@ static int stm_char_release(struct inode *inode, struct file *file)
 				  stmf->output.channel);
 
 	stm_output_free(stm, &stmf->output);
-
 	/*
 	 * matches the stm_char_open()'s
 	 * class_find_device() + try_module_get()
