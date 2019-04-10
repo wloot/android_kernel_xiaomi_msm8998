@@ -976,6 +976,8 @@ static ssize_t max_freq_store(struct device *dev, struct device_attribute *attr,
 	unsigned long value;
 	int ret;
 	unsigned long min;
+	
+	return count;
 
 	ret = sscanf(buf, "%lu", &value);
 	if (ret != 1)
