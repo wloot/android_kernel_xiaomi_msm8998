@@ -1,6 +1,5 @@
 /*
  * Copyright (c) 2009-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -558,7 +557,7 @@ static struct msm_soc_info cpu_of_id[] = {
 
 	/* Cobalt IDs */
 	[292] = {MSM_CPU_8998, "MSM8998"},
-	[319] = {MSM_CPU_8998, "APQ8998"},
+	[319] = {MSM_CPU_8998, "APQ8098"},
 
 	/* Hamster ID */
 	[306] = {MSM_CPU_HAMSTER, "MSMHAMSTER"},
@@ -1267,10 +1266,6 @@ static void * __init setup_dummy_socinfo(void)
 		dummy_socinfo.id = 246;
 		strlcpy(dummy_socinfo.build_id, "msm8996 - ",
 			sizeof(dummy_socinfo.build_id));
-	} else if (early_machine_is_msm8996_auto()) {
-		dummy_socinfo.id = 310;
-		strlcpy(dummy_socinfo.build_id, "msm8996-auto - ",
-		sizeof(dummy_socinfo.build_id));
 	} else if (early_machine_is_msm8929()) {
 		dummy_socinfo.id = 268;
 		strlcpy(dummy_socinfo.build_id, "msm8929 - ",
@@ -1319,9 +1314,9 @@ static void * __init setup_dummy_socinfo(void)
 		dummy_socinfo.id = 346;
 		strlcpy(dummy_socinfo.build_id, "sda636 - ",
 			sizeof(dummy_socinfo.build_id));
-	} else if (early_machine_is_apq8998()) {
+	} else if (early_machine_is_apq8098()) {
 		dummy_socinfo.id = 319;
-		strlcpy(dummy_socinfo.build_id, "apq8998 - ",
+		strlcpy(dummy_socinfo.build_id, "apq8098 - ",
 			sizeof(dummy_socinfo.build_id));
 	}
 
