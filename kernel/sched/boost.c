@@ -105,6 +105,8 @@ enum sched_boost_policy sched_boost_policy(void)
 
 static bool verify_boost_params(int old_val, int new_val)
 {
+	if (new_val == CONSERVATIVE_BOOST)
+		return false;
 	/*
 	 * Boost can only be turned on or off. There is no possiblity of
 	 * switching from one boost type to another or to set the same
