@@ -1,5 +1,4 @@
 /* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -302,7 +301,6 @@ struct fg_batt_props {
 	int		float_volt_uv;
 	int		vbatt_full_mv;
 	int		fastchg_curr_ma;
-	int		nom_cap_uah;
 };
 
 struct fg_cyc_ctr_data {
@@ -461,7 +459,6 @@ struct fg_chip {
 	bool			use_ima_single_mode;
 	bool			qnovo_enable;
 	bool			suspended;
-	bool			report_full;
 	struct completion	soc_update;
 	struct completion	soc_ready;
 	struct delayed_work	profile_load_work;
@@ -470,7 +467,6 @@ struct fg_chip {
 	struct delayed_work	sram_dump_work;
 	struct work_struct	esr_filter_work;
 	struct alarm		esr_filter_alarm;
-	struct delayed_work	soc_work;
 	ktime_t			last_delta_temp_time;
 	struct fg_saved_data	saved_data[POWER_SUPPLY_PROP_MAX];
 };
