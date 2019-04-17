@@ -19,7 +19,6 @@
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#define DEBUG
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/err.h>
@@ -33,14 +32,6 @@
 #include <linux/mfd/msm-cdc-pinctrl.h>
 #include <soc/qcom/socinfo.h>
 #include "usb-headset.h"
-
-#undef pr_debug
-#define pr_debug pr_err
-#undef dev_dbg
-#define dev_dbg dev_err
-#undef pr_info
-#define pr_info pr_err
-
 
 #define USBHS_SWITCH_AUDIO		0
 #define USBHS_SWITCH_USB		1
