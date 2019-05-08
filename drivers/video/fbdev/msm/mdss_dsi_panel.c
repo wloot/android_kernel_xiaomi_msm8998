@@ -1228,7 +1228,7 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0x100:		/*cabc on*/
 		if (ctrl->dispparam_cabcon_cmds.cmd_cnt) {
-			pr_info("cabcon\n");
+			pr_debug("cabcon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1317,7 +1317,7 @@ static int mdss_dsi_panel_dispparam(struct mdss_panel_data *pdata)
 	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	param = pdata->panel_info.panel_paramstatus;
-	pr_info("param 0x%x\n", param);
+	pr_debug("param 0x%x\n", param);
 	/* support oled hbm mode */
 	switch (param) {
 	case 0xD00:
