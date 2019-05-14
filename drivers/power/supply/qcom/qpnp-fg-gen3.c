@@ -762,6 +762,7 @@ static int fg_get_msoc_raw(struct fg_chip *chip, int *val)
 
 #define FULL_CAPACITY	100
 #define FULL_SOC_RAW	255
+#define FULL_SOC_REPORT_THR     250
 static int fg_get_msoc(struct fg_chip *chip, int *msoc)
 {
 	int rc;
@@ -780,6 +781,12 @@ static int fg_get_msoc(struct fg_chip *chip, int *msoc)
 		*msoc = 100;
 	else if (*msoc == 0)
 		*msoc = 0;
+	else if ((*msoc >= FULL_SOC_REPORT_THR)
+			&& (*msoc < FULL_SOC_RAW) && chip->report_full) {
+		*msoc = DIV_ROUND_CLOSEST(*msoc * FULL_CAPACITY, FULL_SOC_RAW) + 1;
+		if (*msoc >= FULL_CAPACITY)
+		*msoc = FULL_CAPACITY;
+	}
 	else
 		*msoc = DIV_ROUND_CLOSEST((*msoc - 1) * (FULL_CAPACITY - 2),
 				FULL_SOC_RAW - 2) + 1;
@@ -1029,6 +1036,13 @@ static int fg_get_batt_profile(struct fg_chip *chip)
 	if (rc < 0) {
 		pr_err("battery cc_cv threshold unavailable, rc:%d\n", rc);
 		chip->bp.vbatt_full_mv = -EINVAL;
+	}
+
+	rc = of_property_read_u32(profile_node, "qcom,nom-batt-capacity-mah",
+			&chip->bp.nom_cap_uah);
+	if (rc < 0) {
+		pr_err("battery nominal capacity unavailable, rc:%d\n", rc);
+		chip->bp.nom_cap_uah = -EINVAL;
 	}
 
 	data = of_get_property(profile_node, "qcom,fg-profile-data", &len);
@@ -2042,6 +2056,7 @@ static int fg_set_constant_chg_voltage(struct fg_chip *chip, int volt_uv)
 	return 0;
 }
 
+#define DEFAULT_RECHARGE_SOC_RAW 0xfd
 static int fg_set_recharge_soc(struct fg_chip *chip, int recharge_soc)
 {
 	u8 buf;
@@ -2054,6 +2069,11 @@ static int fg_set_recharge_soc(struct fg_chip *chip, int recharge_soc)
 		return 0;
 
 	fg_encode(chip->sp, FG_SRAM_RECHARGE_SOC_THR, recharge_soc, &buf);
+
+	if ((buf <= DEFAULT_RECHARGE_SOC_RAW)
+						&& (chip->health != POWER_SUPPLY_HEALTH_WARM))
+				buf += 1;
+
 	rc = fg_sram_write(chip,
 			chip->sp[FG_SRAM_RECHARGE_SOC_THR].addr_word,
 			chip->sp[FG_SRAM_RECHARGE_SOC_THR].addr_byte, &buf,
@@ -2090,25 +2110,20 @@ static int fg_adjust_recharge_soc(struct fg_chip *chip)
 	 * the recharge SOC threshold based on the monotonic SOC at which
 	 * the charge termination had happened.
 	 */
-	if (is_input_present(chip)) {
+	if (is_input_present(chip) && !chip->recharge_soc_adjusted) {
 		if (chip->charge_done) {
-			if (!chip->recharge_soc_adjusted) {
-				/* Get raw monotonic SOC for calculation */
-				rc = fg_get_msoc(chip, &msoc);
-				if (rc < 0) {
-					pr_err("Error in getting msoc, rc=%d\n",
-						rc);
-					return rc;
-				}
-
-				/* Adjust the recharge_soc threshold */
-				new_recharge_soc = msoc - (FULL_CAPACITY -
-								recharge_soc);
-				chip->recharge_soc_adjusted = true;
-			} else {
-				/* adjusted already, do nothing */
+			if (chip->health == POWER_SUPPLY_HEALTH_GOOD)
 				return 0;
+			/* Get raw monotonic SOC for calculation */
+			rc = fg_get_msoc(chip, &msoc);
+			if (rc < 0) {
+				pr_err("Error in getting msoc, rc=%d\n", rc);
+				return rc;
 			}
+
+			/* Adjust the recharge_soc threshold */
+			new_recharge_soc = msoc - (FULL_CAPACITY - recharge_soc);
+			chip->recharge_soc_adjusted = true;
 		} else {
 			if (!chip->recharge_soc_adjusted)
 				return 0;
@@ -2120,10 +2135,13 @@ static int fg_adjust_recharge_soc(struct fg_chip *chip)
 			new_recharge_soc = recharge_soc;
 			chip->recharge_soc_adjusted = false;
 		}
-	} else {
+	} else if ((!is_input_present(chip) || chip->health == POWER_SUPPLY_HEALTH_GOOD)
+							&& chip->recharge_soc_adjusted) {
 		/* Restore the default value */
 		new_recharge_soc = recharge_soc;
 		chip->recharge_soc_adjusted = false;
+	} else {
+		return 0;
 	}
 
 	rc = fg_set_recharge_soc(chip, new_recharge_soc);
@@ -2517,6 +2535,7 @@ static void fg_ttf_update(struct fg_chip *chip)
 	int delay_ms;
 	union power_supply_propval prop = {0, };
 	int online = 0;
+	int msoc = 0;
 
 	if (usb_psy_initialized(chip)) {
 		rc = power_supply_get_property(chip->usb_psy,
@@ -2551,6 +2570,24 @@ static void fg_ttf_update(struct fg_chip *chip)
 		online = online || prop.intval;
 	}
 
+	chip->charge_done = prop.intval;
+		 if (chip->charge_done && !chip->report_full) {
+				chip->report_full = true;
+		 } else if (!chip->charge_done && chip->report_full) {
+				rc = fg_get_msoc_raw(chip, &msoc);
+				if (rc < 0)
+						pr_err("Error in getting msoc, rc=%d\n", rc);
+				if (msoc < FULL_SOC_REPORT_THR)
+						chip->report_full = false;
+		 }
+
+	rc = power_supply_get_property(chip->batt_psy,
+			POWER_SUPPLY_PROP_HEALTH, &prop);
+	if (rc < 0) {
+		pr_err("Error in getting battery health, rc=%d\n", rc);
+		return;
+	}
+	chip->health = prop.intval;
 
 	if (chip->online_status == online)
 		return;
@@ -2716,6 +2753,7 @@ static void status_change_work(struct work_struct *work)
 			struct fg_chip, status_change_work);
 	union power_supply_propval prop = {0, };
 	int rc, batt_temp;
+	int msoc = 0;
 
 	if (!batt_psy_initialized(chip)) {
 		fg_dbg(chip, FG_STATUS, "Charger not available?!\n");
@@ -2746,6 +2784,16 @@ static void status_change_work(struct work_struct *work)
 	}
 
 	chip->charge_done = prop.intval;
+	if (chip->charge_done && !chip->report_full) {
+				chip->report_full = true;
+		 } else if (!chip->charge_done && chip->report_full) {
+				rc = fg_get_msoc_raw(chip, &msoc);
+				if (rc < 0)
+						pr_err("Error in getting msoc, rc=%d\n", rc);
+				if (msoc < FULL_SOC_REPORT_THR)
+						chip->report_full = false;
+		 }
+
 	fg_cycle_counter_update(chip);
 	fg_cap_learning_update(chip);
 
@@ -3823,7 +3871,10 @@ static int fg_psy_get_property(struct power_supply *psy,
 		rc = fg_get_sram_prop(chip, FG_SRAM_OCV, &pval->intval);
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-		pval->intval = chip->cl.nom_cap_uah;
+		if (-EINVAL != chip->bp.nom_cap_uah)
+			pval->intval = chip->bp.nom_cap_uah * 1000;
+		else
+			pval->intval = chip->cl.nom_cap_uah;
 		break;
 	case POWER_SUPPLY_PROP_RESISTANCE_ID:
 		pval->intval = chip->batt_id_ohms;

@@ -301,6 +301,7 @@ struct fg_batt_props {
 	int		float_volt_uv;
 	int		vbatt_full_mv;
 	int		fastchg_curr_ma;
+	int		nom_cap_uah;
 };
 
 struct fg_cyc_ctr_data {
@@ -459,6 +460,7 @@ struct fg_chip {
 	bool			use_ima_single_mode;
 	bool			qnovo_enable;
 	bool			suspended;
+	bool			report_full;
 	struct completion	soc_update;
 	struct completion	soc_ready;
 	struct delayed_work	profile_load_work;
