@@ -467,6 +467,7 @@ struct fg_chip {
 	struct delayed_work	sram_dump_work;
 	struct work_struct	esr_filter_work;
 	struct alarm		esr_filter_alarm;
+	struct delayed_work	soc_work;
 	ktime_t			last_delta_temp_time;
 	struct fg_saved_data	saved_data[POWER_SUPPLY_PROP_MAX];
 };

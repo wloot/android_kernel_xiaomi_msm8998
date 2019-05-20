@@ -4610,9 +4610,6 @@ static irqreturn_t fg_delta_msoc_irq_handler(int irq, void *data)
 	if (rc < 0)
 		pr_err("Error in adjusting timebase, rc=%d\n", rc);
 
-	if (batt_psy_initialized(chip))
-		power_supply_changed(chip->batt_psy);
-
 	return IRQ_HANDLED;
 }
 
@@ -5280,6 +5277,32 @@ static int fg_parse_dt(struct fg_chip *chip)
 	return 0;
 }
 
+#define SOC_WORK_MS	60000
+static void soc_work_fn(struct work_struct *work)
+{
+	struct fg_chip *chip = container_of(work,
+		struct fg_chip,
+		soc_work.work);
+	static int prev_soc = -EINVAL;
+	int soc = 0;
+	int rc;
+
+	if (chip->charge_status != POWER_SUPPLY_STATUS_CHARGING) {
+		rc = fg_get_prop_capacity(chip, &soc);
+		/* if soc changes, report power supply change uevent */
+		if (!(rc < 0) && (soc != prev_soc)) {
+			if (chip->fg_psy) {
+				pr_info("Soc changed, updating power supply now\n");
+				power_supply_changed(chip->fg_psy);
+			}
+			prev_soc = soc;
+		}
+	}
+
+	queue_delayed_work(system_power_efficient_wq,
+		&chip->soc_work, msecs_to_jiffies(SOC_WORK_MS));
+}
+
 static void fg_cleanup(struct fg_chip *chip)
 {
 	alarm_try_to_cancel(&chip->esr_filter_alarm);
@@ -5395,6 +5418,7 @@ static int fg_gen3_probe(struct platform_device *pdev)
 	INIT_WORK(&chip->status_change_work, status_change_work);
 	INIT_DELAYED_WORK(&chip->ttf_work, ttf_work);
 	INIT_DELAYED_WORK(&chip->sram_dump_work, sram_dump_work);
+	INIT_DELAYED_WORK(&chip->soc_work, soc_work_fn);
 	INIT_WORK(&chip->esr_filter_work, esr_filter_work);
 	alarm_init(&chip->esr_filter_alarm, ALARM_BOOTTIME,
 			fg_esr_filter_alarm_cb);
@@ -5477,6 +5501,8 @@ static int fg_gen3_probe(struct platform_device *pdev)
 	device_init_wakeup(chip->dev, true);
 	queue_delayed_work(system_power_efficient_wq,
 		&chip->profile_load_work, 0);
+	queue_delayed_work(system_power_efficient_wq,
+		&chip->soc_work, 0);
 
 	pr_debug("FG GEN3 driver probed successfully\n");
 	return 0;
