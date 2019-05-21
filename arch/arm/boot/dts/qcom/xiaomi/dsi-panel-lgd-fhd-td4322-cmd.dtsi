@@ -79,7 +79,7 @@
 		qcom,mdss-dsi-panel-mcap-on-cmds-state = "dsi_lp_mode";
 		qcom,mdss-dsi-tx-eot-append;
 		qcom,mdss-dsi-h-sync-pulse = <0>;
-		qcom,mdss-dsi-traffic-mode = "burst_mode";
+		qcom,mdss-dsi-traffic-mode = "non_burst_sync_pulse";
 		qcom,mdss-dsi-bllp-eof-power-mode;
 		qcom,mdss-dsi-bllp-power-mode;
 		qcom,mdss-dsi-lp11-init;
