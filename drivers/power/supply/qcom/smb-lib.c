@@ -1894,17 +1894,11 @@ int smblib_set_prop_batt_capacity(struct smb_charger *chg,
 	return 0;
 }
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define MAX_CURRENT_PERCENT		100
-#define HIGH_CURRENT_PERCENT		70
-#define MEDIUM_CURRENT_PERCENT		50
-#endif
 int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 				const union power_supply_propval *val)
 {
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
 	int *thermal_mitigation;
-	int current_percent;
 #endif
 
 	if (val->intval < 0)
@@ -1949,15 +1943,8 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 		break;
 	}
 
-	if (chg->system_temp_level == 6)
-		current_percent = MAX_CURRENT_PERCENT;
-	else if (chg->system_temp_level < 3)
-		current_percent = HIGH_CURRENT_PERCENT;
-	else
-		current_percent = MEDIUM_CURRENT_PERCENT;
-
 	vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
-			thermal_mitigation[chg->system_temp_level] * current_percent / 100);
+			thermal_mitigation[chg->system_temp_level]);
 #else
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
