@@ -26,10 +26,6 @@
 #include "step-chg-jeita.h"
 #include "storm-watch.h"
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#include <linux/fb.h>
-#endif
-
 #define smblib_err(chg, fmt, ...)		\
 	pr_err("%s: %s: " fmt, chg->name,	\
 		__func__, ##__VA_ARGS__)	\
@@ -1899,80 +1895,6 @@ int smblib_set_prop_batt_capacity(struct smb_charger *chg,
 }
 
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define SCREEN_ON_ICL		1600000
-#define SCREEN_ON_CHECK_MS	90000
-#define SCREEN_OFF_CHECK_MS	5000
-static void smblib_fb_state_work(struct work_struct *work)
-{
-	struct smb_charger *chg = container_of(work, struct smb_charger,
-			fb_state_work.work);
-	union power_supply_propval usb_present;
-	int rc;
-
-	rc = smblib_get_prop_usb_present(chg, &usb_present);
-	if (rc < 0) {
-		smblib_err(chg, "Couldn't check usb present, rc=%d\n", rc);
-		return;
-	}
-
-	if (!usb_present.intval)
-		return;
-
-	if (!chg->usb_icl_votable) {
-		smblib_err(chg, "Couldn't find USB ICL votable\n");
-		return;
-	}
-
-	if (chg->screen_on) {
-		smblib_dbg(chg, PR_MISC, "Screen is on, lower USB ICL\n");
-		vote(chg->usb_icl_votable, FB_SCREEN_VOTER, true, SCREEN_ON_ICL);
-	} else {
-		smblib_dbg(chg, PR_MISC, "Screen is off, reset USB ICL\n");
-		vote(chg->usb_icl_votable, FB_SCREEN_VOTER, false, 0);
-	}
-}
-
-static int smblib_fb_state_cb(struct notifier_block *self,
-		unsigned long type, void *data)
-{
-	struct smb_charger *chg = container_of(self,
-			struct smb_charger, fb_state_notifier);
-	struct fb_event *evdata = data;
-	unsigned int check_ms;
-	unsigned int blank;
-
-	if (!evdata || !evdata->data)
-		goto end;
-
-	if (type != FB_EARLY_EVENT_BLANK)
-		goto end;
-
-	cancel_delayed_work(&chg->fb_state_work);
-
-	blank = *(int *)(evdata->data);
-	switch (blank) {
-	case FB_BLANK_UNBLANK:
-		chg->screen_on = true;
-		check_ms = SCREEN_ON_CHECK_MS;
-		break;
-	case FB_BLANK_POWERDOWN:
-		chg->screen_on = false;
-		check_ms = SCREEN_OFF_CHECK_MS;
-		break;
-	default:
-		goto end;
-	}
-
-	queue_delayed_work(system_power_efficient_wq,
-			&chg->fb_state_work,
-			msecs_to_jiffies(check_ms));
-
-end:
-	return NOTIFY_OK;
-}
-#endif
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
 #define MAX_CURRENT_PERCENT		100
 #define HIGH_CURRENT_PERCENT		70
 #define MEDIUM_CURRENT_PERCENT		50
@@ -1983,7 +1905,6 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
 	int *thermal_mitigation;
 	int current_percent;
-	bool throttle_current;
 #endif
 
 	if (val->intval < 0)
@@ -2012,8 +1933,6 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	vote(chg->chg_disable_votable, THERMAL_DAEMON_VOTER, false, 0);
 
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
-	throttle_current = chg->screen_on;
-
 	if (chg->system_temp_level == 0)
 		return vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, false, 0);
 
@@ -2027,11 +1946,10 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	case POWER_SUPPLY_TYPE_USB_DCP:
 	default:
 		thermal_mitigation = chg->thermal_mitigation_dcp;
-		throttle_current = false;
 		break;
 	}
 
-	if (!throttle_current || chg->system_temp_level == 6)
+	if (chg->system_temp_level == 6)
 		current_percent = MAX_CURRENT_PERCENT;
 	else if (chg->system_temp_level < 3)
 		current_percent = HIGH_CURRENT_PERCENT;
@@ -5203,9 +5121,6 @@ int smblib_init(struct smb_charger *chg)
 	INIT_WORK(&chg->legacy_detection_work, smblib_legacy_detection_work);
 	INIT_DELAYED_WORK(&chg->uusb_otg_work, smblib_uusb_otg_work);
 	INIT_DELAYED_WORK(&chg->bb_removal_work, smblib_bb_removal_work);
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	INIT_DELAYED_WORK(&chg->fb_state_work, smblib_fb_state_work);
-#endif
 
 	chg->fake_capacity = -EINVAL;
 	chg->fake_input_current_limited = -EINVAL;
@@ -5241,16 +5156,6 @@ int smblib_init(struct smb_charger *chg)
 			return rc;
 		}
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		chg->fb_state_notifier.notifier_call = smblib_fb_state_cb;
-		rc = fb_register_client(&chg->fb_state_notifier);
-		if (rc < 0) {
-			smblib_err(chg,
-				"Couldn't register notifier rc=%d\n", rc);
-			return rc;
-		}
-#endif
-
 		chg->bms_psy = power_supply_get_by_name("bms");
 		chg->pl.psy = power_supply_get_by_name("parallel");
 		break;
@@ -5280,10 +5185,6 @@ int smblib_deinit(struct smb_charger *chg)
 		cancel_work_sync(&chg->legacy_detection_work);
 		cancel_delayed_work_sync(&chg->uusb_otg_work);
 		cancel_delayed_work_sync(&chg->bb_removal_work);
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		cancel_delayed_work_sync(&chg->fb_state_work);
-		fb_unregister_client(&chg->fb_state_notifier);
-#endif
 		power_supply_unreg_notifier(&chg->nb);
 		smblib_destroy_votables(chg);
 		qcom_step_chg_deinit();
