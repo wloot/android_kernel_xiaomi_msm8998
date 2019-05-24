@@ -272,6 +272,6 @@
 		];
 		qcom,mdss-dsi-dispparam-srgb-command-state = "dsi_hs_mode";
 		qcom,partial-update-enabled = "single_roi";
-		qcom,panel-roi-alignment = <1080 8 1080 8 1080 8>;		
+		qcom,panel-roi-alignment = <2 2 4 2 1080 2>;		
 	};
 };
