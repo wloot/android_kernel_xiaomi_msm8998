@@ -20,6 +20,7 @@
 #include <linux/input/qpnp-power-on.h>
 #include <linux/irq.h>
 #include <linux/pmic-voter.h>
+#include <linux/module.h>
 #include "smb-lib.h"
 #include "smb-reg.h"
 #include "battery.h"
@@ -1894,13 +1895,61 @@ int smblib_set_prop_batt_capacity(struct smb_charger *chg,
 	return 0;
 }
 
+static bool skip_thermal = false;
+
+int smblib_vote_icl_thermal(struct smb_charger *chg)
+{
+	int *thermal_mitigation;
+
+	if (chg->system_temp_level == 0 || skip_thermal)
+		return vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, false, 0);
+
+	switch (chg->usb_psy_desc.type) {
+	case POWER_SUPPLY_TYPE_USB_HVDCP:
+		thermal_mitigation = chg->thermal_mitigation_qc2;
+		break;
+	case POWER_SUPPLY_TYPE_USB_HVDCP_3:
+		thermal_mitigation = chg->thermal_mitigation_qc3;
+		break;
+	case POWER_SUPPLY_TYPE_USB_DCP:
+	default:
+		thermal_mitigation = chg->thermal_mitigation_dcp;
+		break;
+	}
+
+	vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+			thermal_mitigation[chg->system_temp_level]);
+
+	return 0;
+}
+
+static ssize_t skip_thermal_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t len)
+{
+	struct smb_charger *chg = dev_get_drvdata(dev);
+	ssize_t rc = -EINVAL;
+
+	rc = kstrtobool(buf, &skip_thermal);
+	if (rc)
+		return rc;
+
+	smblib_vote_icl_thermal(chg);
+
+	return len;
+}
+
+static ssize_t skip_thermal_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", skip_thermal);
+}
+
+static DEVICE_ATTR(skip_thermal, 0664, skip_thermal_show, skip_thermal_store);
+
 int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 				const union power_supply_propval *val)
 {
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	int *thermal_mitigation;
-#endif
-
 	if (val->intval < 0)
 		return -EINVAL;
 
@@ -1927,33 +1976,16 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	vote(chg->chg_disable_votable, THERMAL_DAEMON_VOTER, false, 0);
 
 #ifdef CONFIG_MACH_XIAOMI_MSM8998
-	if (chg->system_temp_level == 0)
-		return vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, false, 0);
-
-	switch (chg->usb_psy_desc.type) {
-	case POWER_SUPPLY_TYPE_USB_HVDCP:
-		thermal_mitigation = chg->thermal_mitigation_qc2;
-		break;
-	case POWER_SUPPLY_TYPE_USB_HVDCP_3:
-		thermal_mitigation = chg->thermal_mitigation_qc3;
-		break;
-	case POWER_SUPPLY_TYPE_USB_DCP:
-	default:
-		thermal_mitigation = chg->thermal_mitigation_dcp;
-		break;
-	}
-
-	vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
-			thermal_mitigation[chg->system_temp_level]);
+	return smblib_vote_icl_thermal(chg);
 #else
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
 
 	vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, true,
 			chg->thermal_mitigation[chg->system_temp_level]);
-#endif
 
 	return 0;
+#endif
 }
 
 int smblib_set_prop_charge_qnovo_enable(struct smb_charger *chg,
@@ -5140,6 +5172,15 @@ int smblib_init(struct smb_charger *chg)
 		if (rc < 0) {
 			smblib_err(chg,
 				"Couldn't register notifier rc=%d\n", rc);
+			return rc;
+		}
+
+		sysfs_attr_init(&dev_attr_skip_thermal.attr);
+		rc = sysfs_create_file(&chg->dev->kobj,
+				&dev_attr_skip_thermal.attr);
+		if (rc < 0) {
+			smblib_err(chg,
+				"Couldn't create smblib_thermal sysfs rc: %d\n", rc);
 			return rc;
 		}
 
