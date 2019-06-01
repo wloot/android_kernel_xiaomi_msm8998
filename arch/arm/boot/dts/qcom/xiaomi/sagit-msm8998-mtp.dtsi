@@ -424,11 +424,22 @@
 
 &pmi8998_haptics {
 	status = "okay";
+	qcom,vmax-mv = <3248>;
 	qcom,wave-play-rate-us = <5000>;
-	qcom,vmax-mv = <2830>;
 	qcom,wave-shape = "sine";
 	qcom,brake-pattern = [03 02 00 00];
-	qcom,misc-trim-error-rc19p2-clk-reg-present;
+	qcom,disable_force_back_emf_delay;
+	qcom,vmax-overbrake-mv = <3596>;
+	qcom,brake-pattern-count = <9>;
+	qcom,brake-pattern-arry = [03 00 00 00
+	03 02 00 00
+	03 03 01 00
+	03 03 02 01
+	03 03 03 02
+	03 03 03 02
+	03 03 03 02
+	03 03 03 02
+	03 03 03 03];
 };
 
 &pm8998_vadc {
