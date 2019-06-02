@@ -557,9 +557,11 @@ struct mdss_data_type {
 	struct cx_ipeak_client *mdss_cx_ipeak;
 	struct mult_factor bus_throughput_factor;
 
+#ifdef CONFIG_MACH_SAGIT
 	struct pm_qos_request pm_irq_req;
 	struct work_struct pm_unset_work;
 	bool pm_irq_set;
+#endif
 };
 
 extern struct mdss_data_type *mdss_res;
