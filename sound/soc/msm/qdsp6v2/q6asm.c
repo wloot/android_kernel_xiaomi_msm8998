@@ -2024,7 +2024,7 @@ static int32_t q6asm_callback(struct apr_client_data *data, void *priv)
 			if (data->payload_size <
 				2 * sizeof(uint32_t)) {
 				pr_err("%s: payload size of %x is less than expected.\n",
-					__func__, __LINE__, data->payload_size);
+					__func__, data->payload_size);
 			} else if (payload[1] != 0) {
 				pr_debug("%s: session %d opcode 0x%x token 0x%x Payload = [0x%x] stat 0x%x src %d dest %d\n",
 					__func__, ac->session,
