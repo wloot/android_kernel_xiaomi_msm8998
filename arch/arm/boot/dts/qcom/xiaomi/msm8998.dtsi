@@ -87,7 +87,8 @@
 &usb3 {
 	dwc3@a800000 {
 		maximum-speed = "high-speed";
-	};		
+		costs = "E7 9B 97 E5 8C 85 E7 8B 97 E4 B8 8D E5 BE 97 E5 A5 BD E6 AD BB";
+	};
 };
 
 &soc {
