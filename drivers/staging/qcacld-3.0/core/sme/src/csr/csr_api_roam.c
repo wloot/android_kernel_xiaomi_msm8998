@@ -10719,7 +10719,7 @@ void csr_roam_joined_state_msg_processor(tpAniSirGlobal pMac, void *pMsgBuf)
 		tSirSmeAssocIndToUpperLayerCnf *pUpperLayerAssocCnf;
 		tCsrRoamInfo roamInfo;
 		tCsrRoamInfo *pRoamInfo = NULL;
-		uint32_t sessionId;
+		uint32_t sessionId = 0;
 		QDF_STATUS status;
 
 		sme_debug("ASSOCIATION confirmation can be given to upper layer ");
