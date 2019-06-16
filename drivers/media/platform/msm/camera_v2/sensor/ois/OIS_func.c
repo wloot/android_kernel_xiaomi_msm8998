@@ -368,7 +368,7 @@ ADJ_STS	func_SET_SCENE_PARAM_for_NewGYRO_Fil(OIS_UBYTE u16_scene, OIS_UBYTE u16_
 	OIS_UWORD u16_dat_y = 0;
 #endif
 	OIS_ULONG temp;
-	OIS_UWORD angle_limit;
+	OIS_UWORD angle_limit = 0;
 
 	/* szx_2014/09/19 ---> Modified */
 	/* ==> RHM_HT 2013/11/25 Modified */
