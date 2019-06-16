@@ -628,7 +628,7 @@ static int __init elliptic_driver_init(void)
 {
 	int err;
 	int i;
-	int devices_to_destroy;
+	int devices_to_destroy = 0;
 	dev_t device_number;
 
 	err = alloc_chrdev_region(&device_number, 0, ELLIPTIC_NUM_DEVICES,
@@ -663,9 +663,6 @@ static int __init elliptic_driver_init(void)
 
 	if (elliptic_data_io_initialize())
 		goto fail;
-
-
-	devices_to_destroy = 0;
 
 	for (i = 0; i < ELLIPTIC_NUM_DEVICES; ++i) {
 		if (elliptic_device_initialize(&elliptic_devices[i], i,
