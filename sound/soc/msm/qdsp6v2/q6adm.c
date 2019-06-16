@@ -1219,7 +1219,7 @@ static int adm_process_get_param_response(u32 opcode, u32 idx, u32 *payload,
 	struct adm_cmd_rsp_get_pp_params_v5 *v5_rsp = NULL;
 	struct adm_cmd_rsp_get_pp_params_v6 *v6_rsp = NULL;
 	u32 *param_data = NULL;
-	int data_size;
+	int data_size = 0;
 	int struct_size;
 
 	if (payload == NULL) {
