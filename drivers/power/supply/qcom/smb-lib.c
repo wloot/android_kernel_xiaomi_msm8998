@@ -3717,6 +3717,8 @@ static void smblib_handle_hvdcp_check_timeout(struct smb_charger *chg,
 		if (!get_effective_result(chg->pd_allowed_votable) &&
 				!chg->micro_usb_mode)
 			__smblib_set_prop_pd_active(chg, 0);
+
+		smblib_vote_icl_thermal(chg);
 	}
 
 	smblib_dbg(chg, PR_INTERRUPT, "IRQ: smblib_handle_hvdcp_check_timeout %s\n",
