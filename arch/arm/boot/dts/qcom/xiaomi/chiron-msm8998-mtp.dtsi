@@ -781,7 +781,7 @@
 	qcom,fg-cutoff-voltage = <3400>;
 	qcom,fg-empty-voltage = <3100>;
 	qcom,fg-jeita-hyst-temp = <0>;
-	qcom,fg-jeita-thresholds = <0 15 45 60>;
+	qcom,fg-jeita-thresholds = <0 15 48 60>;
 	qcom,fg-esr-clamp-mohms = <60>;
 	qcom,fg-batt-temp-delta = <6>;
 };
