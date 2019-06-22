@@ -4655,7 +4655,9 @@ static void lim_tx_mgmt_frame(tpAniSirGlobal mac_ctx,
 	struct sir_mgmt_msg *mb_msg, uint32_t msg_len,
 	void *packet, uint8_t *frame)
 {
+#if defined(WLAN_DEBUG) || defined(DEBUG)
 	tpSirMacFrameCtl fc = (tpSirMacFrameCtl) mb_msg->data;
+#endif
 	QDF_STATUS qdf_status;
 	uint8_t sme_session_id = 0;
 	tpPESession session;
