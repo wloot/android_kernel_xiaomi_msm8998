@@ -23,6 +23,3 @@ $(obj)/regdb.c: $(src)/db.txt $(src)/genregdb.awk
 	@$(AWK) -f $(srctree)/$(src)/genregdb.awk < $< > $@
 
 clean-files := regdb.c
-
-ccflags-y += \
-	-Wno-nonnull

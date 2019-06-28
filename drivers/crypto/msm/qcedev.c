@@ -572,7 +572,7 @@ static int qcedev_sha_update_max_xfer(struct qcedev_async_req *qcedev_areq,
 {
 	int err = 0;
 	int i = 0;
-	unsigned long total;
+	uint32_t total;
 
 	uint8_t *user_src = NULL;
 	uint8_t *k_src = NULL;
