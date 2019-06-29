@@ -1041,15 +1041,14 @@ static unsigned long __calculate(struct vidc_bus_vote_data *d,
 }
 
 
-static int __get_target_freq(struct devfreq *dev, unsigned long *freq,
-		u32 *flag)
+static int __get_target_freq(struct devfreq *dev, unsigned long *freq)
 {
 	unsigned long ab_kbps = 0, c = 0;
 	struct devfreq_dev_status stats = {0};
 	struct msm_vidc_gov_data *vidc_data = NULL;
 	struct governor *gov = NULL;
 
-	if (!dev || !freq || !flag)
+	if (!dev || !freq)
 		return -EINVAL;
 
 	gov = container_of(dev->governor,

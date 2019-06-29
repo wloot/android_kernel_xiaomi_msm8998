@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -28,8 +28,7 @@ static struct devfreq *df;
  * by KGSL driver to get and return a value for frequency.
  */
 static int devfreq_vbif_get_freq(struct devfreq *df,
-				unsigned long *freq,
-				u32 *flag)
+				unsigned long *freq)
 {
 	/* If the IB isn't set yet, check if it should be non-zero. */
 	if (!dev_ib && extern_get_bw) {

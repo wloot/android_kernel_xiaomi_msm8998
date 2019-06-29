@@ -315,7 +315,7 @@ static void m4m_stop_hwmon(struct cache_hwmon *hw)
 }
 
 /* device probe functions */
-static struct of_device_id match_table[] = {
+static const struct of_device_id m4m_match_table[] = {
 	{ .compatible = "qcom,m4m-hwmon" },
 	{}
 };
@@ -408,22 +408,10 @@ static struct platform_driver m4m_hwmon_driver = {
 	.probe = m4m_hwmon_driver_probe,
 	.driver = {
 		.name = "m4m-hwmon",
-		.of_match_table = match_table,
-		.owner = THIS_MODULE,
+		.of_match_table = m4m_match_table,
 	},
 };
 
-static int __init m4m_hwmon_init(void)
-{
-	return platform_driver_register(&m4m_hwmon_driver);
-}
-module_init(m4m_hwmon_init);
-
-static void __exit m4m_hwmon_exit(void)
-{
-	platform_driver_unregister(&m4m_hwmon_driver);
-}
-module_exit(m4m_hwmon_exit);
-
+module_platform_driver(m4m_hwmon_driver);
 MODULE_DESCRIPTION("M4M hardware monitor driver");
 MODULE_LICENSE("GPL v2");

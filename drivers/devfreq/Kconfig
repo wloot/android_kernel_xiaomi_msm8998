@@ -61,16 +61,16 @@ config DEVFREQ_GOV_USERSPACE
 	  Sets the frequency at the user specified one.
 	  This governor returns the user configured frequency if there
 	  has been an input to /sys/devices/.../power/devfreq_set_freq.
-	  Otherwise, the governor does not change the frequnecy
+	  Otherwise, the governor does not change the frequency
 	  given at the initialization.
 
-config DEVFREQ_GOV_QCOM_ADRENO_TZ
-	tristate "Qualcom  Adreno Trustzone"
-	depends on QCOM_KGSL && QCOM_SCM
+config DEVFREQ_GOV_PASSIVE
+	tristate "Passive"
 	help
-	  Trustzone based governor for the Adreno GPU.
-	  Sets the frequency using a "on-demand" algorithm.
-	  This governor is unlikely to be useful for other devices.
+	  Sets the frequency based on the frequency of its parent devfreq
+	  device. This governor does not change the frequency by itself
+	  through sysfs entries. The passive governor recommends that
+	  devfreq device uses the OPP table to get the frequency/voltage.
 
 config DEVFREQ_GOV_CPUFREQ
 	tristate "CPUfreq"
@@ -89,24 +89,6 @@ config QCOM_BIMC_BWMON
 	  has the capability to raise an IRQ when the count exceeds a
 	  programmable limit.
 
-config DEVFREQ_GOV_QCOM_GPUBW_MON
-	tristate "GPU BW voting governor"
-	depends on DEVFREQ_GOV_QCOM_ADRENO_TZ
-	help
-	 QTI GPU governor for GPU bus bandwidth voting.
-	 This governor works together with QTI Adreno Trustzone governor,
-	 and select bus frequency votes using an "on-demand" alorithm.
-	 This governor is unlikely to be useful for non-QTI devices.
-
-config ARMBW_HWMON
-	tristate "ARM PMU Bandwidth monitor hardware"
-	depends on ARCH_QCOM
-	help
-	  The PMU present on these ARM cores allow for the use of counters to
-	  monitor the traffic coming from each core to the bus. It also has the
-	  capability to raise an IRQ when the counter overflows, which can be
-	  used to get an IRQ when the count exceeds a certain value
-
 config ARM_MEMLAT_MON
 	tristate "ARM CPU Memory Latency monitor hardware"
 	depends on ARCH_QCOM
@@ -117,11 +99,11 @@ config ARM_MEMLAT_MON
 	  the mem_latency devfreq governor.
 
 config QCOMCCI_HWMON
-	tristate "QCOM CCI Cache monitor hardware"
+	tristate "QTI CCI Cache monitor hardware"
 	depends on ARCH_QCOM
 	help
-	  QCOM CCI has additional PMU counters that can be used to monitor
-	  cache requests. QCOM CCI hardware monitor device configures these
+	  QTI CCI has additional PMU counters that can be used to monitor
+	  cache requests. QTI CCI hardware monitor device configures these
 	  registers to monitor cache and inform governor. It can also set an
 	  IRQ when count exceeds a programmable limit.
 
@@ -154,11 +136,11 @@ config DEVFREQ_GOV_QCOM_CACHE_HWMON
 	  unlikely to be useful for other devices.
 
 config DEVFREQ_GOV_SPDM_HYP
-	bool "QCOM SPDM Hypervisor Governor"
+	bool "QTI SPDM Hypervisor Governor"
 	depends on ARCH_QCOM
 	help
 	  Hypervisor based governor for CPU bandwidth voting
-	  for QCOM chipsets.
+	  for QTI chipsets.
 	  Sets the frequency using a "on-demand" algorithm.
 	  This governor is unlikely to be useful for other devices.
 
@@ -174,37 +156,61 @@ config DEVFREQ_GOV_MEMLAT
 
 comment "DEVFREQ Drivers"
 
-config ARM_EXYNOS4_BUS_DEVFREQ
-	bool "ARM Exynos4210/4212/4412 Memory Bus DEVFREQ Driver"
-	depends on (CPU_EXYNOS4210 || SOC_EXYNOS4212 || SOC_EXYNOS4412) && !ARCH_MULTIPLATFORM
+config DEVFREQ_GOV_QCOM_ADRENO_TZ
+	tristate "Qualcomm Technologies Inc Adreno Trustzone"
+	depends on QCOM_KGSL && QCOM_SCM
+	help
+	   Trustzone based governor for the Adreno GPU. Sets
+	   the frequency using a "on-demand" algorithm. This
+	   governor is unlikely to be useful for other
+	   devices.
+
+config DEVFREQ_GOV_QCOM_GPUBW_MON
+	tristate "GPU BW voting governor"
+	depends on DEVFREQ_GOV_QCOM_ADRENO_TZ
+	help
+	  This governor works together with Adreno Trustzone governor,
+	  and select bus frequency votes using an "on-demand" alorithm.
+	  This governor is unlikely to be useful for non-Adreno
+	  devices.
+
+config ARM_EXYNOS_BUS_DEVFREQ
+	tristate "ARM EXYNOS Generic Memory Bus DEVFREQ Driver"
+	depends on ARCH_EXYNOS || COMPILE_TEST
 	select DEVFREQ_GOV_SIMPLE_ONDEMAND
+	select DEVFREQ_GOV_PASSIVE
+	select DEVFREQ_EVENT_EXYNOS_PPMU
+	select PM_DEVFREQ_EVENT
 	select PM_OPP
 	help
-	  This adds the DEVFREQ driver for Exynos4210 memory bus (vdd_int)
-	  and Exynos4212/4412 memory interface and bus (vdd_mif + vdd_int).
-	  It reads PPMU counters of memory controllers and adjusts
-	  the operating frequencies and voltages with OPP support.
+	  This adds the common DEVFREQ driver for Exynos Memory bus. Exynos
+	  Memory bus has one more group of memory bus (e.g, MIF and INT block).
+	  Each memory bus group could contain many memoby bus block. It reads
+	  PPMU counters of memory controllers by using DEVFREQ-event device
+	  and adjusts the operating frequencies and voltages with OPP support.
 	  This does not yet operate with optimal voltages.
 
-config ARM_EXYNOS5_BUS_DEVFREQ
-	tristate "ARM Exynos5250 Bus DEVFREQ Driver"
-	depends on SOC_EXYNOS5250
+config ARM_TEGRA_DEVFREQ
+	tristate "Tegra DEVFREQ Driver"
+	depends on ARCH_TEGRA_124_SOC
 	select DEVFREQ_GOV_SIMPLE_ONDEMAND
 	select PM_OPP
 	help
-	  This adds the DEVFREQ driver for Exynos5250 bus interface (vdd_int).
-	  It reads PPMU counters of memory controllers and adjusts the
+	  This adds the DEVFREQ driver for the Tegra family of SoCs.
+	  It reads ACTMON counters of memory controllers and adjusts the
 	  operating frequencies and voltages with OPP support.
 
-config ARM_TEGRA_DEVFREQ
-       tristate "Tegra DEVFREQ Driver"
-       depends on ARCH_TEGRA_124_SOC
-       select DEVFREQ_GOV_SIMPLE_ONDEMAND
-       select PM_OPP
-       help
-         This adds the DEVFREQ driver for the Tegra family of SoCs.
-         It reads ACTMON counters of memory controllers and adjusts the
-         operating frequencies and voltages with OPP support.
+config ARM_RK3399_DMC_DEVFREQ
+	tristate "ARM RK3399 DMC DEVFREQ Driver"
+	depends on ARCH_ROCKCHIP
+	select DEVFREQ_EVENT_ROCKCHIP_DFI
+	select DEVFREQ_GOV_SIMPLE_ONDEMAND
+	select PM_DEVFREQ_EVENT
+	select PM_OPP
+	help
+          This adds the DEVFREQ driver for the RK3399 DMC(Dynamic Memory Controller).
+          It sets the frequency for the memory controller and reads the usage counts
+          from hardware.
 
 config DEVFREQ_SIMPLE_DEV
 	tristate "Device driver for simple clock device with no status info"
@@ -216,7 +222,7 @@ config DEVFREQ_SIMPLE_DEV
 	  clock APIs and don't have any form of status reporting.
 
 config QCOM_DEVFREQ_DEVBW
-	bool "QCOM DEVFREQ device for device master <-> slave IB/AB BW voting"
+	bool "Qualcomm Technologies Inc. DEVFREQ device for device master <-> slave IB/AB BW voting"
 	depends on ARCH_QCOM
 	select DEVFREQ_GOV_PERFORMANCE
 	select DEVFREQ_GOV_POWERSAVE
@@ -229,7 +235,7 @@ config QCOM_DEVFREQ_DEVBW
 	  shared across SoCs.
 
 config SPDM_SCM
-	bool "QCOM SPDM SCM based call support"
+	bool "QTI SPDM SCM based call support"
 	depends on DEVFREQ_SPDM
 	help
 	  SPDM driver support the dcvs algorithm logic being accessed via
@@ -238,13 +244,13 @@ config SPDM_SCM
           will be activated.
 
 config DEVFREQ_SPDM
-	bool "QCOM SPDM based bandwidth voting"
+	bool "QTI SPDM based bandwidth voting"
 	depends on ARCH_QCOM
 	select DEVFREQ_GOV_SPDM_HYP
 	help
-	  This adds the support for SPDM based bandwidth voting on QCOM chipsets.
+	  This adds the support for SPDM based bandwidth voting on QTI chipsets.
 	  This driver allows any SPDM based client to vote for bandwidth.
-	  Used with the QCOM SPDM Hypervisor Governor.
+	  Used with the QTI SPDM Hypervisor Governor.
 
 source "drivers/devfreq/event/Kconfig"
 

@@ -1,3 +1,16 @@
+/* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ */
+
 #ifndef MSM_ADRENO_DEVFREQ_H
 #define MSM_ADRENO_DEVFREQ_H
 
@@ -8,11 +21,17 @@
 #define ADRENO_DEVFREQ_NOTIFY_RETIRE	2
 #define ADRENO_DEVFREQ_NOTIFY_IDLE	3
 
+#define DEVFREQ_FLAG_WAKEUP_MAXFREQ	0x2
+#define DEVFREQ_FLAG_FAST_HINT		0x4
+#define DEVFREQ_FLAG_SLOW_HINT		0x8
+
 struct device;
 
-int kgsl_devfreq_add_notifier(struct device *, struct notifier_block *);
+int kgsl_devfreq_add_notifier(struct device *device,
+	struct notifier_block *block);
 
-int kgsl_devfreq_del_notifier(struct device *, struct notifier_block *);
+int kgsl_devfreq_del_notifier(struct device *device,
+	struct notifier_block *block);
 
 /* same as KGSL_MAX_PWRLEVELS */
 #define MSM_ADRENO_MAX_PWRLEVELS 10
@@ -73,7 +92,7 @@ struct msm_busmon_extended_profile {
 
 #ifdef CONFIG_DEVFREQ_GOV_QCOM_GPUBW_MON
 int devfreq_vbif_update_bw(unsigned long ib, unsigned long ab);
-int devfreq_vbif_register_callback(void *);
+int devfreq_vbif_register_callback(void *callback);
 #endif
 
 #endif

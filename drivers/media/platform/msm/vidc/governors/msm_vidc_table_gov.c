@@ -82,7 +82,7 @@ static int __get_bus_freq(struct msm_vidc_bus_table_gov *gov,
 }
 
 static int msm_vidc_table_get_target_freq(struct devfreq *dev,
-		unsigned long *frequency, u32 *flag)
+		unsigned long *frequency)
 {
 	struct devfreq_dev_status status = {0};
 	struct msm_vidc_gov_data *vidc_data = NULL;
@@ -90,9 +90,9 @@ static int msm_vidc_table_get_target_freq(struct devfreq *dev,
 	enum bus_profile profile = 0;
 	int i = 0;
 
-	if (!dev || !frequency || !flag) {
-		dprintk(VIDC_ERR, "%s: Invalid params %pK, %pK, %pK\n",
-			__func__, dev, frequency, flag);
+	if (!dev || !frequency) {
+		dprintk(VIDC_ERR, "%s: Invalid params %pK, %pK\n",
+			__func__, dev, frequency);
 		return -EINVAL;
 	}
 

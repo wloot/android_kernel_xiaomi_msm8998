@@ -1,15 +1,15 @@
 /*
-*Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
-*
-*This program is free software; you can redistribute it and/or modify
-*it under the terms of the GNU General Public License version 2 and
-*only version 2 as published by the Free Software Foundation.
-*
-*This program is distributed in the hope that it will be useful,
-*but WITHOUT ANY WARRANTY; without even the implied warranty of
-*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*GNU General Public License for more details.
-*/
+ *Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+ *
+ *This program is free software; you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License version 2 and
+ *only version 2 as published by the Free Software Foundation.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ */
 #include <linux/clk.h>
 #include <linux/device.h>
 #include <linux/devfreq.h>
@@ -70,12 +70,7 @@ static int change_bw(struct device *dev, unsigned long *freq, u32 flags)
 update_thresholds:
 	desc.arg[0] = SPDM_CMD_ENABLE;
 	desc.arg[1] = data->spdm_client;
-
-	if (data->cci_clk)
-		desc.arg[2] = (clk_get_rate(data->cci_clk)) / 1000;
-	else
-		desc.arg[2] = 0;
-
+	desc.arg[2] = (clk_get_rate(data->cci_clk)) / 1000;
 	ext_status = spdm_ext_call(&desc, 3);
 	if (ext_status)
 		pr_err("External command %u failed with error %u",
@@ -111,7 +106,9 @@ static int get_dev_status(struct device *dev, struct devfreq_dev_status *status)
 	if (!data)
 		return -EINVAL;
 
-	/* determine if we want to go up or down based on the notification */
+	/*
+	 * determine if we want to go up or down based on the notification.
+	 */
 	if (data->action == SPDM_UP)
 		status->busy_time = 255;
 	else
@@ -249,6 +246,7 @@ no_pdata:
 	return ret;
 }
 
+#ifdef CONFIG_MSM_HVC
 int __spdm_hyp_call(struct spdm_args *args, int num_args)
 {
 	struct hvc_desc desc = { { 0 } };
@@ -268,6 +266,7 @@ int __spdm_hyp_call(struct spdm_args *args, int num_args)
 			desc.ret[0], desc.ret[1]);
 	return status;
 }
+#endif
 
 int __spdm_scm_call(struct spdm_args *args, int num_args)
 {
@@ -344,7 +343,8 @@ static int probe(struct platform_device *pdev)
 
 	data->cci_clk = clk_get(&pdev->dev, "cci_clk");
 	if (IS_ERR(data->cci_clk)) {
-		data->cci_clk = NULL;
+		ret = PTR_ERR(data->cci_clk);
+		goto no_clock;
 	}
 
 	data->profile =
@@ -381,6 +381,7 @@ static int probe(struct platform_device *pdev)
 no_spdm_device:
 	devm_kfree(&pdev->dev, data->profile);
 no_profile:
+no_clock:
 	msm_bus_scale_unregister_client(data->bus_scale_client_id);
 no_bus_scaling:
 	devm_kfree(&pdev->dev, data->config_data.ports);

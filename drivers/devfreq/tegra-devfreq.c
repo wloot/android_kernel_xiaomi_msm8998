@@ -500,6 +500,8 @@ static int tegra_devfreq_target(struct device *dev, unsigned long *freq,
 	clk_set_min_rate(tegra->emc_clock, rate);
 	clk_set_rate(tegra->emc_clock, 0);
 
+	*freq = rate;
+
 	return 0;
 }
 
@@ -688,9 +690,9 @@ static int tegra_devfreq_probe(struct platform_device *pdev)
 	}
 
 	irq = platform_get_irq(pdev, 0);
-	if (irq < 0) {
-		dev_err(&pdev->dev, "Failed to get IRQ: %d\n", irq);
-		return irq;
+	if (irq <= 0) {
+		dev_err(&pdev->dev, "Failed to get IRQ\n");
+		return -ENODEV;
 	}
 
 	platform_set_drvdata(pdev, tegra);

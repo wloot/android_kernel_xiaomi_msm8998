@@ -77,7 +77,7 @@ struct kgsl_pwrscale {
 	struct devfreq *devfreqptr;
 	struct msm_adreno_extended_profile gpu_profile;
 	struct msm_busmon_extended_profile bus_profile;
-	unsigned int freq_table[KGSL_MAX_PWRLEVELS];
+	unsigned long freq_table[KGSL_MAX_PWRLEVELS];
 	char last_governor[DEVFREQ_NAME_LEN];
 	struct kgsl_power_stats accum_stats;
 	bool enabled;

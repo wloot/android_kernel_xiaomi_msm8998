@@ -1504,6 +1504,9 @@ static void cpufreq_offline_finish(unsigned int cpu)
 		cpufreq_driver->exit(policy);
 		policy->freq_table = NULL;
 	}
+
+	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
+          				CPUFREQ_STOP, policy);
 }
 
 /**

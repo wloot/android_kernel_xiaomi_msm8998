@@ -178,6 +178,7 @@ static int __secure_tz_reset_entry2(unsigned int *scm_data, u32 size_scm_data,
 	} else {
 		if (is_scm_armv8()) {
 			struct scm_desc desc = {0};
+
 			desc.arginfo = 0;
 			ret = scm_call2(SCM_SIP_FNID(SCM_SVC_DCVS,
 					 TZ_RESET_ID_64), &desc);
@@ -206,6 +207,7 @@ static int __secure_tz_update_entry3(unsigned int *scm_data, u32 size_scm_data,
 		if (is_scm_armv8()) {
 			unsigned int cmd_id;
 			struct scm_desc desc = {0};
+
 			desc.args[0] = scm_data[0];
 			desc.args[1] = scm_data[1];
 			desc.args[2] = scm_data[2];
@@ -338,8 +340,19 @@ static int tz_init(struct devfreq_msm_adreno_tz_data *priv,
 	return ret;
 }
 
-static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
-								u32 *flag)
+static inline int devfreq_get_freq_level(struct devfreq *devfreq,
+	unsigned long freq)
+{
+	int lev;
+
+	for (lev = 0; lev < devfreq->profile->max_state; lev++)
+	if (freq == devfreq->profile->freq_table[lev])
+		return lev;
+
+	return -EINVAL;
+}
+
+static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq)
 {
 	int result = 0;
 	struct devfreq_msm_adreno_tz_data *priv = devfreq->data;
@@ -519,6 +532,7 @@ static int tz_suspend(struct devfreq *devfreq)
 {
 	struct devfreq_msm_adreno_tz_data *priv = devfreq->data;
 	unsigned int scm_data[2] = {0, 0};
+
 	__secure_tz_reset_entry2(scm_data, sizeof(scm_data), priv->is_64);
 
 	priv->bin.total_time = 0;
@@ -534,6 +548,7 @@ static int tz_handler(struct devfreq *devfreq, unsigned int event, void *data)
 					(devfreq->profile),
 					struct msm_adreno_extended_profile,
 					profile);
+
 	switch (event) {
 	case DEVFREQ_GOV_START:
 		result = tz_start(devfreq);
@@ -566,9 +581,9 @@ static int tz_handler(struct devfreq *devfreq, unsigned int event, void *data)
 		/* Reset the suspend_start when gpu resumes */
 		suspend_start = 0;
 		spin_unlock(&suspend_lock);
-
+		/* fallthrough */
 	case DEVFREQ_GOV_INTERVAL:
-		/* ignored, this governor doesn't use polling */
+		/* fallthrough, this governor doesn't use polling */
 	default:
 		result = 0;
 		break;
@@ -638,6 +653,7 @@ static struct devfreq_governor msm_adreno_tz = {
 static int __init msm_adreno_tz_init(void)
 {
 	workqueue = create_freezable_workqueue("governor_msm_adreno_tz_wq");
+
 	if (workqueue == NULL)
 		return -ENOMEM;
 
@@ -648,6 +664,7 @@ subsys_initcall(msm_adreno_tz_init);
 static void __exit msm_adreno_tz_exit(void)
 {
 	int ret = devfreq_remove_governor(&msm_adreno_tz);
+
 	if (ret)
 		pr_err(TAG "failed to remove governor %d\n", ret);
 
@@ -657,4 +674,4 @@ static void __exit msm_adreno_tz_exit(void)
 
 module_exit(msm_adreno_tz_exit);
 
-MODULE_LICENSE("GPLv2");
+MODULE_LICENSE("GPL v2");

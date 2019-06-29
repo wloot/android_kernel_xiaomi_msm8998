@@ -1,21 +1,23 @@
 /*
-*Copyright (c) 2014-2015, The Linux Foundation. All rights reserved.
-*
-*This program is free software; you can redistribute it and/or modify
-*it under the terms of the GNU General Public License version 2 and
-*only version 2 as published by the Free Software Foundation.
-*
-*This program is distributed in the hope that it will be useful,
-*but WITHOUT ANY WARRANTY; without even the implied warranty of
-*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*GNU General Public License for more details.
-*/
+ *Copyright (c) 2014-2015, 2017, The Linux Foundation. All rights reserved.
+ *
+ *This program is free software; you can redistribute it and/or modify
+ *it under the terms of the GNU General Public License version 2 and
+ *only version 2 as published by the Free Software Foundation.
+ *
+ *This program is distributed in the hope that it will be useful,
+ *but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *GNU General Public License for more details.
+ */
 
 #ifndef DEVFREQ_SPDM_H
 #define DEVFREQ_SPDM_H
 
 #include <linux/list.h>
+#ifdef CONFIG_MSM_HVC
 #include <soc/qcom/hvc.h>
+#endif
 #include <soc/qcom/scm.h>
 
 enum pl_levels { SPDM_PL1, SPDM_PL2, SPDM_PL3, SPDM_PL_COUNT };
@@ -119,12 +121,11 @@ struct spdm_args {
 	u64 ret[SPDM_MAX_RETS];
 };
 
-extern int __spdm_hyp_call(struct spdm_args *args, int num_args);
-extern int __spdm_scm_call(struct spdm_args *args, int num_args);
-
 #ifdef CONFIG_SPDM_SCM
+extern int __spdm_scm_call(struct spdm_args *args, int num_args);
 #define spdm_ext_call __spdm_scm_call
 #else
+extern int __spdm_hyp_call(struct spdm_args *args, int num_args);
 #define spdm_ext_call __spdm_hyp_call
 #endif
 #endif
