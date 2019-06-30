@@ -48,7 +48,7 @@
  * timeout, qos request is cancelled automatically.
  * Kept 80ms default, inline with default GPU idle time.
  */
-#define KGSL_L2PC_CPU_TIMEOUT	(80 * 1000)
+#define KGSL_L2PC_CPU_TIMEOUT	(64 * 1000)
 
 /* Order deeply matters here because reasons. New entries go on the end */
 static const char * const clocks[] = {
