@@ -13,6 +13,8 @@
 #ifndef _LINUX_SYNC_H
 #define _LINUX_SYNC_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <linux/types.h>
 #include <linux/kref.h>
 #include <linux/ktime.h>
