@@ -15,6 +15,8 @@
 #ifndef _KGSL_DEBUGFS_H
 #define _KGSL_DEBUGFS_H
 
+#undef CONFIG_DEBUG_FS
+
 struct kgsl_device;
 struct kgsl_process_private;
 

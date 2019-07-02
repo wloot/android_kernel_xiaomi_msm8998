@@ -13,6 +13,8 @@
 #ifndef __ADRENO_H
 #define __ADRENO_H
 
+#undef CONFIG_DEBUG_FS
+
 #include "kgsl_device.h"
 #include "kgsl_sharedmem.h"
 #include "adreno_drawctxt.h"
