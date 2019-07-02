@@ -15,6 +15,8 @@
 #ifndef MDSS_MDP_DEBUG_H
 #define MDSS_MDP_DEBUG_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <linux/msm_mdp.h>
 #include <linux/stringify.h>
 

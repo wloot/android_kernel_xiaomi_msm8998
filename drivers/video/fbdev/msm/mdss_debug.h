@@ -14,6 +14,8 @@
 #ifndef MDSS_DEBUG_H
 #define MDSS_DEBUG_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <stdarg.h>
 #include <linux/debugfs.h>
 #include <linux/list.h>

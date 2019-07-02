@@ -15,6 +15,8 @@
 #ifndef MDSS_DSI_H
 #define MDSS_DSI_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <linux/list.h>
 #include <linux/mdss_io_util.h>
 #include <linux/irqreturn.h>
