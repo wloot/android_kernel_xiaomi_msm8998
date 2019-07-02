@@ -1045,8 +1045,10 @@ static int mdss_dsi_debugfs_setup(struct mdss_panel_data *pdata,
 
 	dfs->root = debugfs_create_dir("dsi_ctrl_pdata", parent);
 	if (IS_ERR_OR_NULL(dfs->root)) {
+#ifdef CONFIG_DEBUG_FS
 		pr_err("%s: debugfs_create_dir dsi fail, error %ld\n",
 			__func__, PTR_ERR(dfs->root));
+#endif
 		kfree(dfs);
 		return -ENODEV;
 	}
@@ -1099,8 +1101,10 @@ static int mdss_dsi_debugfs_init(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
 	panel_info = pdata->panel_info;
 	rc = mdss_dsi_debugfs_setup(pdata, panel_info.debugfs_info->root);
 	if (rc) {
+#ifdef CONFIG_DEBUG_FS
 		pr_err("%s: Error in initilizing dsi ctrl debugfs\n",
 				__func__);
+#endif
 		return rc;
 	}
 

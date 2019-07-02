@@ -3064,7 +3064,9 @@ static void populate_debugfs_dir(struct clk_osm *c)
 	if (osm_debugfs_base == NULL) {
 		osm_debugfs_base = debugfs_create_dir("osm", NULL);
 		if (IS_ERR_OR_NULL(osm_debugfs_base)) {
+#ifdef CONFIG_DEBUG_FS
 			pr_err("osm debugfs base directory creation failed\n");
+#endif
 			osm_debugfs_base = NULL;
 			return;
 		}
