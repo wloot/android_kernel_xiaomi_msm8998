@@ -11,3 +11,5 @@ obj-$(CONFIG_SYNC)			+= sync.o sync_debug.o
 obj-$(CONFIG_SW_SYNC)			+= sw_sync.o
 obj-$(CONFIG_ONESHOT_SYNC)		+= oneshot_sync.o
 obj-$(CONFIG_ANDROID_VSOC)		+= vsoc.o
+
+CFLAGS_sync.o += -Wframe-larger-than=8192
