@@ -266,7 +266,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	mutex_lock(&dev->buffer_lock);
 	ion_buffer_add(dev, buffer);
 	mutex_unlock(&dev->buffer_lock);
-	atomic_long_add(len, &heap->total_allocated);
+	atomic_add(len, &heap->total_allocated);
 	return buffer;
 
 err:
@@ -284,7 +284,7 @@ void ion_buffer_destroy(struct ion_buffer *buffer)
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	buffer->heap->ops->unmap_dma(buffer->heap, buffer);
 
-	atomic_long_sub(buffer->size, &buffer->heap->total_allocated);
+	atomic_sub(buffer->size, &buffer->heap->total_allocated);
 	buffer->heap->ops->free(buffer);
 	vfree(buffer->pages);
 	kfree(buffer);
@@ -322,7 +322,7 @@ static void ion_buffer_add_to_handle(struct ion_buffer *buffer)
 {
 	mutex_lock(&buffer->lock);
 	if (buffer->handle_count == 0)
-		atomic_long_add(buffer->size, &buffer->heap->total_handles);
+		atomic_add(buffer->size, &buffer->heap->total_handles);
 
 	buffer->handle_count++;
 	mutex_unlock(&buffer->lock);
@@ -348,7 +348,7 @@ static void ion_buffer_remove_from_handle(struct ion_buffer *buffer)
 		task = current->group_leader;
 		get_task_comm(buffer->task_comm, task);
 		buffer->pid = task_pid_nr(task);
-		atomic_long_sub(buffer->size, &buffer->heap->total_handles);
+		atomic_sub(buffer->size, &buffer->heap->total_handles);
 	}
 	mutex_unlock(&buffer->lock);
 }
@@ -443,8 +443,7 @@ static void user_ion_handle_get(struct ion_handle *handle)
 }
 
 /* Must hold the client lock */
-static struct ion_handle *user_ion_handle_get_check_overflow(
-	struct ion_handle *handle)
+static struct ion_handle *user_ion_handle_get_check_overflow(struct ion_handle *handle)
 {
 	if (handle->user_ref_count + 1 == 0)
 		return ERR_PTR(-EOVERFLOW);
@@ -454,8 +453,7 @@ static struct ion_handle *user_ion_handle_get_check_overflow(
 
 /* passes a kref to the user ref count.
  * We know we're holding a kref to the object before and
- * after this call, so no need to reverify handle.
- */
+ * after this call, so no need to reverify handle. */
 static struct ion_handle *pass_to_user(struct ion_handle *handle)
 {
 	struct ion_client *client = handle->client;
@@ -677,12 +675,12 @@ void ion_free_nolock(struct ion_client *client, struct ion_handle *handle)
 	ion_handle_put_nolock(handle);
 }
 
-static void user_ion_free_nolock(struct ion_client *client,
-				 struct ion_handle *handle)
+/* Must hold the client lock */
+static void user_ion_free_nolock(struct ion_client *client, struct ion_handle *handle)
 {
 	bool valid_handle;
 
-	WARN_ON(client != handle->client);
+	BUG_ON(client != handle->client);
 
 	valid_handle = ion_handle_validate(client, handle);
 	if (!valid_handle) {
@@ -1024,6 +1022,7 @@ void ion_client_destroy(struct ion_client *client)
 	struct ion_device *dev = client->dev;
 	struct rb_node *n;
 
+	pr_debug("%s: %d\n", __func__, __LINE__);
 	mutex_lock(&client->lock);
 	while ((n = rb_first(&client->handles))) {
 		struct ion_handle *handle = rb_entry(n, struct ion_handle,
@@ -1231,6 +1230,9 @@ static void ion_buffer_sync_for_device(struct ion_buffer *buffer,
 	int pages = PAGE_ALIGN(buffer->size) / PAGE_SIZE;
 	int i;
 
+	pr_debug("%s: syncing for device %s\n", __func__,
+		 dev ? dev_name(dev) : "null");
+
 	if (!ion_buffer_fault_user_mappings(buffer))
 		return;
 
@@ -1284,6 +1286,7 @@ static void ion_vm_open(struct vm_area_struct *vma)
 	mutex_lock(&buffer->lock);
 	list_add(&vma_list->list, &buffer->vmas);
 	mutex_unlock(&buffer->lock);
+	pr_debug("%s: adding %pK\n", __func__, vma);
 }
 
 static void ion_vm_close(struct vm_area_struct *vma)
@@ -1291,12 +1294,14 @@ static void ion_vm_close(struct vm_area_struct *vma)
 	struct ion_buffer *buffer = vma->vm_private_data;
 	struct ion_vma_list *vma_list, *tmp;
 
+	pr_debug("%s\n", __func__);
 	mutex_lock(&buffer->lock);
 	list_for_each_entry_safe(vma_list, tmp, &buffer->vmas, list) {
 		if (vma_list->vma != vma)
 			continue;
 		list_del(&vma_list->list);
 		kfree(vma_list);
+		pr_debug("%s: deleting %pK\n", __func__, vma);
 		break;
 	}
 	mutex_unlock(&buffer->lock);
@@ -1747,6 +1752,7 @@ static int ion_release(struct inode *inode, struct file *file)
 {
 	struct ion_client *client = file->private_data;
 
+	pr_debug("%s: %d\n", __func__, __LINE__);
 	ion_client_destroy(client);
 	return 0;
 }
@@ -1758,6 +1764,7 @@ static int ion_open(struct inode *inode, struct file *file)
 	struct ion_client *client;
 	char debug_name[64];
 
+	pr_debug("%s: %d\n", __func__, __LINE__);
 	snprintf(debug_name, 64, "%u", task_pid_nr(current->group_leader));
 	client = ion_client_create(dev, debug_name);
 	if (IS_ERR(client))
@@ -1983,10 +1990,10 @@ void show_ion_usage(struct ion_device *dev)
 					"Total orphaned size");
 	pr_info("---------------------------------\n");
 	plist_for_each_entry(heap, &dev->heaps, node) {
-		pr_info("%16.s 0x%16.lx 0x%16.lx\n",
-			heap->name, atomic_long_read(&heap->total_allocated),
-			atomic_long_read(&heap->total_allocated) -
-			atomic_long_read(&heap->total_handles));
+		pr_info("%16.s 0x%16.x 0x%16.x\n",
+			heap->name, atomic_read(&heap->total_allocated),
+			atomic_read(&heap->total_allocated) -
+			atomic_read(&heap->total_handles));
 		if (heap->debug_show)
 			heap->debug_show(heap, NULL, 0);
 
