@@ -906,8 +906,10 @@ static int __init dm_android_verity_init(void)
 	debug_dir = debugfs_create_dir("android_verity", NULL);
 
 	if (IS_ERR_OR_NULL(debug_dir)) {
+#ifdef CONFIG_DEBUG_FS
 		DMERR("Cannot create android_verity debugfs directory: %ld",
 			PTR_ERR(debug_dir));
+#endif
 		goto end;
 	}
 

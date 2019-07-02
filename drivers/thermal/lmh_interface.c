@@ -105,6 +105,8 @@ static LIST_HEAD(lmh_device_list);
 	_ret) do { \
 		_node = debugfs_create_file(_name, _mode, _parent, \
 				_data, _ops); \
+		if ((IS_ENABLED(CONFIG_DEBUG_FS))) \
+			break; \
 		if (IS_ERR(_node)) { \
 			_ret = PTR_ERR(_node); \
 			pr_err("Error creating debugfs file:%s. err:%d\n", \
@@ -115,6 +117,8 @@ static LIST_HEAD(lmh_device_list);
 #define LMH_CREATE_DEBUGFS_DIR(_node, _name, _parent, _ret) \
 	do { \
 		_node = debugfs_create_dir(_name, _parent); \
+		if ((IS_ENABLED(CONFIG_DEBUG_FS))) \
+			break; \
 		if (IS_ERR(_node)) { \
 			_ret = PTR_ERR(_node); \
 			pr_err("Error creating debugfs dir:%s. err:%d\n", \

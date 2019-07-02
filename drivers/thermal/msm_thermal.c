@@ -1272,8 +1272,10 @@ static int create_thermal_debugfs(void)
 			0600, msm_therm_debugfs->parent, &tsens_temp_print);
 	if (IS_ERR(msm_therm_debugfs->tsens_print)) {
 		ret = PTR_ERR(msm_therm_debugfs->tsens_print);
+#ifdef CONFIG_DEBUG_FS
 		pr_err("Error creating debugfs:[%s]. err:%d\n",
 			MSM_TSENS_PRINT, ret);
+#endif
 		goto create_exit;
 	}
 

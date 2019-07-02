@@ -705,9 +705,11 @@ static void msm_serial_debugfs_init(struct msm_hs_port *msm_uport,
 						msm_uport,
 						&loopback_enable_fops);
 
+#ifdef CONFIG_DEBUG_FS
 	if (IS_ERR_OR_NULL(msm_uport->loopback_dir))
 		MSM_HS_ERR("%s(): Cannot create loopback.%d debug entry",
 							__func__, id);
+#endif
 }
 
 static int msm_hs_remove(struct platform_device *pdev)
@@ -3733,8 +3735,10 @@ static int __init msm_serial_hs_init(void)
 		return ret;
 	}
 	debug_base = debugfs_create_dir("msm_serial_hs", NULL);
+#ifdef CONFIG_DEBUG_FS
 	if (IS_ERR_OR_NULL(debug_base))
 		pr_err("msm_serial_hs: Cannot create debugfs dir\n");
+#endif
 
 	ret = platform_driver_register(&msm_serial_hs_platform_driver);
 	if (ret) {
