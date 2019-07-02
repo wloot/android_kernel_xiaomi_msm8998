@@ -10,7 +10,7 @@ obj-$(CONFIG_COMMON_CLK_MSM)	+= reset.o
 
 obj-$(CONFIG_MSM_CLK_CONTROLLER_V2)	+= msm-clock-controller.o
 
-obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-debug.o
+#obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-debug.o
 
 ifeq ($(CONFIG_ARCH_MSM8996), y)
 	obj-$(CONFIG_COMMON_CLK_MSM) += clock-gcc-8996.o

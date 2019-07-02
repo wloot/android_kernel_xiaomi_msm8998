@@ -15,6 +15,8 @@
 #ifndef __DRIVERS_CLK_MSM_CLOCK_H
 #define __DRIVERS_CLK_MSM_CLOCK_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <linux/clkdev.h>
 
 /**

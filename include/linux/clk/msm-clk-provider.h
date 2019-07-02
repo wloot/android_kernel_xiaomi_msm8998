@@ -16,6 +16,8 @@
 #ifndef __MSM_CLK_PROVIDER_H
 #define __MSM_CLK_PROVIDER_H
 
+#undef CONFIG_DEBUG_FS
+
 #include <linux/types.h>
 #include <linux/err.h>
 #include <linux/list.h>
