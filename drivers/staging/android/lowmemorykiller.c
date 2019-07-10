@@ -45,6 +45,7 @@
 #include <linux/circ_buf.h>
 #include <linux/proc_fs.h>
 #include <linux/slab.h>
+#include <linux/poll.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/swap.h>
