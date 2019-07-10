@@ -616,6 +616,14 @@
 };
 
 &soc {
+	smp2pgpio_rdbg_5_in: qcom,smp2pgpio-rdbg-5-in {
+		status = "disabled";
+	};
+
+	smp2pgpio_rdbg_5_out: qcom,smp2pgpio-rdbg-5-out {
+		status = "disabled";
+	};
+
 	snd_934x: sound-tavil {
 		status = "disabled";
 	};
