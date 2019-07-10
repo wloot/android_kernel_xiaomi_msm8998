@@ -611,6 +611,9 @@
 };
 
 &slim_aud {
+	wcd934x_cdc: tavil_codec {
+		status = "disabled";
+	};
 	tasha_codec {
 		qcom,cdc-micbias1-mv = <2750>;
 		qcom,cdc-micbias2-mv = <1800>;
@@ -620,7 +623,7 @@
 };
 
 &soc {
-	sound-tavil {
+	snd_934x: sound-tavil {
 		status = "disabled";
 	};
 
