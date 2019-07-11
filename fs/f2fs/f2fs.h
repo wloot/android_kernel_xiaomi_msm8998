@@ -3612,6 +3612,12 @@ int f2fs_register_sysfs(struct f2fs_sb_info *sbi);
 void f2fs_unregister_sysfs(struct f2fs_sb_info *sbi);
 
 /*
+ * xattr.c
+ */
+int __init f2fs_init_xattr_caches(void);
+void f2fs_destroy_xattr_caches(void);
+
+/*
  * crypto support
  */
 static inline bool f2fs_encrypted_inode(struct inode *inode)

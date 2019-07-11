@@ -22,6 +22,23 @@
 #include "f2fs.h"
 #include "xattr.h"
 
+static struct kmem_cache *f2fs_xattr_cachep;
+
+int __init f2fs_init_xattr_caches(void)
+{
+	f2fs_xattr_cachep = f2fs_kmem_cache_create("xattr_entry", SZ_256);
+
+	if (!f2fs_xattr_cachep)
+		return -ENOMEM;
+
+	return 0;
+}
+
+void f2fs_destroy_xattr_caches(void)
+{
+	kmem_cache_destroy(f2fs_xattr_cachep);
+}
+
 static size_t f2fs_xattr_generic_list(const struct xattr_handler *handler,
 		struct dentry *dentry, char *list, size_t list_size,
 		const char *name, size_t len)
@@ -358,7 +375,11 @@ static int lookup_all_xattrs(struct inode *inode, struct page *ipage,
 		return -ENODATA;
 
 	*base_size = XATTR_SIZE(xnid, inode) + XATTR_PADDING_SIZE;
-	txattr_addr = f2fs_kzalloc(F2FS_I_SB(inode), *base_size, GFP_NOFS);
+	if (!inline_size)
+		txattr_addr = f2fs_kzalloc(F2FS_I_SB(inode), *base_size, GFP_NOFS);
+	else
+		txattr_addr = kmem_cache_zalloc(f2fs_xattr_cachep, GFP_NOFS);
+
 	if (!txattr_addr)
 		return -ENOMEM;
 
@@ -407,7 +428,10 @@ check:
 	*base_addr = txattr_addr;
 	return 0;
 out:
-	kvfree(txattr_addr);
+	if (!inline_size)
+		kfree(txattr_addr);
+	else
+		kmem_cache_free(f2fs_xattr_cachep, txattr_addr);
 	return err;
 }
 
@@ -421,8 +445,12 @@ static int read_all_xattrs(struct inode *inode, struct page *ipage,
 	void *txattr_addr;
 	int err;
 
-	txattr_addr = f2fs_kzalloc(F2FS_I_SB(inode),
-			inline_size + size + XATTR_PADDING_SIZE, GFP_NOFS);
+	if (!inline_size)
+		txattr_addr = f2fs_kzalloc(F2FS_I_SB(inode),
+				inline_size + size + XATTR_PADDING_SIZE, GFP_NOFS);
+	else
+		txattr_addr = kmem_cache_zalloc(f2fs_xattr_cachep, GFP_NOFS);
+
 	if (!txattr_addr)
 		return -ENOMEM;
 
@@ -450,7 +478,10 @@ static int read_all_xattrs(struct inode *inode, struct page *ipage,
 	*base_addr = txattr_addr;
 	return 0;
 fail:
-	kvfree(txattr_addr);
+	if (!inline_size)
+		kfree(txattr_addr);
+	else
+		kmem_cache_free(f2fs_xattr_cachep, txattr_addr);
 	return err;
 }
 
@@ -540,6 +571,7 @@ int f2fs_getxattr(struct inode *inode, int index, const char *name,
 		void *buffer, size_t buffer_size, struct page *ipage)
 {
 	struct f2fs_xattr_entry *entry = NULL;
+	size_t inline_size = inline_xattr_size(inode);
 	int error = 0;
 	unsigned int size, len;
 	void *base_addr = NULL;
@@ -577,13 +609,17 @@ int f2fs_getxattr(struct inode *inode, int index, const char *name,
 	}
 	error = size;
 out:
-	kvfree(base_addr);
+	if (!inline_size)
+		kfree(base_addr);
+	else
+		kmem_cache_free(f2fs_xattr_cachep, base_addr);
 	return error;
 }
 
 ssize_t f2fs_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size)
 {
 	struct inode *inode = d_inode(dentry);
+	size_t inline_size = inline_xattr_size(inode);
 	struct f2fs_xattr_entry *entry;
 	void *base_addr;
 	int error = 0;
@@ -616,7 +652,10 @@ ssize_t f2fs_listxattr(struct dentry *dentry, char *buffer, size_t buffer_size)
 	}
 	error = buffer_size - rest;
 cleanup:
-	kvfree(base_addr);
+	if (!inline_size)
+		kfree(base_addr);
+	else
+		kmem_cache_free(f2fs_xattr_cachep, base_addr);
 	return error;
 }
 
@@ -634,6 +673,7 @@ static int __f2fs_setxattr(struct inode *inode, int index,
 			struct page *ipage, int flags)
 {
 	struct f2fs_xattr_entry *here, *last;
+	size_t inline_size = inline_xattr_size(inode);
 	void *base_addr, *last_base_addr;
 	nid_t xnid = F2FS_I(inode)->i_xattr_nid;
 	int found, newsize;
@@ -757,7 +797,10 @@ static int __f2fs_setxattr(struct inode *inode, int index,
 	if (!error && S_ISDIR(inode->i_mode))
 		set_sbi_flag(F2FS_I_SB(inode), SBI_NEED_CP);
 exit:
-	kvfree(base_addr);
+	if (!inline_size)
+		kfree(base_addr);
+	else
+		kmem_cache_free(f2fs_xattr_cachep, base_addr);
 	return error;
 }
 

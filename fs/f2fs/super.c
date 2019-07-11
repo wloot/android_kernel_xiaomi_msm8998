@@ -3588,9 +3588,12 @@ static int __init init_f2fs_fs(void)
 	err = init_inodecache();
 	if (err)
 		goto fail;
-	err = f2fs_create_node_manager_caches();
+	err = f2fs_init_xattr_caches();
 	if (err)
 		goto free_inodecache;
+	err = f2fs_create_node_manager_caches();
+	if (err)
+		goto fail_xattr_caches;
 	err = f2fs_create_segment_manager_caches();
 	if (err)
 		goto free_node_manager_caches;
@@ -3630,6 +3633,8 @@ free_segment_manager_caches:
 	f2fs_destroy_segment_manager_caches();
 free_node_manager_caches:
 	f2fs_destroy_node_manager_caches();
+fail_xattr_caches:
+	f2fs_destroy_xattr_caches();
 free_inodecache:
 	destroy_inodecache();
 fail:
@@ -3647,6 +3652,7 @@ static void __exit exit_f2fs_fs(void)
 	f2fs_destroy_checkpoint_caches();
 	f2fs_destroy_segment_manager_caches();
 	f2fs_destroy_node_manager_caches();
+	f2fs_destroy_xattr_caches();
 	destroy_inodecache();
 	f2fs_destroy_trace_ios();
 }
