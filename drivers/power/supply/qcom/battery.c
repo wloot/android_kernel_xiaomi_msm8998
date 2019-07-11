@@ -1,4 +1,5 @@
 /* Copyright (c) 2017 The Linux Foundation. All rights reserved.
+ * Copyright (C) 2019 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -241,7 +242,11 @@ static ssize_t slave_pct_store(struct class *c, struct class_attribute *attr,
 	if (kstrtoul(ubuf, 10, &val))
 		return -EINVAL;
 
-	chip->slave_pct = val;
+	if (val >= 50 && val <= 100)
+		chip->slave_pct = 50;
+	else
+		chip->slave_pct = val;
+
 	rerun_election(chip->fcc_votable);
 	rerun_election(chip->fv_votable);
 	split_settled(chip);
