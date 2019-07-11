@@ -224,8 +224,12 @@
 		qcom,mdss-dsi-off-command = [
 				05 01 00 00 00 00 02 28 00
 				05 01 00 00 46 00 02 10 00];
+		qcom,mdss-dsi-displayoff-command = [05 01 00 00 14 00 02 28 00];
+		qcom,mdss-dsi-displayon-command = [05 01 00 00 14 00 02 29 00];
 		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
 		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-displayoff-command-state = "dsi_hs_mode";
+		qcom,mdss-dsi-displayon-command-state = "dsi_hs_mode";
 		qcom,mdss-dsi-h-sync-pulse = <1>;
 		qcom,mdss-dsi-traffic-mode = "burst_mode";
 		qcom,mdss-dsi-bllp-eof-power-mode;
@@ -259,6 +263,7 @@
 		qcom,dispccbb-enabled;
 		qcom,dispblnotify-enabled;
 		qcom,dispparam-enabled;
+		qcom,disp-paneloff-disablecabc-enabled;
 		qcom,mdss-night-brightness = <7 25 43 61>;
 		qcom,mdss-dsi-panel-xy-coordinate = <0xA1 0x0F 0x18>;
 		qcom,mdss-dsi-dispparam-skin-ce-command = [
