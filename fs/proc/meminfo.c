@@ -192,7 +192,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		K(vm_commit_limit()),
 		K(committed),
 		(unsigned long)VMALLOC_TOTAL >> 10,
-		0ul, // used to be vmalloc 'used'
+		K(vmalloc_nr_pages()), // used to be vmalloc 'used'
 		0ul  // used to be vmalloc 'largest_chunk'
 #ifdef CONFIG_MEMORY_FAILURE
 		, atomic_long_read(&num_poisoned_pages) << (PAGE_SHIFT - 10)
