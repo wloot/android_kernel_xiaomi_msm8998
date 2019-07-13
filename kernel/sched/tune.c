@@ -619,40 +619,16 @@ boost_write(struct cgroup_subsys_state *css, struct cftype *cft,
 	return 0;
 }
 
-#ifdef CONFIG_STUNE_ASSIST
-static int boost_write_wrapper(struct cgroup_subsys_state *css,
-			struct cftype *cft, s64 boost)
-{
-	if (!strcmp(current->comm, "init"))
-		return 0;
-
-	boost_write(css, NULL, boost);
-
-	return 0;
-}
-
-static int prefer_idle_write_wrapper(struct cgroup_subsys_state *css,
-			struct cftype *cft, u64 prefer_idle)
-{
-	if (!strcmp(current->comm, "init"))
-		return 0;
-
-	prefer_idle_write(css, NULL, prefer_idle);
-
-	return 0;
-}
-#endif
-
 static struct cftype files[] = {
 	{
 		.name = "boost",
 		.read_s64 = boost_read,
-		.write_s64 = boost_write_wrapper,
+		.write_s64 = boost_write,
 	},
 	{
 		.name = "prefer_idle",
 		.read_u64 = prefer_idle_read,
-		.write_u64 = prefer_idle_write_wrapper,
+		.write_u64 = prefer_idle_write,
 	},
 	{ }	/* terminate */
 };
