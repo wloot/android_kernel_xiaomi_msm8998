@@ -64,7 +64,7 @@ static nxpTfaContainer_t *tfa98xx_container = NULL;
 static int tfa98xx_kmsg_regs = 0;
 static int tfa98xx_ftrace_regs = 0;
 
-static char *fw_name = "tfa98xx.cnt";
+static char *fw_name = "tfa98xx_aac.cnt";
 module_param(fw_name, charp, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(fw_name, "TFA98xx DSP firmware (container file) name.");
 
