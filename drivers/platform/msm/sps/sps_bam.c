@@ -309,16 +309,15 @@ int sps_bam_enable(struct sps_bam *dev)
 					"sps:BAM %pa uses level for IRQ# %d\n",
 					BAM_ID(dev), dev->props.irq);
 			}
+			if (result) {
+				SPS_ERR(dev, "sps:Failed to enable BAM %pa IRQ %d\n",
+					BAM_ID(dev), dev->props.irq);
+				return SPS_ERROR;
+			}
 		} else {
 			SPS_DBG3(dev,
 				"sps:BAM %pa does not have an valid IRQ# %d\n",
 				BAM_ID(dev), dev->props.irq);
-		}
-
-		if (result) {
-			SPS_ERR(dev, "sps:Failed to enable BAM %pa IRQ %d\n",
-				BAM_ID(dev), dev->props.irq);
-			return SPS_ERROR;
 		}
 
 		/* Enable the BAM interrupt */
