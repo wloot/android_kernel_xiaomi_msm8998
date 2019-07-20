@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright © 2016, STMicroelectronics International N.V.
+ * Copyright Â© 2016, STMicroelectronics International N.V.
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -1415,7 +1415,7 @@ VL53L0_Error VL53L010_GetLimitCheckEnable(VL53L0_DEV Dev, uint16_t LimitCheckId,
 {
 	VL53L0_Error Status = VL53L0_ERROR_NONE;
 	VL53L0_DeviceParameters_t CurrentParameters;
-	uint8_t Temp8;
+	uint8_t Temp8 = '\0';
 
 	LOG_FUNCTION_START("");
 
@@ -3841,7 +3841,7 @@ VL53L0_Error VL53L010_calc_sigma_estimate(VL53L0_DEV Dev,
 	uint32_t signalTotalEventsRtnRawVal;
 	FixPoint1616_t ambientRate_kcps;
 	FixPoint1616_t vcselRate_kcps;
-	FixPoint1616_t xTalkCompRate_mcps;
+	FixPoint1616_t xTalkCompRate_mcps = 0;
 	uint32_t xTalkCompRate_kcps;
 	VL53L0_Error Status = VL53L0_ERROR_NONE;
 	VL53L0_DeviceParameters_t CurrentParameters;
