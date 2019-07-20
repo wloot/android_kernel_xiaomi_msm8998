@@ -746,7 +746,7 @@ static void synaptics_rmi4_i2c_check_addr(struct synaptics_rmi4_data *rmi4_data,
 static int synaptics_rmi4_i2c_set_page(struct synaptics_rmi4_data *rmi4_data,
 		unsigned short addr)
 {
-	int retval;
+	int retval = -EIO;
 	unsigned char retry;
 	unsigned char buf[PAGE_SELECT_LEN];
 	unsigned char page;
@@ -807,10 +807,8 @@ static int synaptics_rmi4_i2c_read(struct synaptics_rmi4_data *rmi4_data,
 	mutex_lock(&rmi4_data->rmi4_io_ctrl_mutex);
 
 	retval = synaptics_rmi4_i2c_set_page(rmi4_data, addr);
-	if (retval != PAGE_SELECT_LEN) {
-		retval = -EIO;
+	if (retval != PAGE_SELECT_LEN)
 		goto exit;
-	}
 
 	msg[0].addr = hw_if.board_data->i2c_addr;
 	msg[0].flags = 0;
