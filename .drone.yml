@@ -1,0 +1,29 @@
+kind: pipeline
+name: kernel_ci
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  depth: 1
+
+cache:
+  mount:
+    - /drone/.ccache
+
+steps:
+  - name: default
+    image: ubuntu:latest
+    environment:
+      BOTTOKEN:
+        from_secret: bot_token
+      CHATID:
+        from_secret: chat_id
+    commands:
+      - apt-get update && apt-get install -y build-essential bc curl git zip ccache
+      - export HOME=/drone
+      - cd ${HOME}
+      - git clone https://github.com/wloot/scripts
+      - chmod -R +x scripts
+      - bash scripts/buildkernel.sh
