@@ -8,10 +8,6 @@ platform:
 clone:
   depth: 1
 
-cache:
-  mount:
-    - /drone/.ccache
-
 steps:
   - name: default
     image: ubuntu:latest
