@@ -4307,13 +4307,6 @@ static int fg_hw_init(struct fg_chip *chip)
 		return rc;
 	}
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	rc = fg_sram_masked_write(chip, 19, 0, 0x08, 0x08, FG_IMA_DEFAULT);
-	if (rc < 0) {
-		pr_err("Error in writing cc soc auto clear rc=%d\n", rc);
-	}
-#endif
-
 	fg_encode(chip->sp, FG_SRAM_ESR_PULSE_THRESH,
 		chip->dt.esr_pulse_thresh_ma, buf);
 	rc = fg_sram_write(chip, chip->sp[FG_SRAM_ESR_PULSE_THRESH].addr_word,
@@ -4612,6 +4605,7 @@ static struct fg_irq_info fg_irqs[FG_IRQ_MAX] = {
 	[MSOC_HIGH_IRQ] = {
 		.name		= "msoc-high",
 		.handler	= fg_soc_irq_handler,
+		.wakeable	= true,
 	},
 	[MSOC_EMPTY_IRQ] = {
 		.name		= "msoc-empty",
@@ -4621,10 +4615,12 @@ static struct fg_irq_info fg_irqs[FG_IRQ_MAX] = {
 	[MSOC_LOW_IRQ] = {
 		.name		= "msoc-low",
 		.handler	= fg_soc_irq_handler,
+		.wakeable	= true,
 	},
 	[MSOC_DELTA_IRQ] = {
 		.name		= "msoc-delta",
 		.handler	= fg_delta_msoc_irq_handler,
+		.wakeable	= true,
 	},
 	[BSOC_DELTA_IRQ] = {
 		.name		= "bsoc-delta",

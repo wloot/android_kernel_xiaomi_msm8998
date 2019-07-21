@@ -26,10 +26,6 @@
 #include "step-chg-jeita.h"
 #include "storm-watch.h"
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#include <linux/fb.h>
-#endif
-
 #define smblib_err(chg, fmt, ...)		\
 	pr_err("%s: %s: " fmt, chg->name,	\
 		__func__, ##__VA_ARGS__)	\
@@ -897,18 +893,9 @@ int smblib_set_icl_current(struct smb_charger *chg, int icl_ua)
 	int rc = 0;
 	bool override;
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	union power_supply_propval val = {0, };
-	int usb_present = 0;
-#endif
-
 	/* suspend and return if 25mA or less is requested */
 	if (icl_ua < USBIN_25MA)
 		return smblib_set_usb_suspend(chg, true);
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	disable_irq_nosync(chg->irq_info[USBIN_ICL_CHANGE_IRQ].irq);
-#endif
 
 	if (icl_ua == INT_MAX)
 		goto override_suspend_config;
@@ -922,21 +909,7 @@ int smblib_set_icl_current(struct smb_charger *chg, int icl_ua)
 			goto enable_icl_changed_interrupt;
 		}
 	} else {
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		rc = smblib_get_prop_usb_present(chg, &val);
-		if (rc < 0)
-			smblib_err(chg, "Couldn't get usb present rc = %d\n", rc);
-		else
-			usb_present = val.intval;
-
-		if (usb_present
-				&& chg->typec_mode == POWER_SUPPLY_TYPEC_NONE)
-			set_sdp_current(chg, 500000);
-		else
-			set_sdp_current(chg, 100000);
-#else
 		set_sdp_current(chg, 100000);
-#endif
 		rc = smblib_set_charge_param(chg, &chg->param.usb_icl, icl_ua);
 		if (rc < 0) {
 			smblib_err(chg, "Couldn't set HC ICL rc=%d\n", rc);
@@ -981,11 +954,6 @@ override_suspend_config:
 	}
 
 enable_icl_changed_interrupt:
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	enable_irq(chg->irq_info[USBIN_ICL_CHANGE_IRQ].irq);
-#endif
-
 	return rc;
 }
 
@@ -1895,94 +1863,9 @@ int smblib_set_prop_batt_capacity(struct smb_charger *chg,
 	return 0;
 }
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define SCREEN_ON_ICL		1600000
-#define SCREEN_ON_CHECK_MS	90000
-#define SCREEN_OFF_CHECK_MS	5000
-static void smblib_fb_state_work(struct work_struct *work)
-{
-	struct smb_charger *chg = container_of(work, struct smb_charger,
-			fb_state_work.work);
-	union power_supply_propval usb_present;
-	int rc;
-
-	rc = smblib_get_prop_usb_present(chg, &usb_present);
-	if (rc < 0) {
-		smblib_err(chg, "Couldn't check usb present, rc=%d\n", rc);
-		return;
-	}
-
-	if (!usb_present.intval)
-		return;
-
-	if (!chg->usb_icl_votable) {
-		smblib_err(chg, "Couldn't find USB ICL votable\n");
-		return;
-	}
-
-	if (chg->screen_on) {
-		smblib_dbg(chg, PR_MISC, "Screen is on, lower USB ICL\n");
-		vote(chg->usb_icl_votable, FB_SCREEN_VOTER, true, SCREEN_ON_ICL);
-	} else {
-		smblib_dbg(chg, PR_MISC, "Screen is off, reset USB ICL\n");
-		vote(chg->usb_icl_votable, FB_SCREEN_VOTER, false, 0);
-	}
-}
-
-static int smblib_fb_state_cb(struct notifier_block *self,
-		unsigned long type, void *data)
-{
-	struct smb_charger *chg = container_of(self,
-			struct smb_charger, fb_state_notifier);
-	struct fb_event *evdata = data;
-	unsigned int check_ms;
-	unsigned int blank;
-
-	if (!evdata || !evdata->data)
-		goto end;
-
-	if (type != FB_EARLY_EVENT_BLANK)
-		goto end;
-
-	cancel_delayed_work(&chg->fb_state_work);
-
-	blank = *(int *)(evdata->data);
-	switch (blank) {
-	case FB_BLANK_UNBLANK:
-		chg->screen_on = true;
-		check_ms = SCREEN_ON_CHECK_MS;
-		break;
-	case FB_BLANK_POWERDOWN:
-		chg->screen_on = false;
-		check_ms = SCREEN_OFF_CHECK_MS;
-		break;
-	default:
-		goto end;
-	}
-
-	queue_delayed_work(system_power_efficient_wq,
-			&chg->fb_state_work,
-			msecs_to_jiffies(check_ms));
-
-end:
-	return NOTIFY_OK;
-}
-#endif
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define MAX_CURRENT_PERCENT		100
-#define HIGH_CURRENT_PERCENT		70
-#define MEDIUM_CURRENT_PERCENT		50
-#endif
 int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 				const union power_supply_propval *val)
 {
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	int *thermal_mitigation;
-	int current_percent;
-	bool throttle_current;
-#endif
-
 	if (val->intval < 0)
 		return -EINVAL;
 
@@ -1994,57 +1877,19 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 
 	chg->system_temp_level = val->intval;
 	/* disable parallel charge in case of system temp level */
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	vote(chg->pl_disable_votable, THERMAL_DAEMON_VOTER,
-			(chg->system_temp_level > 2) ? true : false, 0);
-#else
 	vote(chg->pl_disable_votable, THERMAL_DAEMON_VOTER,
 			chg->system_temp_level ? true : false, 0);
-#endif
 
 	if (chg->system_temp_level == chg->thermal_levels)
 		return vote(chg->chg_disable_votable,
 			THERMAL_DAEMON_VOTER, true, 0);
 
 	vote(chg->chg_disable_votable, THERMAL_DAEMON_VOTER, false, 0);
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	throttle_current = chg->screen_on;
-
-	if (chg->system_temp_level == 0)
-		return vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, false, 0);
-
-	switch (chg->usb_psy_desc.type) {
-	case POWER_SUPPLY_TYPE_USB_HVDCP:
-		thermal_mitigation = chg->thermal_mitigation_qc2;
-		break;
-	case POWER_SUPPLY_TYPE_USB_HVDCP_3:
-		thermal_mitigation = chg->thermal_mitigation_qc3;
-		break;
-	case POWER_SUPPLY_TYPE_USB_DCP:
-	default:
-		thermal_mitigation = chg->thermal_mitigation_dcp;
-		throttle_current = false;
-		break;
-	}
-
-	if (!throttle_current || chg->system_temp_level == 6)
-		current_percent = MAX_CURRENT_PERCENT;
-	else if (chg->system_temp_level < 3)
-		current_percent = HIGH_CURRENT_PERCENT;
-	else
-		current_percent = MEDIUM_CURRENT_PERCENT;
-
-	vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
-			thermal_mitigation[chg->system_temp_level] * current_percent / 100);
-#else
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
 
 	vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, true,
 			chg->thermal_mitigation[chg->system_temp_level]);
-#endif
-
 	return 0;
 }
 
@@ -2640,14 +2485,8 @@ int smblib_get_prop_die_health(struct smb_charger *chg,
 
 #define SDP_CURRENT_UA			500000
 #define CDP_CURRENT_UA			1500000
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-#define DCP_CURRENT_UA			1800000
-#define HVDCP_CURRENT_UA		1500000
-#define HVDCP3_CURRENT_UA		3000000
-#else
 #define DCP_CURRENT_UA			1500000
 #define HVDCP_CURRENT_UA		3000000
-#endif
 #define TYPEC_DEFAULT_CURRENT_UA	900000
 #define TYPEC_MEDIUM_CURRENT_UA		1500000
 #define TYPEC_HIGH_CURRENT_UA		3000000
@@ -3221,25 +3060,11 @@ int smblib_get_charge_current(struct smb_charger *chg,
 
 	typec_source_rd = smblib_get_prop_ufp_mode(chg);
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	/* QC 2.0 adapter*/
-	if (apsd_result->bit & QC_2P0_BIT) {
-		*total_current_ua = HVDCP_CURRENT_UA;
-		return 0;
-	}
-
-	/* QC 3.0 adapter */
-	if (apsd_result->bit & QC_3P0_BIT) {
-		*total_current_ua = HVDCP3_CURRENT_UA;
-		return 0;
-	}
-#else
 	/* QC 2.0/3.0 adapter */
 	if (apsd_result->bit & (QC_3P0_BIT | QC_2P0_BIT)) {
 		*total_current_ua = HVDCP_CURRENT_UA;
 		return 0;
 	}
-#endif
 
 	if (non_compliant) {
 		switch (apsd_result->bit) {
@@ -3695,9 +3520,6 @@ static void smblib_handle_hvdcp_3p0_auth_done(struct smb_charger *chg,
 					      bool rising)
 {
 	const struct apsd_result *apsd_result;
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	int current_ua;
-#endif
 	int rc;
 
 	if (!rising)
@@ -3734,17 +3556,6 @@ static void smblib_handle_hvdcp_3p0_auth_done(struct smb_charger *chg,
 
 	smblib_dbg(chg, PR_INTERRUPT, "IRQ: hvdcp-3p0-auth-done rising; %s detected\n",
 		   apsd_result->name);
-
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	if (apsd_result->bit & QC_2P0_BIT) {
-		current_ua = HVDCP_CURRENT_UA;
-	} else if (apsd_result->bit & QC_3P0_BIT) {
-		current_ua = HVDCP3_CURRENT_UA;
-	}
-
-	vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true,
-			current_ua);
-#endif
 }
 
 static void smblib_handle_hvdcp_check_timeout(struct smb_charger *chg,
@@ -3798,10 +3609,8 @@ static void smblib_handle_hvdcp_detect_done(struct smb_charger *chg,
 
 static void smblib_force_legacy_icl(struct smb_charger *chg, int pst)
 {
-#ifndef CONFIG_MACH_XIAOMI_MSM8998
 	int typec_mode;
 	int rp_ua;
-#endif
 
 	/* while PD is active it should have complete ICL control */
 	if (chg->pd_active)
@@ -3816,40 +3625,25 @@ static void smblib_force_legacy_icl(struct smb_charger *chg, int pst)
 		 */
 		if (!is_client_vote_enabled(chg->usb_icl_votable,
 								USB_PSY_VOTER))
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-			vote(chg->usb_icl_votable, USB_PSY_VOTER, true, 500000);
-#else
-
 			vote(chg->usb_icl_votable, USB_PSY_VOTER, true, 100000);
-#endif
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, false, 0);
 		break;
 	case POWER_SUPPLY_TYPE_USB_CDP:
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 1500000);
 		break;
 	case POWER_SUPPLY_TYPE_USB_DCP:
-#ifndef CONFIG_MACH_XIAOMI_MSM8998
 		typec_mode = smblib_get_prop_typec_mode(chg);
 		rp_ua = get_rp_based_dcp_current(chg, typec_mode);
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, rp_ua);
 		break;
-#endif
 	case POWER_SUPPLY_TYPE_USB_FLOAT:
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 1800000);
-#else
 		/*
 		 * limit ICL to 100mA, the USB driver will enumerate to check
 		 * if this is a SDP and appropriately set the current
 		 */
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 100000);
-#endif
 		break;
 	case POWER_SUPPLY_TYPE_USB_HVDCP:
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 100000);
-		break;
-#endif
 	case POWER_SUPPLY_TYPE_USB_HVDCP_3:
 		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, 3000000);
 		break;
@@ -4965,11 +4759,7 @@ static void smblib_legacy_detection_work(struct work_struct *work)
 		smblib_err(chg, "Couldn't enable type-c rc=%d\n", rc);
 
 	/* wait for type-c detection to complete */
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	msleep(1000);
-#else
 	msleep(400);
-#endif
 
 	rc = smblib_read(chg, TYPE_C_STATUS_5_REG, &stat);
 	if (rc < 0) {
@@ -5200,10 +4990,6 @@ int smblib_init(struct smb_charger *chg)
 	INIT_WORK(&chg->legacy_detection_work, smblib_legacy_detection_work);
 	INIT_DELAYED_WORK(&chg->uusb_otg_work, smblib_uusb_otg_work);
 	INIT_DELAYED_WORK(&chg->bb_removal_work, smblib_bb_removal_work);
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-	INIT_DELAYED_WORK(&chg->fb_state_work, smblib_fb_state_work);
-#endif
-
 	chg->fake_capacity = -EINVAL;
 	chg->fake_input_current_limited = -EINVAL;
 
@@ -5238,16 +5024,6 @@ int smblib_init(struct smb_charger *chg)
 			return rc;
 		}
 
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		chg->fb_state_notifier.notifier_call = smblib_fb_state_cb;
-		rc = fb_register_client(&chg->fb_state_notifier);
-		if (rc < 0) {
-			smblib_err(chg,
-				"Couldn't register notifier rc=%d\n", rc);
-			return rc;
-		}
-#endif
-
 		chg->bms_psy = power_supply_get_by_name("bms");
 		chg->pl.psy = power_supply_get_by_name("parallel");
 		break;
@@ -5277,10 +5053,6 @@ int smblib_deinit(struct smb_charger *chg)
 		cancel_work_sync(&chg->legacy_detection_work);
 		cancel_delayed_work_sync(&chg->uusb_otg_work);
 		cancel_delayed_work_sync(&chg->bb_removal_work);
-#ifdef CONFIG_MACH_XIAOMI_MSM8998
-		cancel_delayed_work_sync(&chg->fb_state_work);
-		fb_unregister_client(&chg->fb_state_notifier);
-#endif
 		power_supply_unreg_notifier(&chg->nb);
 		smblib_destroy_votables(chg);
 		qcom_step_chg_deinit();
