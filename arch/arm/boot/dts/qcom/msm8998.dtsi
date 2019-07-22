@@ -755,26 +755,6 @@
 		qcom,target-dev = <&cpubw>;
 	};
 
-	mincpubw: qcom,mincpubw {
-		compatible = "qcom,devbw";
-		governor = "powersave";
-		qcom,src-dst-ports = <1 512>;
-		qcom,active-only;
-		qcom,bw-tbl =
-			<   762 /*  100 MHz */ >,
-			<  1144 /*  150 MHz */ >,
-			<  1525 /*  200 MHz */ >,
-			<  2288 /*  300 MHz */ >,
-			<  3143 /*  412 MHz */ >,
-			<  4173 /*  547 MHz */ >,
-			<  5195 /*  681 MHz */ >,
-			<  5859 /*  768 MHz */ >,
-			<  7759 /* 1017 MHz */ >,
-			<  9887 /* 1296 MHz */ >,
-			< 11863 /* 1555 MHz */ >,
-			< 13763 /* 1804 MHz */ >;
-	};
-
 	memlat_cpu0: qcom,memlat-cpu0 {
 		compatible = "qcom,devbw";
 		governor = "powersave";
@@ -839,17 +819,6 @@
 			< 1296000  9887 >,
 			< 1555000 11863 >,
 			< 1804000 13763 >;
-	};
-
-	devfreq_cpufreq: devfreq-cpufreq {
-		mincpubw-cpufreq {
-			target-dev = <&mincpubw>;
-			cpu-to-dev-map-0 =
-				< 1881600 1525 >;
-			cpu-to-dev-map-4 =
-				< 2016000 1525 >,
-				< 2092800 5195 >;
-		};
 	};
 
 	msm_cpufreq: qcom,msm-cpufreq {
