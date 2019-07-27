@@ -155,6 +155,9 @@ static u64 iowait_ceiling_pct = 25;
 static u64 iowait_floor_pct = 8;
 #define LAST_IO_CHECK_TOL	(3 * USEC_PER_MSEC)
 
+static const unsigned int max_boost_freq_lp = 1824000;
+static const unsigned int max_boost_freq_perf = 1958400;
+
 static unsigned int aggr_iobusy;
 static unsigned int aggr_mode;
 
@@ -185,7 +188,6 @@ static struct input_handler *handler;
 #define CLUSTER_1_THRESHOLD_FREQ	190000
 #define INPUT_EVENT_CNT_THRESHOLD	15
 #define MAX_LENGTH_CPU_STRING	256
-
 
 
 /**************************sysfs start********************************/
@@ -418,6 +420,11 @@ static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 			return -EINVAL;
 		if (cpu > (num_present_cpus() - 1))
 			return -EINVAL;
+
+		if (cpu < 4)
+			val = min(val, max_boost_freq_lp);
+		else 
+			val = min(val, max_boost_freq_perf);
 
 		i_cpu_stats = &per_cpu(cpu_stats, cpu);
 
