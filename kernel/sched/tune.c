@@ -781,7 +781,7 @@ static void write_default_values(struct cgroup_subsys_state *css)
 		bool prefer_idle;
 	};
 	struct groups_data groups[2] = {
-		{ "top-app",	1, 1 },
+		{ "top-app",	0, 1 },
 		{ "foreground", 0, 1 }};
 
 	for (i = 0; i < ARRAY_SIZE(groups); i++) {
