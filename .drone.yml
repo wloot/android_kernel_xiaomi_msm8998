@@ -22,4 +22,4 @@ steps:
       - cd ${HOME}
       - git clone https://github.com/wloot/scripts
       - chmod -R +x scripts
-      - bash scripts/buildkernel.sh
+      - bash scripts/buildkernel.sh --clang
