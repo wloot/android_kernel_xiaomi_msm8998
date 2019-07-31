@@ -1518,7 +1518,6 @@
 		qcom,irq-mask = <0x1>;
 		interrupts = <0 168 1>;
 		label = "rpm";
-		cpu-affinity = <1 2>;
 	};
 
 	qcom,glink-mailbox-xprt-spss@1d05008 {
