@@ -96,11 +96,16 @@ void cpu_input_boost_kick(void)
 static void __cpu_input_boost_kick_max(struct boost_drv *b,
 				       unsigned int duration_ms)
 {
-	unsigned long boost_jiffies = msecs_to_jiffies(duration_ms);
+	unsigned long boost_jiffies;
 	unsigned long curr_expires, new_expires;
 
 	if (test_bit(SCREEN_OFF, &b->state))
 		return;
+
+	if (!duration_ms)
+		return;
+
+	boost_jiffies = msecs_to_jiffies(duration_ms);
 
 	do {
 		curr_expires = atomic_long_read(&b->max_boost_expires);
