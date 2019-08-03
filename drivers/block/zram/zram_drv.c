@@ -1495,7 +1495,7 @@ static ssize_t disksize_store(struct device *dev,
 	int err;
 	const char *maxsize = "1879048192";
 
-	if (buf > maxsize)
+	if (*buf > *maxsize)
 		buf = maxsize;
 
 	disksize = memparse(buf, NULL);
