@@ -5,17 +5,17 @@
  */
 
 #include <linux/dma-buf.h>
-#include <linux/rbtree.h>
+#include <linux/msm_dma_iommu_mapping.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include <asm/barrier.h>
 
 struct msm_iommu_meta {
-	struct rb_node node;
-	struct list_head maps;
+	struct msm_iommu_data *data;
+	struct list_head lnode;
+	struct list_head map_list;
 	atomic_t refcount;
-	rwlock_t lock;
-	void *buffer;
+	rwlock_t map_lock;
 };
 
 struct msm_iommu_map {
@@ -28,68 +28,15 @@ struct msm_iommu_map {
 	atomic_t refcount;
 };
 
-static struct rb_root iommu_root;
-static DEFINE_RWLOCK(rb_tree_lock);
-
-static void msm_iommu_meta_add(struct msm_iommu_meta *new_meta)
-{
-	struct rb_root *root = &iommu_root;
-	struct rb_node **p = &root->rb_node;
-	struct rb_node *parent = NULL;
-	struct msm_iommu_meta *meta;
-
-	write_lock(&rb_tree_lock);
-	while (*p) {
-		parent = *p;
-		meta = rb_entry(parent, typeof(*meta), node);
-		if (new_meta->buffer < meta->buffer)
-			p = &(*p)->rb_left;
-		else
-			p = &(*p)->rb_right;
-	}
-	rb_link_node(&new_meta->node, parent, p);
-	rb_insert_color(&new_meta->node, root);
-	write_unlock(&rb_tree_lock);
-}
-
-static struct msm_iommu_meta *msm_iommu_meta_lookup_get(void *buffer)
-{
-	struct rb_root *root = &iommu_root;
-	struct rb_node **p = &root->rb_node;
-	struct msm_iommu_meta *meta;
-
-	read_lock(&rb_tree_lock);
-	while (*p) {
-		meta = rb_entry(*p, typeof(*meta), node);
-		if (buffer < meta->buffer) {
-			p = &(*p)->rb_left;
-		} else if (buffer > meta->buffer) {
-			p = &(*p)->rb_right;
-		} else {
-			atomic_inc(&meta->refcount);
-			read_unlock(&rb_tree_lock);
-			return meta;
-		}
-	}
-	read_unlock(&rb_tree_lock);
-
-	return NULL;
-}
-
-static void msm_iommu_map_add(struct msm_iommu_meta *meta,
-			      struct msm_iommu_map *map)
-{
-	write_lock(&meta->lock);
-	list_add(&map->lnode, &meta->maps);
-	write_unlock(&meta->lock);
-}
+static LIST_HEAD(meta_list);
+static DEFINE_RWLOCK(meta_lock);
 
 static struct msm_iommu_map *msm_iommu_map_lookup(struct msm_iommu_meta *meta,
 						  struct device *dev)
 {
 	struct msm_iommu_map *map;
 
-	list_for_each_entry(map, &meta->maps, lnode) {
+	list_for_each_entry(map, &meta->map_list, lnode) {
 		if (map->dev == dev)
 			return map;
 	}
@@ -97,19 +44,21 @@ static struct msm_iommu_map *msm_iommu_map_lookup(struct msm_iommu_meta *meta,
 	return NULL;
 }
 
-static void msm_iommu_meta_put(struct msm_iommu_meta *meta, int count)
+static void msm_iommu_meta_put(struct msm_iommu_data *data)
 {
-	struct rb_root *root = &iommu_root;
+	struct msm_iommu_meta *meta = data->meta;
 	bool free_meta;
 
-	write_lock(&rb_tree_lock);
-	free_meta = atomic_sub_and_test(count, &meta->refcount);
+	write_lock(&meta_lock);
+	free_meta = atomic_dec_and_test(&meta->refcount);
 	if (free_meta)
-		rb_erase(&meta->node, root);
-	write_unlock(&rb_tree_lock);
+		list_del(&meta->lnode);
+	write_unlock(&meta_lock);
 
-	if (free_meta)
+	if (free_meta) {
 		kfree(meta);
+		data->meta = NULL;
+	}
 }
 
 int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
@@ -117,26 +66,34 @@ int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
 			 struct dma_attrs *attrs)
 {
 	int not_lazy = dma_get_attr(DMA_ATTR_NO_DELAYED_UNMAP, attrs);
+	struct msm_iommu_data *data = dma_buf->priv;
 	struct msm_iommu_meta *meta;
 	struct msm_iommu_map *map;
 
-	meta = msm_iommu_meta_lookup_get(dma_buf->priv);
+	/* The same buffer can be mapped concurrently, so lock onto it */
+	mutex_lock(&data->lock);
+	meta = data->meta;
 	if (meta) {
-		read_lock(&meta->lock);
+		atomic_inc(&meta->refcount);
+		read_lock(&meta->map_lock);
 		map = msm_iommu_map_lookup(meta, dev);
 		if (map)
 			atomic_inc(&map->refcount);
-		read_unlock(&meta->lock);
+		read_unlock(&meta->map_lock);
 	} else {
 		meta = kmalloc(sizeof(*meta), GFP_KERNEL | __GFP_NOFAIL);
 		*meta = (typeof(*meta)){
-			.buffer = dma_buf->priv,
+			.data = data,
 			.refcount = ATOMIC_INIT(2 - not_lazy),
-			.lock = __RW_LOCK_UNLOCKED(&meta->lock),
-			.maps = LIST_HEAD_INIT(meta->maps)
+			.map_lock = __RW_LOCK_UNLOCKED(&meta->map_lock),
+			.map_list = LIST_HEAD_INIT(meta->map_list)
 		};
 
-		msm_iommu_meta_add(meta);
+		write_lock(&meta_lock);
+		list_add(&meta->lnode, &meta_list);
+		write_unlock(&meta_lock);
+
+		data->meta = meta;
 		map = NULL;
 	}
 
@@ -162,8 +119,11 @@ int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
 			}
 		};
 
-		msm_iommu_map_add(meta, map);
+		write_lock(&meta->map_lock);
+		list_add(&map->lnode, &meta->map_list);
+		write_unlock(&meta->map_lock);
 	}
+	mutex_unlock(&data->lock);
 
 	return nents;
 }
@@ -171,50 +131,50 @@ int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
 void msm_dma_unmap_sg(struct device *dev, struct scatterlist *sgl, int nents,
 		      enum dma_data_direction dir, struct dma_buf *dma_buf)
 {
+	struct msm_iommu_data *data = dma_buf->priv;
 	struct msm_iommu_meta *meta;
 	struct msm_iommu_map *map;
 	bool free_map;
 
-	meta = msm_iommu_meta_lookup_get(dma_buf->priv);
-	if (!meta)
+	mutex_lock(&data->lock);
+	meta = data->meta;
+	if (!meta) {
+		mutex_unlock(&data->lock);
 		return;
+	}
 
-	write_lock(&meta->lock);
+	write_lock(&meta->map_lock);
 	map = msm_iommu_map_lookup(meta, dev);
 	if (!map) {
-		write_unlock(&meta->lock);
-		msm_iommu_meta_put(meta, 1);
+		write_unlock(&meta->map_lock);
+		mutex_unlock(&data->lock);
 		return;
 	}
 
 	free_map = atomic_dec_and_test(&map->refcount);
 	if (free_map)
 		list_del(&map->lnode);
-	write_unlock(&meta->lock);
+	write_unlock(&meta->map_lock);
 
 	if (free_map) {
 		dma_unmap_sg(map->dev, &map->sgl, map->nents, map->dir);
 		kfree(map);
 	}
-
-	msm_iommu_meta_put(meta, 2);
+	msm_iommu_meta_put(data);
+	mutex_unlock(&data->lock);
 }
 
 int msm_dma_unmap_all_for_dev(struct device *dev)
 {
-	struct msm_iommu_map *map, *map_next;
-	struct rb_root *root = &iommu_root;
+	struct msm_iommu_map *map, *tmp_map;
 	struct msm_iommu_meta *meta;
-	struct rb_node *meta_node;
 	LIST_HEAD(unmap_list);
 	int ret = 0;
 
-	read_lock(&rb_tree_lock);
-	meta_node = rb_first(root);
-	while (meta_node) {
-		meta = rb_entry(meta_node, typeof(*meta), node);
-		write_lock(&meta->lock);
-		list_for_each_entry_safe(map, map_next, &meta->maps, lnode) {
+	read_lock(&meta_lock);
+	list_for_each_entry(meta, &meta_list, lnode) {
+		write_lock(&meta->map_lock);
+		list_for_each_entry_safe(map, tmp_map, &meta->map_list, lnode) {
 			if (map->dev != dev)
 				continue;
 
@@ -224,12 +184,11 @@ int msm_dma_unmap_all_for_dev(struct device *dev)
 			else
 				ret = -EINVAL;
 		}
-		write_unlock(&meta->lock);
-		meta_node = rb_next(meta_node);
+		write_unlock(&meta->map_lock);
 	}
-	read_unlock(&rb_tree_lock);
+	read_unlock(&meta_lock);
 
-	list_for_each_entry_safe(map, map_next, &unmap_list, lnode) {
+	list_for_each_entry_safe(map, tmp_map, &unmap_list, lnode) {
 		dma_unmap_sg(map->dev, &map->sgl, map->nents, map->dir);
 		kfree(map);
 	}
@@ -237,31 +196,34 @@ int msm_dma_unmap_all_for_dev(struct device *dev)
 	return ret;
 }
 
-/* Only to be called by ION code when a buffer is freed */
-void msm_dma_buf_freed(void *buffer)
+void msm_dma_buf_freed(struct msm_iommu_data *data)
 {
-	struct msm_iommu_map *map, *map_next;
+	struct msm_iommu_map *map, *tmp_map;
 	struct msm_iommu_meta *meta;
 	LIST_HEAD(unmap_list);
 
-	meta = msm_iommu_meta_lookup_get(buffer);
-	if (!meta)
+	mutex_lock(&data->lock);
+	meta = data->meta;
+	if (!meta) {
+		mutex_unlock(&data->lock);
 		return;
+	}
 
-	write_lock(&meta->lock);
-	list_for_each_entry_safe(map, map_next, &meta->maps, lnode) {
+	write_lock(&meta->map_lock);
+	list_for_each_entry_safe(map, tmp_map, &meta->map_list, lnode) {
 		/* Do the actual unmapping outside of the lock */
 		if (atomic_dec_and_test(&map->refcount))
 			list_move_tail(&map->lnode, &unmap_list);
 		else
 			list_del_init(&map->lnode);
 	}
-	write_unlock(&meta->lock);
+	write_unlock(&meta->map_lock);
 
-	list_for_each_entry_safe(map, map_next, &unmap_list, lnode) {
+	list_for_each_entry_safe(map, tmp_map, &unmap_list, lnode) {
 		dma_unmap_sg(map->dev, &map->sgl, map->nents, map->dir);
 		kfree(map);
 	}
 
-	msm_iommu_meta_put(meta, 2);
+	msm_iommu_meta_put(data);
+	mutex_unlock(&data->lock);
 }
