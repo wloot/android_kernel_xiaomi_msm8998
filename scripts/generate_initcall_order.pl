@@ -138,7 +138,7 @@ sub process_objects {
 		} else {
 			STDOUT->autoflush(1);
 			print "$index\n";
-			find_initcalls($object);
+			find_initcalls("$ENV{'objtree'}/${object}");
 			exit;
 		}
 
