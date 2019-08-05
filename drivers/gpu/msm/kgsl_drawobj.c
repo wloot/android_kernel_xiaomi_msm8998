@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2017,2019, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -175,8 +175,11 @@ static void syncobj_timer(unsigned long data)
 /*
  * a generic function to retire a pending sync event and (possibly)
  * kick the dispatcher
+ * Returns false if the event was already marked for cancellation in another
+ * thread. This function should return true if this thread is responsible for
+ * freeing up the memory, and the event will not be cancelled.
  */
-static void drawobj_sync_expire(struct kgsl_device *device,
+static bool drawobj_sync_expire(struct kgsl_device *device,
 	struct kgsl_drawobj_sync_event *event)
 {
 	struct kgsl_drawobj_sync *syncobj = event->syncobj;
@@ -185,7 +188,7 @@ static void drawobj_sync_expire(struct kgsl_device *device,
 	 * leave without doing anything useful
 	 */
 	if (!test_and_clear_bit(event->id, &syncobj->pending))
-		return;
+		return false;
 
 	/*
 	 * If no more pending events, delete the timer and schedule the command
@@ -198,6 +201,7 @@ static void drawobj_sync_expire(struct kgsl_device *device,
 			device->ftbl->drawctxt_sched(device,
 				event->syncobj->base.context);
 	}
+	return true;
 }
 
 /*
@@ -212,8 +216,13 @@ static void drawobj_sync_func(struct kgsl_device *device,
 	trace_syncpoint_timestamp_expire(event->syncobj,
 		event->context, event->timestamp);
 
-	drawobj_sync_expire(device, event);
-	kgsl_context_put(event->context);
+	/*
+	 * Put down the context ref count only if
+	 * this thread successfully clears the pending bit mask.
+	 */
+	if (drawobj_sync_expire(device, event))
+		kgsl_context_put(event->context);
+
 	drawobj_put(&event->syncobj->base);
 }
 
@@ -243,18 +252,11 @@ static void drawobj_destroy_sparse(struct kgsl_drawobj *drawobj)
 static void drawobj_destroy_sync(struct kgsl_drawobj *drawobj)
 {
 	struct kgsl_drawobj_sync *syncobj = SYNCOBJ(drawobj);
-	unsigned long pending, flags;
+	unsigned long flags;
 	unsigned int i;
 
 	/* Zap the canary timer */
 	del_timer_sync(&syncobj->timer);
-
-	/*
-	 * Copy off the pending list and clear all pending events - this will
-	 * render any subsequent asynchronous callback harmless
-	 */
-	bitmap_copy(&pending, &syncobj->pending, KGSL_MAX_SYNCPOINTS);
-	bitmap_zero(&syncobj->pending, KGSL_MAX_SYNCPOINTS);
 
 	/*
 	 * Clear all pending events - this will render any subsequent async
@@ -263,8 +265,12 @@ static void drawobj_destroy_sync(struct kgsl_drawobj *drawobj)
 	for (i = 0; i < syncobj->numsyncs; i++) {
 		struct kgsl_drawobj_sync_event *event = &syncobj->synclist[i];
 
-		/* Don't do anything if the event has already expired */
-		if (!test_bit(i, &pending))
+		/*
+		 * Don't do anything if the event has already expired.
+		 * If this thread clears the pending bit mask then it is
+		 * responsible for doing context put.
+		 */
+		if (!test_and_clear_bit(i, &syncobj->pending))
 			continue;
 
 		switch (event->type) {
@@ -272,6 +278,11 @@ static void drawobj_destroy_sync(struct kgsl_drawobj *drawobj)
 			kgsl_cancel_event(drawobj->device,
 				&event->context->events, event->timestamp,
 				drawobj_sync_func, event);
+			/*
+			 * Do context put here to make sure the context is alive
+			 * till this thread cancels kgsl event.
+			 */
+			kgsl_context_put(event->context);
 			break;
 		case KGSL_CMD_SYNCPOINT_TYPE_FENCE:
 			spin_lock_irqsave(&event->handle_lock, flags);
@@ -293,7 +304,7 @@ static void drawobj_destroy_sync(struct kgsl_drawobj *drawobj)
 	 * If we cancelled an event, there's a good chance that the context is
 	 * on a dispatcher queue, so schedule to get it removed.
 	 */
-	if (!bitmap_empty(&pending, KGSL_MAX_SYNCPOINTS) &&
+	if (!bitmap_empty(&syncobj->pending, KGSL_MAX_SYNCPOINTS) &&
 		drawobj->device->ftbl->drawctxt_sched)
 		drawobj->device->ftbl->drawctxt_sched(drawobj->device,
 							drawobj->context);
