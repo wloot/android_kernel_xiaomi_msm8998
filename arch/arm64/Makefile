@@ -19,8 +19,15 @@ ifeq ($(CONFIG_RELOCATABLE), y)
 # Pass --no-apply-dynamic-relocs to restore pre-binutils-2.27 behaviour
 # for relative relocs, since this leads to better Image compression
 # with the relocation offsets always being zero.
-LDFLAGS_vmlinux		+= -shared -Bsymbolic -z notext -z norelro \
+LDFLAGS_vmlinux		+= -Bsymbolic -z notext -z norelro \
 			$(call ld-option, --no-apply-dynamic-relocs)
+
+# Pass -pie for lld to minimize image size
+ifeq ($(ld-name),lld)
+LDFLAGS_vmlinux		+= -pie
+else
+LDFLAGS_vmlinux		+= -shared
+endif
 endif
 
 KBUILD_DEFCONFIG := defconfig
