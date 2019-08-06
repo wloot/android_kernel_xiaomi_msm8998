@@ -27,7 +27,6 @@ struct ion_device {
 struct ion_client {
 	struct ion_device *dev;
 	struct rb_root handles;
-	struct rb_node node;
 	struct idr idr;
 	rwlock_t idr_lock;
 	rwlock_t rb_lock;
