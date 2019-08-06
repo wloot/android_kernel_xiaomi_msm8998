@@ -124,13 +124,6 @@ static struct smb_params v1_params = {
 		.max_u	= 3000000,
 		.step_u	= 25000,
 	},
-	.jeita_fv_comp          = {
-		.name   = "jeita fv reduction",
-		.reg    = JEITA_FVCOMP_CFG_REG,
-		.min_u  = 0,
-		.max_u  = 472500,
-		.step_u = 7500,
-	},
 	.freq_buck		= {
 		.name	= "buck switching frequency",
 		.reg	= CFG_BUCKBOOST_FREQ_SELECT_BUCK_REG,
@@ -213,9 +206,6 @@ module_param_named(
 #define BITE_WDOG_TIMEOUT_8S		0x3
 #define BARK_WDOG_TIMEOUT_MASK		GENMASK(3, 2)
 #define BARK_WDOG_TIMEOUT_SHIFT		2
-#define DEFAULT_CRITICAL_JEITA_CCOMP 2975000
-#define JEITA_SOFT_HOT_CC_COMP          1600000
-#define JEITA_SOFT_COOL_CC_COMP         2225000
 
 static int smb2_parse_dt(struct smb2 *chip)
 {
@@ -378,24 +368,6 @@ static int smb2_parse_dt(struct smb2 *chip)
 					&chg->otg_delay_ms);
 	if (rc < 0)
 		chg->otg_delay_ms = OTG_DEFAULT_DEGLITCH_TIME_MS;
-
-	rc = of_property_read_u32(node, "qcom,fcc-low-temp-delta",
-				&chip->dt.jeita_low_cc_delta);
-	if (rc < 0)
-		chip->dt.jeita_low_cc_delta = DEFAULT_CRITICAL_JEITA_CCOMP;
-	chg->jeita_ccomp_low_delta = chip->dt.jeita_low_cc_delta;
-
-	rc = of_property_read_u32(node, "qcom,fcc-hot-temp-delta",
-				&chip->dt.jeita_hot_cc_delta);
-	if (rc < 0)
-		chip->dt.jeita_hot_cc_delta = JEITA_SOFT_HOT_CC_COMP;
-	chg->jeita_ccomp_hot_delta = chip->dt.jeita_hot_cc_delta;
-
-	rc = of_property_read_u32(node, "qcom,fcc-cool-temp-delta",
-				&chip->dt.jeita_cool_cc_delta);
-	if (rc < 0)
-		chip->dt.jeita_cool_cc_delta = JEITA_SOFT_COOL_CC_COMP;
-	chg->jeita_ccomp_cool_delta = chip->dt.jeita_cool_cc_delta;
 
 	chg->fcc_stepper_mode = of_property_read_bool(node,
 					"qcom,fcc-stepping-enable");
@@ -1568,30 +1540,6 @@ static int smb2_disable_typec(struct smb_charger *chg)
 	return rc;
 }
 
-static int smb2_init_jeita(struct smb2 *chip)
-{
-	struct smb_charger *chg = &chip->chg;
-	int rc;
-
-	/*set cc compensation to 0.3C*/
-	rc = smblib_set_charge_param(chg, &chg->param.jeita_cc_comp, 2225000);
-	if (rc < 0) {
-		pr_err("Couldn't configure jeita_cc rc = %d\n", rc);
-		return rc;
-	}
-	rc = smblib_set_charge_param(chg, &chg->param.jeita_fv_comp, 300000);
-	if (rc < 0) {
-		pr_err("Couldn't configure jeita_cv rc = %d\n", rc);
-		return rc;
-	}
-	rc = smblib_masked_write(chg, JEITA_EN_CFG_REG,
-					JEITA_EN_COLD_SL_FCV_BIT, 0);
-	if (rc < 0)
-		pr_err("Couldn't disable cold_sl_fcv rc=%d\n", rc);
-
-	return 0;
-}
-
 static int smb2_init_hw(struct smb2 *chip)
 {
 	struct smb_charger *chg = &chip->chg;
@@ -1627,8 +1575,6 @@ static int smb2_init_hw(struct smb2 *chip)
 		chg->param.freq_buck.max_u = chip->dt.max_freq_khz;
 		chg->param.freq_boost.max_u = chip->dt.max_freq_khz;
 	}
-
-	smb2_init_jeita(chip);
 
 	/* set a slower soft start setting for OTG */
 	rc = smblib_masked_write(chg, DC_ENG_SSUPPLY_CFG2_REG,
