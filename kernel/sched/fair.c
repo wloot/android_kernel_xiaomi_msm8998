@@ -2680,6 +2680,7 @@ int core_ctl_set_boost(bool boost)
 EXPORT_SYMBOL(core_ctl_set_boost);
 
 #ifdef CONFIG_SMP
+/* Precomputed fixed inverse multiplies for multiplication by y^n */
 static const u32 runnable_avg_yN_inv[] = {
 	0xffffffff, 0xfa83b2da, 0xf5257d14, 0xefe4b99a, 0xeac0c6e6, 0xe5b906e6,
 	0xe0ccdeeb, 0xdbfbb796, 0xd744fcc9, 0xd2a81d91, 0xce248c14, 0xc9b9bd85,
@@ -2823,7 +2824,6 @@ __update_load_avg(u64 now, int cpu, struct sched_avg *sa,
 
 	scale_freq = arch_scale_freq_capacity(NULL, cpu);
 	scale_cpu = arch_scale_cpu_capacity(NULL, cpu);
-	trace_sched_contrib_scale_f(cpu, scale_freq, scale_cpu);
 
 	/* delta_w is the amount already accumulated against our next period */
 	delta_w = sa->period_contrib;
@@ -2882,7 +2882,6 @@ __update_load_avg(u64 now, int cpu, struct sched_avg *sa,
 		if (cfs_rq)
 			cfs_rq->runnable_load_sum += weight * scaled_delta;
 	}
-
 	if (running)
 		sa->util_sum += scaled_delta * scale_cpu;
 
