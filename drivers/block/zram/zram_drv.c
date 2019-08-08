@@ -1492,10 +1492,11 @@ static ssize_t disksize_store(struct device *dev,
 	u64 disksize;
 	struct zcomp *comp;
 	struct zram *zram = dev_to_zram(dev);
+	const char *maxsize = "2147483648";
+	char *endptr;
 	int err;
-	const char *maxsize = "1879048192";
 
-	if (*buf > *maxsize)
+	if (simple_strtoull(buf, &endptr, 0) > simple_strtoull(maxsize, &endptr, 0))
 		buf = maxsize;
 
 	disksize = memparse(buf, NULL);
