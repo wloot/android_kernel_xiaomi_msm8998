@@ -133,6 +133,13 @@ struct cpuset {
 	int relax_domain_level;
 };
 
+#ifdef CONFIG_CPUSETS_ASSIST
+struct cs_target {
+	const char *name;
+	char *cpus;
+};
+#endif
+
 static inline struct cpuset *css_cs(struct cgroup_subsys_state *css)
 {
 	return css ? container_of(css, struct cpuset, css) : NULL;
@@ -1696,11 +1703,6 @@ static ssize_t cpuset_write_resmask(struct kernfs_open_file *of,
 	struct cpuset *trialcs;
 	int retval = -ENODEV;
 
-#ifndef CONFIG_CPUSETS_ASSIST
-	/* Don't call strstrip here because buf is read-only */
-	buf = strstrip(buf);
-#endif
-
 	/*
 	 * CPU or memory hotunplug may leave @cs w/o any execution
 	 * resources, in which case the hotplug code asynchronously updates
@@ -1757,32 +1759,37 @@ out_unlock:
 	return retval ?: nbytes;
 }
 
+static ssize_t cpuset_write_resmask_assist(struct kernfs_open_file *of,
+					   struct cs_target tgt, size_t nbytes,
+					   loff_t off)
+{
+	pr_info("cpuset_assist: setting %s to %s\n", tgt.name, tgt.cpus);
+	return cpuset_write_resmask(of, tgt.cpus, nbytes, off);
+}
+
 static ssize_t cpuset_write_resmask_wrapper(struct kernfs_open_file *of,
 					 char *buf, size_t nbytes, loff_t off)
 {
 #ifdef CONFIG_CPUSETS_ASSIST
-	int i;
-	struct cpuset *cs = css_cs(of_css(of));
-	struct c_data {
-		char *c_name;
-		char *c_cpus;
-	};
-	struct c_data c_targets[6] = {
-		/* Silver only cpusets go first */
+	static struct cs_target cs_targets[] = {
+		/* Little-only cpusets go first */
 		{ "background",			"0-1"},
 		{ "camera-daemon",		"0-3"},
 		{ "system-background",		"0-3"},
 		{ "restricted",			"0-3"},
 		{ "top-app",			"0-7"},
-		{ "foreground",			"0-3,6-7"}};
+		{ "foreground",			"0-3,6-7"},
+	};
+	struct cpuset *cs = css_cs(of_css(of));
+	int i;
 
 	if (!strcmp(current->comm, "init")) {
-		for (i = 0; i < ARRAY_SIZE(c_targets); i++) {
-			if (!strcmp(cs->css.cgroup->kn->name, c_targets[i].c_name)) {
-				strcpy(buf, c_targets[i].c_cpus);
-				pr_info("%s: setting to %s\n", c_targets[i].c_name, buf);
-				break;
-			}
+		for (i = 0; i < ARRAY_SIZE(cs_targets); i++) {
+			struct cs_target tgt = cs_targets[i];
+
+			if (!strcmp(cs->css.cgroup->kn->name, tgt.name))
+				return cpuset_write_resmask_assist(of, tgt,
+								   nbytes, off);
 		}
 	}
 #endif
