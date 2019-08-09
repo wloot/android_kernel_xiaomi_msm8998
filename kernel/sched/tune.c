@@ -772,24 +772,36 @@ schedtune_boostgroup_init(struct schedtune *st)
 }
 
 #ifdef CONFIG_STUNE_ASSIST
+struct st_data {
+	char *name;
+	int boost;
+	bool prefer_idle;
+	bool colocate;
+	bool no_override;
+};
+
 static void write_default_values(struct cgroup_subsys_state *css)
 {
-	u8 i;
-	struct groups_data {
-		char *name;
-		int boost;
-		bool prefer_idle;
-	};
-	struct groups_data groups[2] = {
+	static struct st_data st_targets[] = {
 		{ "top-app",	0, 1 },
-		{ "foreground", 0, 1 }};
+		{ "foreground", 0, 1 },
+	};
+	int i;
 
-	for (i = 0; i < ARRAY_SIZE(groups); i++) {
-		if (!strcmp(css->cgroup->kn->name, groups[i].name)) {
-			pr_info("%s: %i - %i\n", groups[i].name,
-					groups[i].boost, groups[i].prefer_idle);
-			boost_write(css, NULL, groups[i].boost);
-			prefer_idle_write(css, NULL, groups[i].prefer_idle);
+	for (i = 0; i < ARRAY_SIZE(st_targets); i++) {
+		struct st_data tgt = st_targets[i];
+
+		if (!strcmp(css->cgroup->kn->name, tgt.name)) {
+			pr_info("stune_assist: setting values for %s: boost=%d prefer_idle=%d colocate=%d no_override=%d\n",
+				tgt.name, tgt.boost, tgt.prefer_idle,
+				tgt.colocate, tgt.no_override);
+
+			boost_write(css, NULL, tgt.boost);
+			prefer_idle_write(css, NULL, tgt.prefer_idle);
+#ifdef CONFIG_SCHED_WALT
+			sched_colocate_write(css, NULL, tgt.colocate);
+			sched_boost_override_write(css, NULL, tgt.no_override);
+#endif
 		}
 	}
 }
