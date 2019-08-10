@@ -1069,7 +1069,7 @@ int reset_stune_boost(int slot)
 	int ret = 0;
 	int boost = 0;
 
-	if (!st_ta)
+	if (unlikely(!st_ta))
 		return -EINVAL;
 
 	ret = deactivate_boost_slot(slot);
@@ -1090,7 +1090,7 @@ int reset_stune_boost(int slot)
 
 int do_stune_sched_boost(int *slot)
 {
-	if (!st_ta)
+	if (unlikely(!st_ta))
 		return -EINVAL;
 
 	return _do_stune_boost(st_ta->sched_boost, slot);
@@ -1098,7 +1098,7 @@ int do_stune_sched_boost(int *slot)
 
 int do_stune_boost(int boost, int *slot)
 {
-	if (!st_ta)
+	if (unlikely(!st_ta))
 		return -EINVAL;
 
 	return _do_stune_boost(boost, slot);
@@ -1106,7 +1106,7 @@ int do_stune_boost(int boost, int *slot)
 
 int get_sched_boost(void)
 {
-	if (!st_ta)
+	if (unlikely(!st_ta))
 		return -EINVAL;
 
 	return st_ta->sched_boost;
