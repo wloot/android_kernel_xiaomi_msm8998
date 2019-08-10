@@ -17,7 +17,7 @@ steps:
       CHATID:
         from_secret: chat_id
     commands:
-      - apt-get update && apt-get install -y build-essential bc curl git zip python zstd
+      - apt-get update && apt-get install -y build-essential bc curl git zip python zstd flex
       - export HOME=/drone
       - cd ${HOME}
       - git clone https://github.com/wloot/scripts
