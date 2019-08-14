@@ -327,10 +327,14 @@ static int fb_notifier_callback(struct notifier_block *self,
 
 	switch (*blank) {
 	case FB_BLANK_POWERDOWN:
+		if (trigger_rapid_gc)
+			return NOTIFY_OK;
 		trigger_rapid_gc = true;
 		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	case FB_BLANK_UNBLANK:
+		if (!trigger_rapid_gc)
+			return NOTIFY_OK;
 		trigger_rapid_gc = false;
 		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
