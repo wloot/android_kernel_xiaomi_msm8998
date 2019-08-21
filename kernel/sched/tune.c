@@ -778,15 +778,12 @@ struct st_data {
 	char *name;
 	int boost;
 	bool prefer_idle;
-	bool colocate;
-	bool no_override;
 };
 
 static void write_default_values(struct cgroup_subsys_state *css)
 {
 	static struct st_data st_targets[] = {
 		{ "top-app",	1, 1 },
-		{ "foreground", 0, 1 },
 	};
 	int i;
 
@@ -794,16 +791,10 @@ static void write_default_values(struct cgroup_subsys_state *css)
 		struct st_data tgt = st_targets[i];
 
 		if (!strcmp(css->cgroup->kn->name, tgt.name)) {
-			pr_info("stune_assist: setting values for %s: boost=%d prefer_idle=%d colocate=%d no_override=%d\n",
-				tgt.name, tgt.boost, tgt.prefer_idle,
-				tgt.colocate, tgt.no_override);
-
+			pr_info("stune_assist: setting values for %s: boost=%d prefer_idle=%d\n",
+				tgt.name, tgt.boost, tgt.prefer_idle);
 			boost_write(css, NULL, tgt.boost);
 			prefer_idle_write(css, NULL, tgt.prefer_idle);
-#ifdef CONFIG_SCHED_WALT
-			sched_colocate_write(css, NULL, tgt.colocate);
-			sched_boost_override_write(css, NULL, tgt.no_override);
-#endif
 		}
 	}
 }
