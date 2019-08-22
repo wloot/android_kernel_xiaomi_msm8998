@@ -6466,11 +6466,11 @@ boosted_cpu_util(int cpu)
 	int margin;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (dsb_boosting || sched_feat(SCHEDTUNE_BOOST_UTIL))
+	if (sched_feat(SCHEDTUNE_BOOST_UTIL) || dsb_boosting)
 #else
 	if (sched_feat(SCHEDTUNE_BOOST_UTIL))
 #endif
-		margin = 0;
+		margin = schedtune_cpu_margin(util, cpu);
 	else
 		margin = min(0, schedtune_cpu_margin(util, cpu));
 
@@ -6486,11 +6486,11 @@ boosted_task_util(struct task_struct *task)
 	long margin;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	if (dsb_boosting || sched_feat(SCHEDTUNE_BOOST_UTIL))
+	if (sched_feat(SCHEDTUNE_BOOST_UTIL) || dsb_boosting)
 #else
 	if (sched_feat(SCHEDTUNE_BOOST_UTIL))
 #endif
-		margin = 0;
+		margin = schedtune_task_margin(task);
 	else
 		margin = min((long)0, schedtune_task_margin(task));
 
