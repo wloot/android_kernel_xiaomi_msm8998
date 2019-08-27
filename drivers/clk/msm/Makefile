@@ -14,15 +14,19 @@ ifeq ($(CONFIG_DEBUG_FS), y)
 obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-debug.o
 endif
 
-ifeq ($(CONFIG_ARCH_MSM8996), y)
-	obj-$(CONFIG_COMMON_CLK_MSM) += clock-gcc-8996.o
-	obj-$(CONFIG_COMMON_CLK_MSM) += clock-mmss-8996.o
-	obj-$(CONFIG_COMMON_CLK_MSM) += clock-cpu-8996.o
-else
-	obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-gcc-8998.o
-	obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-gpu-8998.o
-	obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-mmss-8998.o
-	obj-$(CONFIG_COMMON_CLK_MSM)	+= clock-osm.o
+# MSM 8996
+ifeq ($(CONFIG_COMMON_CLK_MSM), y)
+	obj-$(CONFIG_ARCH_MSM8996) += clock-gcc-8996.o
+	obj-$(CONFIG_ARCH_MSM8996) += clock-mmss-8996.o
+	obj-$(CONFIG_ARCH_MSM8996) += clock-cpu-8996.o
+endif
+
+# MSM 8998
+ifeq ($(CONFIG_COMMON_CLK_MSM), y)
+	obj-$(CONFIG_ARCH_MSM8998)	+= clock-gcc-8998.o
+	obj-$(CONFIG_ARCH_MSM8998)	+= clock-gpu-8998.o
+	obj-$(CONFIG_ARCH_MSM8998)	+= clock-mmss-8998.o
+	obj-$(CONFIG_ARCH_MSM8998)	+= clock-osm.o
 endif
 
 obj-$(CONFIG_COMMON_CLK_MSM)	+= gdsc.o
