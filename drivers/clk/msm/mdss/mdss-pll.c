@@ -175,13 +175,9 @@ static int mdss_pll_clock_register(struct platform_device *pdev,
 	}
 
 	switch (pll_res->pll_interface_type) {
+#ifdef CONFIG_ARCH_MSM8996
 	case MDSS_DSI_PLL_8996:
 		rc = dsi_pll_clock_register_8996(pdev, pll_res);
-		break;
-	case MDSS_DSI_PLL_8998:
-		rc = dsi_pll_clock_register_8998(pdev, pll_res);
-	case MDSS_DP_PLL_8998:
-		rc = dp_pll_clock_register_8998(pdev, pll_res);
 		break;
 	case MDSS_HDMI_PLL_8996:
 		rc = hdmi_8996_v1_pll_clock_register(pdev, pll_res);
@@ -195,12 +191,21 @@ static int mdss_pll_clock_register(struct platform_device *pdev,
 	case MDSS_HDMI_PLL_8996_V3_1_8:
 		rc = hdmi_8996_v3_1p8_pll_clock_register(pdev, pll_res);
 		break;
+#endif
+#ifdef CONFIG_ARCH_MSM8998
+	case MDSS_DSI_PLL_8998:
+		rc = dsi_pll_clock_register_8998(pdev, pll_res);
+		break;
+	case MDSS_DP_PLL_8998:
+		rc = dp_pll_clock_register_8998(pdev, pll_res);
+		break;
 	case MDSS_HDMI_PLL_8998_3_3:
 		rc = hdmi_8998_3p3_pll_clock_register(pdev, pll_res);
 		break;
 	case MDSS_HDMI_PLL_8998_1_8:
 		rc = hdmi_8998_1p8_pll_clock_register(pdev, pll_res);
 		break;
+#endif
 	case MDSS_UNKNOWN_PLL:
 	default:
 		rc = -EINVAL;
