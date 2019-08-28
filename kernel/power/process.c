@@ -143,14 +143,6 @@ int freeze_processes(void)
 	pr_cont("\n");
 	BUG_ON(in_atomic());
 
-	/*
-	 * Now that the whole userspace is frozen we need to disbale
-	 * the OOM killer to disallow any further interference with
-	 * killable tasks.
-	 */
-	if (!error && !oom_killer_disable())
-		error = -EBUSY;
-
 	if (error)
 		thaw_processes();
 	return error;
@@ -194,7 +186,6 @@ void thaw_processes(void)
 	pm_freezing = false;
 	pm_nosig_freezing = false;
 
-	oom_killer_enable();
 
 	pr_info("Restarting tasks ... ");
 
