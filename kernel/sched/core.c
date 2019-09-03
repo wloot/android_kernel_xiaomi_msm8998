@@ -1275,6 +1275,10 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
 	unsigned int dest_cpu;
 	int ret = 0;
 
+	/* Force all performance-critical kthreads onto the big cluster */
+	if (p->flags & PF_PERF_CRITICAL)
+		new_mask = cpu_perf_mask;
+
 	/* Force all trivial, unbound kthreads onto the little cluster */
 	if (p->flags & PF_KTHREAD && p->pid != 1 &&
 		cpumask_equal(new_mask, cpu_all_mask))
