@@ -281,7 +281,6 @@ static int smb2_parse_dt(struct smb2 *chip)
 	if (rc < 0)
 		chip->dt.wipower_max_uw = -EINVAL;
 
-#ifdef CONFIG_FB
 	if (of_find_property(node, "qcom,thermal-mitigation-dcp", &byte_len)) {
 		chg->thermal_mitigation_dcp = devm_kzalloc(chg->dev, byte_len, GFP_KERNEL);
 
@@ -333,26 +332,6 @@ static int smb2_parse_dt(struct smb2 *chip)
 			return rc;
 		}
 	}
-#else
-	if (of_find_property(node, "qcom,thermal-mitigation", &byte_len)) {
-		chg->thermal_mitigation = devm_kzalloc(chg->dev, byte_len,
-			GFP_KERNEL);
-
-		if (chg->thermal_mitigation == NULL)
-			return -ENOMEM;
-
-		chg->thermal_levels = byte_len / sizeof(u32);
-		rc = of_property_read_u32_array(node,
-				"qcom,thermal-mitigation",
-				chg->thermal_mitigation,
-				chg->thermal_levels);
-		if (rc < 0) {
-			dev_err(chg->dev,
-				"Couldn't read threm limits rc = %d\n", rc);
-			return rc;
-		}
-	}
-#endif
 
 	of_property_read_u32(node, "qcom,float-option", &chip->dt.float_option);
 	if (chip->dt.float_option < 0 || chip->dt.float_option > 4) {
@@ -2600,12 +2579,6 @@ static void smb2_shutdown(struct platform_device *pdev)
 #ifdef CONFIG_FB
 static int smblib_suspend(struct device *dev)
 {
-	struct smb2 *chip = dev_get_drvdata(dev);
-	struct smb_charger *chg = &chip->chg;
-
-	cancel_delayed_work(&chg->screen_on_work);
-	chg->checking_in_progress = false;
-
 	return 0;
 }
 
