@@ -19,10 +19,6 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/consumer.h>
 #include <linux/extcon.h>
-#ifdef CONFIG_FB
-#include <linux/notifier.h>
-#include <linux/fb.h>
-#endif
 #include "storm-watch.h"
 
 enum print_reason {
@@ -70,7 +66,6 @@ enum hvdcp3_type {
 #define PD_SUSPEND_SUPPORTED_VOTER	"PD_SUSPEND_SUPPORTED_VOTER"
 #define PL_DELAY_VOTER			"PL_DELAY_VOTER"
 #define CTM_VOTER			"CTM_VOTER"
-#define FB_SCREEN_VOTER			"FB_SCREEN_VOTER"
 #define SW_QC3_VOTER			"SW_QC3_VOTER"
 #define AICL_RERUN_VOTER		"AICL_RERUN_VOTER"
 #define LEGACY_UNKNOWN_VOTER		"LEGACY_UNKNOWN_VOTER"
@@ -283,9 +278,6 @@ struct smb_charger {
 	struct mutex		ps_change_lock;
 	struct mutex		otg_oc_lock;
 	struct mutex		vconn_oc_lock;
-#ifdef CONFIG_FB
-	struct mutex		screen_lock;
-#endif
 
 	/* power supplies */
 	struct power_supply		*batt_psy;
@@ -299,12 +291,6 @@ struct smb_charger {
 
 	/* notifiers */
 	struct notifier_block	nb;
-#ifdef CONFIG_FB
-	struct notifier_block	smb_fb_notif;
-	struct delayed_work	screen_on_work;
-	bool			screen_on;
-	bool			checking_in_progress;
-#endif
 
 	/* parallel charging */
 	struct parallel_params	pl;
@@ -362,13 +348,9 @@ struct smb_charger {
 	int			boost_threshold_ua;
 	int			system_temp_level;
 	int			thermal_levels;
-#ifdef CONFIG_FB
 	int			*thermal_mitigation_dcp;
 	int			*thermal_mitigation_qc3;
 	int			*thermal_mitigation_qc2;
-#else
-	int			*thermal_mitigation;
-#endif
 	int			*thermal_mitigation;
 	int			dcp_icl_ua;
 	int			fake_capacity;
