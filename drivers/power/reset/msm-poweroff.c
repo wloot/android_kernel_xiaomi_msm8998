@@ -84,7 +84,7 @@ static struct notifier_block panic_blk = {
 #endif
 
 static int dload_type = SCM_DLOAD_FULLDUMP;
-static int download_mode;
+static int download_mode = 1;
 static struct kobject dload_kobj;
 static void *dload_mode_addr, *dload_type_addr;
 static bool dload_mode_enabled;
@@ -153,7 +153,7 @@ static void set_dload_mode(int on)
 	dload_mode_enabled = on;
 }
 
-int get_dload_mode(void)
+static bool get_dload_mode(void)
 {
 	return dload_mode_enabled;
 }
@@ -333,22 +333,33 @@ static void msm_restart_prepare(const char *cmd)
 			__raw_writel(0x7766550a, restart_reason);
 		} else if (!strncmp(cmd, "oem-", 4)) {
 			unsigned long code;
+			unsigned long reset_reason;
 			int ret;
 			ret = kstrtoul(cmd + 4, 16, &code);
-			if (!ret)
+			if (!ret) {
+				/* Bit-2 to bit-7 of SOFT_RB_SPARE for hard
+				 * reset reason:
+				 * Value 0 to 31 for common defined features
+				 * Value 32 to 63 for oem specific features
+				 */
+				reset_reason = code +
+						PON_RESTART_REASON_OEM_MIN;
+				if (reset_reason > PON_RESTART_REASON_OEM_MAX ||
+				   reset_reason < PON_RESTART_REASON_OEM_MIN) {
+					pr_err("Invalid oem reset reason: %lx\n",
+						reset_reason);
+				} else {
+					qpnp_pon_set_restart_reason(
+						reset_reason);
+				}
 				__raw_writel(0x6f656d00 | (code & 0xff),
 					     restart_reason);
-		} else if (!strncmp(cmd, "edl", 3)) {
-			if (0) {
-			enable_emergency_dload_mode();
 			}
+		} else if (!strncmp(cmd, "edl", 3)) {
+			enable_emergency_dload_mode();
 		} else {
-			qpnp_pon_set_restart_reason(PON_RESTART_REASON_NORMAL);
 			__raw_writel(0x77665501, restart_reason);
 		}
-	} else {
-		qpnp_pon_set_restart_reason(PON_RESTART_REASON_NORMAL);
-		__raw_writel(0x77665501, restart_reason);
 	}
 
 	flush_cache_all();

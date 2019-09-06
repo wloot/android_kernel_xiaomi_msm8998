@@ -1,5 +1,4 @@
 /* Copyright (c) 2016-2017 The Linux Foundation. All rights reserved.
- * Copyright (C) 2019 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,6 +28,13 @@
 #define PERPH_SUBTYPE_OFFSET		0x05
 #define SUBTYPE_MASK			GENMASK(7, 0)
 #define INT_RT_STS_OFFSET		0x10
+
+#ifdef CONFIG_MACH_XIAOMI_MSM8998
+#define HVDCP_PULSE_COUNT_MAX_REG		(USBIN_BASE + 0x5B)
+#define PULSE_COUNT_QC2P0_12V			BIT(7)
+#define PULSE_COUNT_QC2P0_9V			BIT(6)
+#define PULSE_COUNT_QC3P0_mask			GENMASK(5, 0)
+#endif
 
 /* CHGR Peripheral Registers */
 #define BATTERY_CHARGER_STATUS_1_REG	(CHGR_BASE + 0x06)
@@ -588,11 +594,6 @@ enum {
 #define EN_LEGACY_CABLE_DETECTION_BIT		BIT(1)
 #define ALLOW_PD_DRING_UFP_TCCDB_BIT		BIT(0)
 
-#define HVDCP_PULSE_COUNT_MAX_REG	(USBIN_BASE + 0x5B)
-#define PULSE_COUNT_QC2P0_12V		BIT(7)
-#define PULSE_COUNT_QC2P0_9V		BIT(6)
-#define PULSE_COUNT_QC3P0_mask		GENMASK(5, 0)
-
 #define USBIN_ADAPTER_ALLOW_CFG_REG		(USBIN_BASE + 0x60)
 #define USBIN_ADAPTER_ALLOW_MASK		GENMASK(3, 0)
 enum {
@@ -636,7 +637,6 @@ enum {
 #define USBIN_LOAD_CFG_REG			(USBIN_BASE + 0x65)
 #define USBIN_OV_CH_LOAD_OPTION_BIT		BIT(7)
 #define ICL_OVERRIDE_AFTER_APSD_BIT		BIT(4)
-#define USBIN_COLLAPSE_SEL_MASK                 GENMASK(1, 0)
 
 #define USBIN_ICL_OPTIONS_REG			(USBIN_BASE + 0x66)
 #define CFG_USB3P0_SEL_BIT			BIT(2)

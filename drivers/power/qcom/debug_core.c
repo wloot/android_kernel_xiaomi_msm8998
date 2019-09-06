@@ -294,7 +294,7 @@ int msm_core_debug_init(void)
 
 	msm_core_data = get_cpu_pwr_stats();
 	if (!msm_core_data)
-		return PTR_ERR(NULL);
+		goto fail;
 
 	dir = debugfs_create_dir("msm_core", NULL);
 	if (IS_ERR_OR_NULL(dir))
