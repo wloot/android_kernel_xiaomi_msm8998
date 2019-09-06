@@ -23,8 +23,7 @@
 #include "gc.h"
 #include <trace/events/f2fs.h>
 
-#define TRIGGER_RAPID_GC (!screen_on && power_supply_is_system_supplied())
-static bool screen_on = true;
+static bool trigger_rapid_gc = false;
 static LIST_HEAD(gc_sbi_list);
 static DEFINE_MUTEX(gc_wakelock_mutex);
 static DEFINE_MUTEX(gc_sbi_mutex);
@@ -57,6 +56,7 @@ static int gc_thread_func(void *data)
 	wait_queue_head_t *wq = &sbi->gc_thread->gc_wait_queue_head;
 	unsigned int wait_ms = gc_th->min_sleep_time;
 
+	rapid_gc_set_wakelock();
 	set_freezable();
 	do {
 		wait_event_interruptible_timeout(*wq,
@@ -64,14 +64,11 @@ static int gc_thread_func(void *data)
 				gc_th->gc_wake,
 				msecs_to_jiffies(wait_ms));
 
-		sbi->rapid_gc = TRIGGER_RAPID_GC ? 1 : 0;
 		if (sbi->rapid_gc) {
-			rapid_gc_set_wakelock();
 			// Use 1 instead of 0 to allow thread interrupts
 			wait_ms = 1;
 			sbi->gc_mode = GC_URGENT;
 		} else {
-			rapid_gc_set_wakelock();
 			wait_ms = gc_th->min_sleep_time;
 			sbi->gc_mode = GC_NORMAL;
 		}
@@ -88,10 +85,9 @@ static int gc_thread_func(void *data)
 			break;
 
 		if (sbi->sb->s_writers.frozen >= SB_FREEZE_WRITE) {
-			if (!sbi->rapid_gc) {
+			if (!sbi->rapid_gc)
 				increase_sleep_time(gc_th, &wait_ms);
-				stat_other_skip_bggc_count(sbi);
-			}
+			stat_other_skip_bggc_count(sbi);
 			continue;
 		}
 
@@ -118,7 +114,7 @@ static int gc_thread_func(void *data)
 		 * invalidated soon after by user update or deletion.
 		 * So, I'd like to wait some time to collect dirty segments.
 		 */
-		if (sbi->gc_mode == GC_URGENT || sbi->rapid_gc) {
+		if (sbi->gc_mode == GC_URGENT) {
 			if (!sbi->rapid_gc)
 				wait_ms = gc_th->urgent_sleep_time;
 			mutex_lock(&sbi->gc_mutex);
@@ -194,8 +190,11 @@ int f2fs_start_gc_thread(struct f2fs_sb_info *sbi)
 	gc_th->max_sleep_time = DEF_GC_THREAD_MAX_SLEEP_TIME;
 	gc_th->no_gc_sleep_time = DEF_GC_THREAD_NOGC_SLEEP_TIME;
 
-	sbi->gc_mode = GC_NORMAL;
-	gc_th->gc_wake= 0;
+	if (trigger_rapid_gc)
+		gc_th->gc_wake= 1;
+	else
+		gc_th->gc_wake= 0;
+	sbi->rapid_gc = trigger_rapid_gc;
 
 	sbi->gc_thread = gc_th;
 	init_waitqueue_head(&sbi->gc_thread->gc_wait_queue_head);
@@ -241,7 +240,6 @@ static void f2fs_start_rapid_gc(void)
 		    ((long)((sbi->user_block_count - written_block_count(sbi)) *
 			RAPID_GC_LIMIT_INVALID_BLOCK) / 100)) {
 			f2fs_start_gc_thread(sbi);
-			sbi->gc_thread->gc_wake = 1;
 			wake_up_interruptible_all(&sbi->gc_thread->gc_wait_queue_head);
 			wake_up_discard_thread(sbi, true);
 		} else {
@@ -286,41 +284,32 @@ void f2fs_gc_sbi_list_del(struct f2fs_sb_info *sbi)
 static struct work_struct rapid_gc_fb_worker;
 static void rapid_gc_fb_work(struct work_struct *work)
 {
-	if (screen_on) {
+	if (trigger_rapid_gc)
+		f2fs_start_rapid_gc();
+	else
 		f2fs_stop_rapid_gc();
-	} else {
-		/*
-		 * Start all GC threads exclusively from here
-		 * since the phone screen would turn on when
-		 * a charger is connected
-		 */
-		if (TRIGGER_RAPID_GC)
-			f2fs_start_rapid_gc();
-	}
 }
 
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data)
 {
-	struct fb_event *evdata = data;
-	int *blank;
+	int *blank = ((struct fb_event *)data)->data;
 
-	if ((event == FB_EVENT_BLANK) && evdata && evdata->data) {
-		blank = evdata->data;
+	if (event != FB_EVENT_BLANK)
+		return NOTIFY_OK;
 
-		switch (*blank) {
-		case FB_BLANK_POWERDOWN:
-			screen_on = false;
-			queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
-			break;
-		case FB_BLANK_UNBLANK:
-			screen_on = true;
-			queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
-			break;
-		}
+	switch (*blank) {
+	case FB_BLANK_POWERDOWN:
+		if(power_supply_is_system_supplied())
+			trigger_rapid_gc = true;
+		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
+		break;
+	case FB_BLANK_UNBLANK:
+		trigger_rapid_gc = false;
+		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
+		break;
 	}
-
-	return 0;
+	return NOTIFY_OK;
 }
 
 static struct notifier_block fb_notifier_block = {
@@ -331,12 +320,12 @@ void __init f2fs_init_rapid_gc(void)
 {
 	INIT_WORK(&rapid_gc_fb_worker, rapid_gc_fb_work);
 	wakeup_source_init(&gc_wakelock, "f2fs_rapid_gc_wakelock");
-        fb_register_client(&fb_notifier_block);
+	fb_register_client(&fb_notifier_block);
 }
 
 void __exit f2fs_destroy_rapid_gc(void)
 {
-        fb_unregister_client(&fb_notifier_block);
+	fb_unregister_client(&fb_notifier_block);
 	wakeup_source_trash(&gc_wakelock);
 }
 
