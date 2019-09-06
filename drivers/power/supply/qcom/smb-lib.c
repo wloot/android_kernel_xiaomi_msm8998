@@ -115,7 +115,6 @@ static int smblib_get_jeita_cc_delta(struct smb_charger *chg, int *cc_delta_ua)
 {
 	int rc, cc_minus_ua;
 	u8 stat;
-	union power_supply_propval batt_temp;
 
 	rc = smblib_read(chg, BATTERY_CHARGER_STATUS_2_REG, &stat);
 	if (rc < 0) {
@@ -131,41 +130,11 @@ static int smblib_get_jeita_cc_delta(struct smb_charger *chg, int *cc_delta_ua)
 		return 0;
 	}
 
-	rc = smblib_get_prop_from_bms(chg,
-				POWER_SUPPLY_PROP_TEMP, &batt_temp);
-	if (rc < 0) {
-		smblib_err(chg, "Couldn't get batt temp rc=%d\n", rc);
-		return rc;
-	}
-
 	rc = smblib_get_charge_param(chg, &chg->param.jeita_cc_comp,
 					&cc_minus_ua);
 	if (rc < 0) {
 		smblib_err(chg, "Couldn't get jeita cc minus rc=%d\n", rc);
 		return rc;
-	}
-
-	if ((stat & BAT_TEMP_STATUS_HOT_SOFT_LIMIT_BIT) == BAT_TEMP_STATUS_HOT_SOFT_LIMIT_BIT) {
-		if (cc_minus_ua != chg->jeita_ccomp_hot_delta) {
-			rc = smblib_set_charge_param(chg, &chg->param.jeita_cc_comp,
-							chg->jeita_ccomp_hot_delta);
-			if (rc < 0)
-				pr_err("%s: Couldn't configure jeita_cc rc=%d\n", __func__, rc);
-		}
-	} else if ((stat & BAT_TEMP_STATUS_COLD_SOFT_LIMIT_BIT) == BAT_TEMP_STATUS_COLD_SOFT_LIMIT_BIT) {
-		if (batt_temp.intval >= 0) {
-			if (batt_temp.intval <= BATT_TEMP_CRITICAL_LOW) {                /*set 0.1C on 0~5 Degree */
-				rc = smblib_set_charge_param(chg, &chg->param.jeita_cc_comp,
-								chg->jeita_ccomp_low_delta);
-			if (rc < 0)
-				pr_err("%s: Couldn't configure jeita_cc rc=%d\n", __func__, rc);
-			} else {                                                /*set 0.3C on 5~15 Degree */
-				rc = smblib_set_charge_param(chg, &chg->param.jeita_cc_comp,
-								chg->jeita_ccomp_cool_delta);
-				if (rc < 0)
-					pr_err("%s: Couldn't configure jeita_cc rc=%d\n", __func__, rc);
-			}
-		}
 	}
 
 	rc = smblib_get_charge_param(chg, &chg->param.jeita_cc_comp, &cc_minus_ua);
@@ -427,10 +396,14 @@ int smblib_set_charge_param(struct smb_charger *chg,
 		if (rc < 0)
 			return -EINVAL;
 	} else {
-		if (val_u > param->max_u || val_u < param->min_u) {
-			smblib_err(chg, "%s: %d is out of range [%d, %d]\n",
-				param->name, val_u, param->min_u, param->max_u);
-			return -EINVAL;
+		if (val_u > param->max_u) {
+			smblib_dbg(chg, PR_REGISTER, "%s: %d is out of the maximum %d\n",
+				param->name, val_u, param->max_u);
+			val_u = param->max_u;
+		} else if (val_u < param->min_u) {
+			smblib_dbg(chg, PR_REGISTER, "%s: %d is out of the minimum %d\n",
+				param->name, val_u, param->min_u);
+			val_u = param->min_u;
 		}
 
 		val_raw = (val_u - param->min_u) / param->step_u;
@@ -2912,7 +2885,7 @@ int smblib_get_prop_die_health(struct smb_charger *chg,
 #define CDP_CURRENT_UA			1500000
 #define DCP_CURRENT_UA			1800000
 #define HVDCP_CURRENT_UA		1500000
-#define HVDCP3_CURRENT_UA               2700000
+#define HVDCP3_CURRENT_UA               3000000
 #define TYPEC_DEFAULT_CURRENT_UA	900000
 #define TYPEC_MEDIUM_CURRENT_UA		1500000
 #define TYPEC_HIGH_CURRENT_UA		3000000
@@ -4127,7 +4100,7 @@ static void smblib_handle_hvdcp_3p0_auth_done(struct smb_charger *chg,
 {
 	const struct apsd_result *apsd_result;
 	int rc;
-	int current_ua;
+	int current_ua = 0;
 
 	if (!rising)
 		return;

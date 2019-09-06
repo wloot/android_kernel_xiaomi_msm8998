@@ -234,7 +234,6 @@ struct smb_params {
 	struct smb_chg_param	dc_icl_div2_mid_hv;
 	struct smb_chg_param	dc_icl_div2_hv;
 	struct smb_chg_param	jeita_cc_comp;
-	struct smb_chg_param	jeita_fv_comp;
 	struct smb_chg_param	freq_buck;
 	struct smb_chg_param	freq_boost;
 };
@@ -370,9 +369,6 @@ struct smb_charger {
 #else
 	int			*thermal_mitigation;
 #endif
-	int			jeita_ccomp_cool_delta;
-	int			jeita_ccomp_hot_delta;
-	int			jeita_ccomp_low_delta;
 	int			*thermal_mitigation;
 	int			dcp_icl_ua;
 	int			fake_capacity;
