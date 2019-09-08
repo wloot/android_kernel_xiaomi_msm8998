@@ -281,6 +281,15 @@ void f2fs_gc_sbi_list_del(struct f2fs_sb_info *sbi)
 	mutex_unlock(&gc_sbi_mutex);
 }
 
+static struct work_struct rapid_gc_fb_worker;
+static void rapid_gc_fb_work(struct work_struct *work)
+{
+	if (trigger_rapid_gc)
+		f2fs_start_rapid_gc();
+	else
+		f2fs_stop_rapid_gc();
+}
+
 static int fb_notifier_callback(struct notifier_block *self,
 				unsigned long event, void *data)
 {
@@ -291,14 +300,13 @@ static int fb_notifier_callback(struct notifier_block *self,
 
 	switch (*blank) {
 	case FB_BLANK_POWERDOWN:
-		if(power_supply_is_system_supplied()) {
+		if(power_supply_is_system_supplied())
 			trigger_rapid_gc = true;
-			f2fs_start_rapid_gc();
-		}
+		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	case FB_BLANK_UNBLANK:
 		trigger_rapid_gc = false;
-		f2fs_stop_rapid_gc();
+		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	}
 	return NOTIFY_OK;
@@ -310,6 +318,7 @@ static struct notifier_block fb_notifier_block = {
 
 void __init f2fs_init_rapid_gc(void)
 {
+	INIT_WORK(&rapid_gc_fb_worker, rapid_gc_fb_work);
 	wakeup_source_init(&gc_wakelock, "f2fs_rapid_gc_wakelock");
 	fb_register_client(&fb_notifier_block);
 }
