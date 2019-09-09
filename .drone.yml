@@ -16,6 +16,10 @@ steps:
         from_secret: bot_token
       CHATID:
         from_secret: chat_id
+      GITID:
+        from_secret: git_id
+      GITPWD:
+        from_secret: git_password
     commands:
       - apt-get update && apt-get install -y build-essential bc curl git zip zstd flex
       - export HOME=/drone
