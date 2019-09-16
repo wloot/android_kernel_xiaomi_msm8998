@@ -5335,7 +5335,7 @@ static void soc_work_fn(struct work_struct *work)
 
 	cycle_count = fg_get_cycle_count(chip);
 
-	pr_info("adjust_soc: s %d r %d i %d v %d t %d cc %d m 0x%02x\n",
+	pr_debug("adjust_soc: s %d r %d i %d v %d t %d cc %d m 0x%02x\n",
 			soc, esr_uohms, curr_ua, volt_uv, temp, cycle_count, msoc);
 
 	if (temp < 450 && chip->last_batt_temp >= 450) {
@@ -5476,7 +5476,7 @@ static void fg_battery_soc_smooth_tracking(struct fg_chip *chip)
 			power_supply_changed(chip->batt_psy);
 	}
 
-	pr_info("soc:%d, last_soc:%d, raw_soc:%d, soc_changed:%d.\n",
+	pr_debug("soc:%d, last_soc:%d, raw_soc:%d, soc_changed:%d.\n",
 			chip->param.batt_soc, last_batt_soc,
 			chip->param.batt_raw_soc, soc_changed);
 }
@@ -5505,7 +5505,7 @@ static void soc_monitor_work(struct work_struct *work)
 	if (chip->soc_reporting_ready)
 		fg_battery_soc_smooth_tracking(chip);
 
-	pr_info("soc:%d, raw_soc:%d, c:%d, s:%d\n",
+	pr_debug("soc:%d, raw_soc:%d, c:%d, s:%d\n",
 			chip->param.batt_soc, chip->param.batt_raw_soc,
 			chip->param.batt_ma, chip->charge_status);
 
