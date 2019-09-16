@@ -929,6 +929,13 @@ config PELT_UTIL_HALFLIFE_16
 	  decay of utlization and load twice as fast as for the default
 	  configuration using 32ms.
 
+config PELT_UTIL_HALFLIFE_12
+	bool "12 ms, more fast"
+	help
+	  Use 12ms as PELT half-life value. This will increase the ramp-up and
+	  decay of utlization and load twice as fast as for the default
+	  configuration using 32ms.
+
 config PELT_UTIL_HALFLIFE_8
 	bool "8 ms, very fast"
 	help
