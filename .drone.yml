@@ -1,0 +1,29 @@
+kind: pipeline
+name: kernel_ci
+
+platform:
+  os: linux
+  arch: amd64
+
+clone:
+  depth: 1
+
+steps:
+  - name: default
+    image: ubuntu:19.10
+    environment:
+      BOTTOKEN:
+        from_secret: bot_token
+      CHATID:
+        from_secret: chat_id
+      GITID:
+        from_secret: git_id
+      GITPWD:
+        from_secret: git_password
+    commands:
+      - apt-get update && apt-get install -y gcc make bc curl git zip zstd flex
+      - export HOME=/drone
+      - cd ${HOME}
+      - git clone https://github.com/wloot/scripts
+      - chmod -R +x scripts
+      - bash scripts/buildkernel.sh --clang
