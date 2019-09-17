@@ -46,6 +46,7 @@ ifneq ($(WLAN_DISABLE_BUILD_TAG), y)
 CONFIG_BUILD_TAG := y
 endif
 endif
+CONFIG_BUILD_TAG := n
 
 ifeq ($(CONFIG_ARCH_MDM9630), y)
 CONFIG_MOBILE_ROUTER := y
