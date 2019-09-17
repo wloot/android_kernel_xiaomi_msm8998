@@ -231,6 +231,8 @@ static int perf_adjust_notify(struct notifier_block *nb, unsigned long val,
 	pr_debug("msm_perf: CPU%u seting min:max %u:%u kHz\n", cpu, min, max);
 
 	cpufreq_verify_within_limits(policy, min, max);
+	if (max != 4294967295)
+		policy->max=max;
 
 	pr_debug("msm_perf: CPU%u policy after: %u:%u kHz\n", cpu,
 						policy->min, policy->max);
