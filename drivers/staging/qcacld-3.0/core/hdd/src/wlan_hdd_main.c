@@ -12270,7 +12270,9 @@ int hdd_register_cb(struct hdd_context *hdd_ctx)
 	if (!QDF_IS_STATUS_SUCCESS(status))
 		hdd_err("set lost link info callback failed");
 
+#ifdef WLAN_DEBUG
 	wlan_hdd_register_cp_stats_cb(hdd_ctx);
+#endif
 
 	ret = hdd_register_data_stall_detect_cb();
 	if (ret) {
