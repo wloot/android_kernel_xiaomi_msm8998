@@ -82,7 +82,6 @@ endif
 ifneq ($(CONFIG_MOBILE_ROUTER), y)
 #Flag to enable TDLS feature
 CONFIG_QCOM_TDLS := y
-CONFIG_WLAN_SYSFS := y
 endif
 
 CONFIG_QCACLD_FEATURE_GREEN_AP := y
@@ -310,6 +309,10 @@ ifeq ($(CONFIG_DEBUG_FS), y)
        CONFIG_WLAN_POWER_DEBUGFS := y
 
        CONFIG_WLAN_MWS_INFO_DEBUGFS := y
+
+       ifneq ($(CONFIG_MOBILE_ROUTER), y)
+       CONFIG_WLAN_SYSFS := y
+       endif
 endif
 
 # Feature flags which are not (currently) configurable via Kconfig
