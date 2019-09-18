@@ -29,7 +29,7 @@ struct sensor_eeprom_name_t {
 };
 
 struct sensor_eeprom_name_t sensor_eeprom_name[3];
-uint8_t eeprom_name_count = 0;
+uint8_t eeprom_name_count;
 #endif
 
 DEFINE_MSM_MUTEX(msm_eeprom_mutex);
