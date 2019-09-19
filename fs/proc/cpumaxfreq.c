@@ -13,7 +13,7 @@ static int cpumaxfreq_show(struct seq_file *m, void *v)
 
 static int cpumaxfreq_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, &cpumaxfreq_show, NULL);
+	return single_open(file, cpumaxfreq_show, NULL);
 }
 
 static const struct file_operations proc_cpumaxfreq_operations = {
