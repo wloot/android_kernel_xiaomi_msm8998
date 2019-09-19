@@ -1783,13 +1783,13 @@ static int msm_eeprom_platform_probe(struct platform_device *pdev)
 			(strcmp(eb_info->eeprom_name, "sagit_s5k3m3_semco") == 0)) {
 			if (e_ctrl->cal_data.mapdata[0x0e] != 0x03) {
 				if ((e_ctrl->cal_data.mapdata[0x01] == 0x07) || (e_ctrl->cal_data.mapdata[0x01] == 0x03)) {
-					pr_err("3m3 semco and ofilm eeprom goto etcrl free");
+					pr_err("3m3 semco and ofilm eeprom goto power down");
 					back_sensor_module_invalid = false;
 					pr_err("back_sensor_module_invalid = %d \n", back_sensor_module_invalid);
 					strlcpy(sensor_eeprom_name[eeprom_name_count].name, eb_info->eeprom_name, EEPROM_NAME_MAX);
 					pr_err("%s: sensor_eeprom_name[%d] = %s, probe unnecessary!\n", __func__, eeprom_name_count, sensor_eeprom_name[eeprom_name_count].name);
 					eeprom_name_count++;
-					goto ectrl_free;
+					goto power_down;
 				}
 			}
 		}
