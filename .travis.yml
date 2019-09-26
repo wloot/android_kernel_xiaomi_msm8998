@@ -1,0 +1,13 @@
+language: cpp
+os: linux
+dist: bionic
+cache: ccache
+git:
+  depth: 1
+script:
+  - cd ${HOME}
+  - git clone https://github.com/wloot/scripts 
+  - sudo chmod -R +x scripts
+  - sudo bash scripts/buildkernel.sh --clang
+after_script:
+  - sleep 1
