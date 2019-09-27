@@ -65,6 +65,8 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 	struct device *dev = heap->priv;
 	struct ion_cma_buffer_info *info;
 
+	dev_dbg(dev, "Request buffer allocation len %ld\n", len);
+
 	info = kzalloc(sizeof(struct ion_cma_buffer_info), GFP_KERNEL);
 	if (!info)
 		return ION_CMA_ALLOCATE_FAILED;
@@ -92,6 +94,7 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
 
 	/* keep this for memory release */
 	buffer->priv_virt = info;
+	dev_dbg(dev, "Allocate buffer %pK\n", buffer);
 	return 0;
 
 err:
@@ -104,6 +107,7 @@ static void ion_cma_free(struct ion_buffer *buffer)
 	struct device *dev = buffer->heap->priv;
 	struct ion_cma_buffer_info *info = buffer->priv_virt;
 
+	dev_dbg(dev, "Release buffer %pK\n", buffer);
 	/* release memory */
 	dma_free_coherent(dev, buffer->size, info->cpu_addr, info->handle);
 	sg_free_table(info->table);
@@ -233,12 +237,10 @@ void ion_cma_heap_destroy(struct ion_heap *heap)
 
 static void ion_secure_cma_free(struct ion_buffer *buffer)
 {
-	int i, ret = 0;
+	int ret = 0;
 	int source_vm;
 	int dest_vmid;
 	int dest_perms;
-	struct sg_table *sgt;
-	struct scatterlist *sg;
 	struct ion_cma_buffer_info *info = buffer->priv_virt;
 
 	source_vm = get_secure_vmid(buffer->flags);
@@ -249,16 +251,13 @@ static void ion_secure_cma_free(struct ion_buffer *buffer)
 	dest_vmid = VMID_HLOS;
 	dest_perms = PERM_READ | PERM_WRITE | PERM_EXEC;
 
-	sgt = info->table;
-	ret = hyp_assign_table(sgt, &source_vm, 1, &dest_vmid, &dest_perms, 1);
+	ret = hyp_assign_table(info->table, &source_vm, 1,
+				&dest_vmid, &dest_perms, 1);
 	if (ret) {
 		pr_err("%s: Not freeing memory since assign failed\n",
 							__func__);
 		return;
 	}
-
-	for_each_sg(sgt->sgl, sg, sgt->nents, i)
-		ClearPagePrivate(sg_page(sg));
 
 	ion_cma_free(buffer);
 }
@@ -267,13 +266,11 @@ static int ion_secure_cma_allocate(struct ion_heap *heap,
 			struct ion_buffer *buffer, unsigned long len,
 			unsigned long align, unsigned long flags)
 {
-	int i, ret = 0;
+	int ret = 0;
 	int source_vm;
 	int dest_vm;
 	int dest_perms;
 	struct ion_cma_buffer_info *info;
-	struct sg_table *sgt;
-	struct scatterlist *sg;
 
 	source_vm = VMID_HLOS;
 	dest_vm = get_secure_vmid(flags);
@@ -295,45 +292,17 @@ static int ion_secure_cma_allocate(struct ion_heap *heap,
 	}
 
 	info = buffer->priv_virt;
-	sgt = info->table;
-	ret = hyp_assign_table(sgt, &source_vm, 1, &dest_vm, &dest_perms, 1);
+	ret = hyp_assign_table(info->table, &source_vm, 1,
+				&dest_vm, &dest_perms, 1);
 	if (ret) {
 		pr_err("%s: Assign call failed\n", __func__);
 		goto err;
 	}
-
-	/* Set the private bit to indicate that we've secured this */
-	for_each_sg(sgt->sgl, sg, sgt->nents, i)
-		SetPagePrivate(sg_page(sg));
-
 	return ret;
 
 err:
 	ion_secure_cma_free(buffer);
 	return ret;
-}
-
-static void *ion_secure_cma_map_kernel(struct ion_heap *heap,
-				       struct ion_buffer *buffer)
-{
-	if (!is_buffer_hlos_assigned(buffer)) {
-		pr_info("%s: Mapping non-HLOS accessible buffer disallowed\n",
-			__func__);
-		return NULL;
-	}
-	return ion_cma_map_kernel(heap, buffer);
-}
-
-static int ion_secure_cma_map_user(struct ion_heap *mapper,
-				   struct ion_buffer *buffer,
-				   struct vm_area_struct *vma)
-{
-	if (!is_buffer_hlos_assigned(buffer)) {
-		pr_info("%s: Mapping non-HLOS accessible buffer disallowed\n",
-			__func__);
-		return -EINVAL;
-	}
-	return ion_cma_mmap(mapper, buffer, vma);
 }
 
 static struct ion_heap_ops ion_secure_cma_ops = {
@@ -342,8 +311,8 @@ static struct ion_heap_ops ion_secure_cma_ops = {
 	.map_dma = ion_cma_heap_map_dma,
 	.unmap_dma = ion_cma_heap_unmap_dma,
 	.phys = ion_cma_phys,
-	.map_user = ion_secure_cma_map_user,
-	.map_kernel = ion_secure_cma_map_kernel,
+	.map_user = ion_cma_mmap,
+	.map_kernel = ion_cma_map_kernel,
 	.unmap_kernel = ion_cma_unmap_kernel,
 	.print_debug = ion_cma_print_debug,
 };
