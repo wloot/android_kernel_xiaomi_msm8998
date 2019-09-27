@@ -24,10 +24,13 @@
 #include <trace/events/f2fs.h>
 
 static bool trigger_rapid_gc = false;
+static bool isCharging = false;
 static LIST_HEAD(gc_sbi_list);
 static DEFINE_MUTEX(gc_wakelock_mutex);
 static DEFINE_MUTEX(gc_sbi_mutex);
 static struct wakeup_source gc_wakelock;
+
+static void f2fs_stop_rapid_gc(void);
 
 static inline void rapid_gc_set_wakelock(void)
 {
@@ -146,9 +149,15 @@ do_gc:
 			sbi->rapid_gc = false;
 			rapid_gc_set_wakelock();
 			sbi->gc_mode = GC_NORMAL;
-			f2fs_info(sbi,
-				"No more rapid GC victim found, "
-				"sleeping for %u ms", wait_ms);
+			if (!isCharging) {
+				f2fs_stop_rapid_gc();
+				f2fs_info(sbi,
+					"No more rapid GC victim found, "
+					"stopping rapid gc thread");
+			} else
+				f2fs_info(sbi,
+					"No more rapid GC victim found, "
+					"sleeping for %u ms", wait_ms);
 
 			/*
 			 * Rapid GC would have cleaned hundreds of segments
@@ -223,9 +232,8 @@ void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi)
 	sbi->gc_thread = NULL;
 }
 
-/* Trigger rapid GC when invalid block is higher than 3% */
-#define RAPID_GC_LIMIT_INVALID_BLOCK 3
-
+/* Trigger rapid GC when invalid block is higher than 10% */
+#define RAPID_GC_LIMIT_INVALID_BLOCK (10 / (isCharging ? 2 : 1))
 static void f2fs_start_rapid_gc(void)
 {
 	struct f2fs_sb_info *sbi;
@@ -284,10 +292,23 @@ void f2fs_gc_sbi_list_del(struct f2fs_sb_info *sbi)
 static struct work_struct rapid_gc_fb_worker;
 static void rapid_gc_fb_work(struct work_struct *work)
 {
-	if (trigger_rapid_gc)
+	isCharging = power_supply_is_system_supplied();
+
+	if (trigger_rapid_gc) {
+		if (!isCharging) {
+			msleep(8000);
+			if (!trigger_rapid_gc)
+				return;
+		}
 		f2fs_start_rapid_gc();
-	else
+	} else {
+		if (isCharging) {
+			msleep(8000);
+			if (trigger_rapid_gc)
+				return;
+		}
 		f2fs_stop_rapid_gc();
+	}
 }
 
 static int fb_notifier_callback(struct notifier_block *self,
@@ -300,8 +321,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 
 	switch (*blank) {
 	case FB_BLANK_POWERDOWN:
-		if(power_supply_is_system_supplied())
-			trigger_rapid_gc = true;
+		trigger_rapid_gc = true;
 		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	case FB_BLANK_UNBLANK:
