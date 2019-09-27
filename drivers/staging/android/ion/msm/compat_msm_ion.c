@@ -157,8 +157,7 @@ static unsigned int convert_cmd(unsigned int cmd)
 	}
 }
 
-long compat_msm_ion_ioctl(struct ion_client *client, unsigned int cmd,
-				unsigned long arg)
+long compat_msm_ion_ioctl(void *client, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
 	case COMPAT_ION_IOC_CLEAN_CACHES:

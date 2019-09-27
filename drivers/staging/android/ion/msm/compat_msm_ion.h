@@ -18,8 +18,7 @@
 
 #if IS_ENABLED(CONFIG_COMPAT)
 
-long compat_msm_ion_ioctl(struct ion_client *client, unsigned int cmd,
-					unsigned long arg);
+long compat_msm_ion_ioctl(void *client, unsigned int cmd, unsigned long arg);
 
 #define compat_ion_user_handle_t compat_int_t
 
