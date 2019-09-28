@@ -232,31 +232,27 @@ void f2fs_stop_gc_thread(struct f2fs_sb_info *sbi)
 	sbi->gc_thread = NULL;
 }
 
-/* Trigger rapid GC when invalid block is higher than 10% */
-#define RAPID_GC_LIMIT_INVALID_BLOCK (10 / (isCharging ? 2 : 1))
+/* Trigger rapid GC when valid block is less than the percentage */
+#define RAPID_GC_LIMIT_VALID_BLOCK (isCharging ? 95 : 90)
 static void f2fs_start_rapid_gc(void)
 {
 	struct f2fs_sb_info *sbi;
-	block_t invalid_blocks;
+	block_t remaining_blocks;
 
 	mutex_lock(&gc_sbi_mutex);
 	list_for_each_entry(sbi, &gc_sbi_list, list) {
-		invalid_blocks = sbi->user_block_count -
-					written_block_count(sbi) -
-					free_user_blocks(sbi);
-		if (invalid_blocks >
-		    ((long)((sbi->user_block_count - written_block_count(sbi)) *
-			RAPID_GC_LIMIT_INVALID_BLOCK) / 100)) {
+		remaining_blocks = sbi->user_block_count - written_block_count(sbi);
+		if (free_user_blocks(sbi) <
+		    remaining_blocks * RAPID_GC_LIMIT_VALID_BLOCK / 100) {
 			f2fs_start_gc_thread(sbi);
 			wake_up_interruptible_all(&sbi->gc_thread->gc_wait_queue_head);
 			wake_up_discard_thread(sbi, true);
 		} else {
-			f2fs_info(sbi, "Invalid blocks lower than %d%%,"
-					"skipping rapid GC (%u / (%u - %u))",
-					RAPID_GC_LIMIT_INVALID_BLOCK,
-					invalid_blocks,
-					sbi->user_block_count,
-					written_block_count(sbi));
+			f2fs_info(sbi, "Valid blocks more than %d%%,"
+					"skipping rapid GC (%u > %u)",
+					RAPID_GC_LIMIT_VALID_BLOCK,
+					free_user_blocks(sbi),
+					remaining_blocks * RAPID_GC_LIMIT_VALID_BLOCK / 100);
 		}
 	}
 	mutex_unlock(&gc_sbi_mutex);
