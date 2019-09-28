@@ -144,20 +144,30 @@ do_gc:
 		stat_inc_bggc_count(sbi);
 
 		/* if return value is not zero, no victim was selected */
-		if (f2fs_gc(sbi, sbi->rapid_gc || test_opt(sbi, FORCE_FG_GC), true, NULL_SEGNO)) {
+		if (f2fs_gc(sbi, sbi->rapid_gc || test_opt(sbi, FORCE_FG_GC), true, NULL_SEGNO) && isCharging) {
 			wait_ms = gc_th->no_gc_sleep_time;
 			sbi->rapid_gc = false;
 			rapid_gc_set_wakelock();
 			sbi->gc_mode = GC_NORMAL;
-			if (!isCharging) {
-				f2fs_stop_rapid_gc();
-				f2fs_info(sbi,
-					"No more rapid GC victim found, "
-					"stopping rapid gc thread");
-			} else
-				f2fs_info(sbi,
-					"No more rapid GC victim found, "
-					"sleeping for %u ms", wait_ms);
+			f2fs_info(sbi,
+				"No more rapid GC victim found, "
+				"sleeping for %u ms", wait_ms);
+
+			/*
+			 * Rapid GC would have cleaned hundreds of segments
+			 * that would not be read again anytime soon.
+			 */
+			mm_drop_caches(3);
+			f2fs_info(sbi, "dropped caches");
+		}
+
+		if (!isCharging && free_user_blocks(sbi) >
+		    (sbi->user_block_count - written_block_count(sbi)) * 97 / 100) {
+			f2fs_stop_gc_thread(sbi);
+			rapid_gc_set_wakelock();
+			f2fs_info(sbi,
+				"Valid blocks is more than 97%, "
+				"stopping rapid gc thread");
 
 			/*
 			 * Rapid GC would have cleaned hundreds of segments
