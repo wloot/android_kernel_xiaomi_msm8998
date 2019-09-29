@@ -1,5 +1,5 @@
 EXTRA_CFLAGS += -I$(src)/inc
-EXTRA_CFLAGS += -Werror
+EXTRA_CFLAGS += -Werror -Wno-enum-conversion
 
 obj-$(CONFIG_SND_SOC_TFA98XX) := snd-soc-tfa98xx.o
 
