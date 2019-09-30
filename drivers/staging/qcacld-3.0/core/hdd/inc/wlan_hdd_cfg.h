@@ -10024,7 +10024,7 @@ enum dot11p_mode {
  * gThreeWayCoexConfigLegacyEnable - Enable coex config legacy feature
  * @Min: 0
  * @Max: 1
- * @Default: 0
+ * @Default: 1
  *
  * This ini is used to enable or disable three way coex config legacy feature.
  * This feature is designed only for non-mobile solution.
@@ -10042,7 +10042,7 @@ enum dot11p_mode {
 #define CFG_ENABLE_TW_COEX_LEGACY_NAME  "gThreeWayCoexConfigLegacyEnable"
 #define CFG_ENABLE_TW_COEX_LEGACY_MIN     (0)
 #define CFG_ENABLE_TW_COEX_LEGACY_MAX     (1)
-#define CFG_ENABLE_TW_COEX_LEGACY_DEFAULT (0)
+#define CFG_ENABLE_TW_COEX_LEGACY_DEFAULT (1)
 
 /*
  * Dense traffic threshold
