@@ -19,7 +19,6 @@
 #define _LINUX_ION_H
 
 #include <linux/err.h>
-#include <linux/msm_dma_iommu_mapping.h>
 #include "../uapi/ion.h"
 
 struct ion_handle;
@@ -28,25 +27,6 @@ struct ion_heap;
 struct ion_mapper;
 struct ion_client;
 struct ion_buffer;
-
-struct ion_buffer {
-	struct ion_device *idev;
-	struct ion_heap *heap;
-	struct sg_table *sg_table;
-	struct list_head list;
-	struct mutex kmap_lock;
-	struct rcu_head rcu;
-	struct work_struct free;
-	void *priv_virt;
-	void *vaddr;
-	unsigned int flags;
-	unsigned int private_flags;
-	int id;
-	int kmap_cnt;
-	size_t size;
-	atomic_t refcount;
-	struct msm_iommu_data iommu_data;
-};
 
 /* This should be removed some day when phys_addr_t's are fully
    plumbed in the kernel, and all instances of ion_phys_addr_t should
@@ -113,11 +93,10 @@ void ion_reserve(struct ion_platform_data *data);
 /**
  * ion_client_create() -  allocate a client and returns it
  * @dev:		the global ion device
+ * @name:		used for debugging
  */
-static inline void *ion_client_create(struct ion_device *dev)
-{
-	return dev;
-}
+struct ion_client *ion_client_create(struct ion_device *dev,
+				     const char *name);
 
 /**
  * ion_client_destroy() -  free's a client and all it's handles
@@ -126,9 +105,7 @@ static inline void *ion_client_create(struct ion_device *dev)
  * Free the provided client and all it's resources including
  * any handles it is holding.
  */
-static inline void ion_client_destroy(void *client)
-{
-}
+void ion_client_destroy(struct ion_client *client);
 
 /**
  * ion_alloc - allocate ion memory
@@ -146,14 +123,9 @@ static inline void ion_client_destroy(void *client)
  * Allocate memory in one of the heaps provided in heap mask and return
  * an opaque handle to it.
  */
-struct ion_buffer *__ion_alloc(struct ion_device *dev, size_t len,
-			       size_t align, unsigned int heap_id_mask,
-			       unsigned int flags);
-static inline void *ion_alloc(void *client, size_t len, size_t align,
-			      unsigned int heap_id_mask, unsigned int flags)
-{
-	return __ion_alloc(client, len, align, heap_id_mask, flags);
-}
+struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
+			     size_t align, unsigned int heap_id_mask,
+			     unsigned int flags);
 
 /**
  * ion_free - free a handle
@@ -162,11 +134,7 @@ static inline void *ion_alloc(void *client, size_t len, size_t align,
  *
  * Free the provided handle.
  */
-void ion_buffer_put(struct ion_buffer *buffer);
-static inline void ion_free(struct ion_client *client, void *handle)
-{
-	ion_buffer_put(handle);
-}
+void ion_free(struct ion_client *client, struct ion_handle *handle);
 
 /**
  * ion_phys - returns the physical address and len of a handle
@@ -184,12 +152,19 @@ static inline void ion_free(struct ion_client *client, void *handle)
  * the returned value may not be valid if the caller is not
  * holding a reference.
  */
-int __ion_phys(struct ion_buffer *buffer, ion_phys_addr_t *addr, size_t *len);
-static inline int ion_phys(struct ion_client *client, void *handle,
-			   ion_phys_addr_t *addr, size_t *len)
-{
-	return __ion_phys(handle, addr, len);
-}
+int ion_phys(struct ion_client *client, struct ion_handle *handle,
+	     ion_phys_addr_t *addr, size_t *len);
+
+/**
+ * ion_map_dma - return an sg_table describing a handle
+ * @client:	the client
+ * @handle:	the handle
+ *
+ * This function returns the sg_table describing
+ * a particular ion handle.
+ */
+struct sg_table *ion_sg_table(struct ion_client *client,
+			      struct ion_handle *handle);
 
 /**
  * ion_map_kernel - create mapping for the given handle
@@ -199,44 +174,29 @@ static inline int ion_phys(struct ion_client *client, void *handle,
  * Map the given handle into the kernel and return a kernel address that
  * can be used to access this address.
  */
-void *__ion_map_kernel(struct ion_buffer *buffer);
-static inline void *ion_map_kernel(struct ion_client *client, void *handle)
-{
-	return __ion_map_kernel(handle);
-}
+void *ion_map_kernel(struct ion_client *client, struct ion_handle *handle);
 
 /**
  * ion_unmap_kernel() - destroy a kernel mapping for a handle
  * @client:	the client
  * @handle:	handle to unmap
  */
-void __ion_unmap_kernel(struct ion_buffer *buffer);
-static inline void ion_unmap_kernel(struct ion_client *client, void *handle)
-{
-	__ion_unmap_kernel(handle);
-}
+void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle);
 
 /**
  * ion_share_dma_buf() - share buffer as dma-buf
  * @client:	the client
  * @handle:	the handle
  */
-struct dma_buf *__ion_share_dma_buf(struct ion_buffer *buffer);
-static inline struct dma_buf *ion_share_dma_buf(void *client, void *handle)
-{
-	return __ion_share_dma_buf(handle);
-}
+struct dma_buf *ion_share_dma_buf(struct ion_client *client,
+						struct ion_handle *handle);
 
 /**
  * ion_share_dma_buf_fd() - given an ion client, create a dma-buf fd
  * @client:	the client
  * @handle:	the handle
  */
-int __ion_share_dma_buf_fd(struct ion_buffer *buffer);
-static inline int ion_share_dma_buf_fd(void *client, void *handle)
-{
-	return __ion_share_dma_buf_fd(handle);
-}
+int ion_share_dma_buf_fd(struct ion_client *client, struct ion_handle *handle);
 
 /**
  * ion_import_dma_buf() - given an dma-buf fd from the ion exporter get handle
@@ -247,11 +207,7 @@ static inline int ion_share_dma_buf_fd(void *client, void *handle)
  * import that fd and return a handle representing it.  If a dma-buf from
  * another exporter is passed in this function will return ERR_PTR(-EINVAL)
  */
-struct ion_buffer *__ion_import_dma_buf(int fd);
-static inline void *ion_import_dma_buf(void *client, int fd)
-{
-	return __ion_import_dma_buf(fd);
-}
+struct ion_handle *ion_import_dma_buf(struct ion_client *client, int fd);
 
 #else
 static inline void ion_reserve(struct ion_platform_data *data)
