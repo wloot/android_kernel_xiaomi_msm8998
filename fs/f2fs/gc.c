@@ -329,13 +329,17 @@ static int fb_notifier_callback(struct notifier_block *self,
 	case FB_BLANK_POWERDOWN:
 		if (trigger_rapid_gc)
 			return NOTIFY_OK;
+		mutex_lock(&gc_sbi_mutex);
 		trigger_rapid_gc = true;
+		mutex_unlock(&gc_sbi_mutex);
 		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	case FB_BLANK_UNBLANK:
 		if (!trigger_rapid_gc)
 			return NOTIFY_OK;
+		mutex_lock(&gc_sbi_mutex);
 		trigger_rapid_gc = false;
+		mutex_unlock(&gc_sbi_mutex);
 		queue_work(system_power_efficient_wq, &rapid_gc_fb_worker);
 		break;
 	}
