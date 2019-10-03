@@ -161,27 +161,27 @@ do_gc:
 			f2fs_info(sbi, "dropped caches");
 		}
 
-		if (!isCharging && free_user_blocks(sbi) >
-		    (sbi->user_block_count - written_block_count(sbi)) * 97 / 100) {
-			f2fs_stop_gc_thread(sbi);
-			rapid_gc_set_wakelock();
-			f2fs_info(sbi,
-				"Valid blocks is more than 97%, "
-				"stopping rapid gc thread");
-
-			/*
-			 * Rapid GC would have cleaned hundreds of segments
-			 * that would not be read again anytime soon.
-			 */
-			mm_drop_caches(3);
-			f2fs_info(sbi, "dropped caches");
-		}
-
 		trace_f2fs_background_gc(sbi->sb, wait_ms,
 				prefree_segments(sbi), free_segments(sbi));
 
 		/* balancing f2fs's metadata periodically */
 		f2fs_balance_fs_bg(sbi);
+
+		if (!isCharging && free_user_blocks(sbi) >
+		    (sbi->user_block_count - written_block_count(sbi)) * 97 / 100) {
+			f2fs_info(sbi,
+				"Valid blocks is more than 97%, "
+				"stopping rapid gc thread");
+			sb_end_write(sbi->sb);
+			sbi->rapid_gc = false;
+			rapid_gc_set_wakelock();
+			kvfree(gc_th);
+			sbi->gc_mode = GC_NORMAL;
+			sbi->gc_thread = NULL;
+			mm_drop_caches(3);
+			f2fs_info(sbi, "dropped caches");
+			break;
+		}
 next:
 		sb_end_write(sbi->sb);
 
