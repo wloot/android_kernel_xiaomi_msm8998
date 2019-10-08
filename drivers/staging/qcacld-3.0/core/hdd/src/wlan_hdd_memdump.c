@@ -42,6 +42,7 @@
 
 static struct proc_dir_entry *proc_file_driver, *proc_dir_driver;
 
+
 /** memdump_get_file_data() - get data available in proc file
  *
  * @file - handle for the proc file.
@@ -56,12 +57,21 @@ static void *memdump_get_file_data(struct file *file)
 	void *hdd_ctx;
 
 	hdd_ctx = PDE_DATA(file_inode(file));
+
 	return hdd_ctx;
 }
 
-void hdd_driver_mem_cleanup(void)
+/**
+ * hdd_driver_mem_cleanup() - Frees memory allocated for
+ * driver dump
+ *
+ * This function unallocates driver dump memory.
+ *
+ * Return: None
+ */
+static void hdd_driver_mem_cleanup(void)
 {
-	struct hdd_context *hdd_ctx;
+	hdd_context_t *hdd_ctx;
 
 	hdd_ctx = cds_get_context(QDF_MODULE_ID_HDD);
 	if (!hdd_ctx) {
@@ -95,7 +105,7 @@ static ssize_t __hdd_driver_memdump_read(struct file *file, char __user *buf,
 {
 	int status;
 	QDF_STATUS qdf_status;
-	struct hdd_context *hdd_ctx;
+	hdd_context_t *hdd_ctx;
 	size_t no_of_bytes_read = 0;
 
 	hdd_ctx = memdump_get_file_data(file);
@@ -107,8 +117,8 @@ static ssize_t __hdd_driver_memdump_read(struct file *file, char __user *buf,
 
 	mutex_lock(&hdd_ctx->memdump_lock);
 	if (*pos < 0) {
-		hdd_err("Invalid start offset for memdump read");
 		mutex_unlock(&hdd_ctx->memdump_lock);
+		hdd_err("Invalid start offset for memdump read");
 		return -EINVAL;
 	} else if (!count || (hdd_ctx->driver_dump_size &&
 				(*pos >= hdd_ctx->driver_dump_size))) {
@@ -123,8 +133,8 @@ static ssize_t __hdd_driver_memdump_read(struct file *file, char __user *buf,
 			hdd_ctx->driver_dump_mem =
 				qdf_mem_malloc(DRIVER_MEM_DUMP_SIZE);
 			if (!hdd_ctx->driver_dump_mem) {
-				hdd_err("qdf_mem_malloc failed");
 				mutex_unlock(&hdd_ctx->memdump_lock);
+				hdd_err("qdf_mem_malloc failed");
 				return -ENOMEM;
 			}
 		}
@@ -152,8 +162,8 @@ static ssize_t __hdd_driver_memdump_read(struct file *file, char __user *buf,
 
 	if (copy_to_user(buf, hdd_ctx->driver_dump_mem + *pos,
 					no_of_bytes_read)) {
-		hdd_err("copy to user space failed");
 		mutex_unlock(&hdd_ctx->memdump_lock);
+		hdd_err("copy to user space failed");
 		return -EFAULT;
 	}
 
@@ -215,7 +225,7 @@ read: hdd_driver_memdump_read
  *
  * Return:   0 on success, error code otherwise.
  */
-static int hdd_driver_memdump_procfs_init(struct hdd_context *hdd_ctx)
+static int hdd_driver_memdump_procfs_init(hdd_context_t *hdd_ctx)
 {
 	proc_dir_driver = proc_mkdir(PROCFS_DRIVER_DUMP_DIR, NULL);
 	if (proc_dir_driver == NULL) {
@@ -268,7 +278,7 @@ static void hdd_driver_memdump_procfs_remove(void)
 int hdd_driver_memdump_init(void)
 {
 	int status;
-	struct hdd_context *hdd_ctx;
+	hdd_context_t *hdd_ctx;
 
 	hdd_ctx = cds_get_context(QDF_MODULE_ID_HDD);
 	if (!hdd_ctx) {
@@ -297,4 +307,6 @@ int hdd_driver_memdump_init(void)
 void hdd_driver_memdump_deinit(void)
 {
 	hdd_driver_memdump_procfs_remove();
+
+	hdd_driver_mem_cleanup();
 }

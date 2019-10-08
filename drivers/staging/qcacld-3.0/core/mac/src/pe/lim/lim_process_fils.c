@@ -158,6 +158,10 @@ static uint8_t lim_get_tk_len(int cypher_suite)
 		return TK_LEN_TKIP;
 	case eSIR_ED_CCMP:
 		return TK_LEN_CCMP;
+	case eSIR_ED_GCMP:
+		return TK_LEN_GCMP;
+	case eSIR_ED_GCMP_256:
+		return TK_LEN_GCMP_256;
 	case eSIR_ED_AES_128_CMAC:
 		return TK_LEN_AES_128_CMAC;
 	default:
@@ -620,15 +624,12 @@ static void lim_generate_pmk(tpPESession pe_session)
 	uint32_t len[1];
 	struct pe_fils_session *fils_info = pe_session->fils_info;
 
-	if (!fils_info)
-		return;
-
 	/* Snounce */
-	qdf_mem_copy(nounce, pe_session->fils_info->fils_nonce,
+	qdf_mem_copy(nounce, fils_info->fils_nonce,
 			SIR_FILS_NONCE_LENGTH);
 	/* anounce */
 	qdf_mem_copy(nounce + SIR_FILS_NONCE_LENGTH,
-			pe_session->fils_info->auth_info.fils_nonce,
+			fils_info->auth_info.fils_nonce,
 			SIR_FILS_NONCE_LENGTH);
 	fils_info->fils_pmk_len = lim_get_pmk_length(fils_info->akm);
 
@@ -712,11 +713,11 @@ static QDF_STATUS lim_process_auth_wrapped_data(tpPESession pe_session,
 	uint8_t auth_tag_len;
 
 	fils_info = pe_session->fils_info;
-	input_data[0] = wrapped_data;
-	input_len[0] = data_len;
-
 	if (!fils_info)
 		return QDF_STATUS_E_FAILURE;
+
+	input_data[0] = wrapped_data;
+	input_len[0] = data_len;
 
 	pe_debug("trying to process the wrappped data");
 
@@ -778,11 +779,6 @@ static QDF_STATUS lim_process_auth_wrapped_data(tpPESession pe_session,
 		pe_err("invalid remaining len %d",
 			remaining_len);
 	}
-
-	if (sizeof(hash) < auth_tag_len) {
-		pe_err("sizeof(hash) < auth_tag_len check failed");
-		return QDF_STATUS_E_FAILURE;
-	}
 	if (qdf_mem_cmp(wrapped_data, hash, auth_tag_len)) {
 		pe_err("integratity check failed for auth, crypto %d",
 			crypto);
@@ -838,10 +834,8 @@ QDF_STATUS lim_create_fils_rik(uint8_t *rrk, uint8_t rrk_len,
 	uint8_t optional_data[SIR_FILS_OPTIONAL_DATA_LEN];
 	uint8_t label[] = SIR_FILS_RIK_LABEL;
 
-	if (!rrk || !rik) {
-		pe_err("FILS rrk/rik NULL");
+	if (!rrk || !rik)
 		return QDF_STATUS_E_FAILURE;
-	}
 
 	optional_data[0] = HMAC_SHA256_128;
 	/* basic validation */
@@ -1001,7 +995,6 @@ void lim_add_fils_data_to_auth_frame(tpPESession session,
 	struct pe_fils_session *fils_info;
 
 	fils_info = session->fils_info;
-
 	if (!fils_info)
 		return;
 
@@ -1083,15 +1076,16 @@ bool lim_process_fils_auth_frame2(tpAniSirGlobal mac_ctx,
 	bool pmkid_found = false;
 	tDot11fIERSN dot11f_ie_rsn = {0};
 
+	if (rx_auth_frm_body->authAlgoNumber != eSIR_FILS_SK_WITHOUT_PFS)
+		return false;
+
 	if (!pe_session->fils_info)
 		return false;
 
-	if (rx_auth_frm_body->authAlgoNumber != SIR_FILS_SK_WITHOUT_PFS)
-		return false;
-
-	ret = dot11f_unpack_ie_rsn(mac_ctx, &rx_auth_frm_body->rsn_ie.info[0],
-				rx_auth_frm_body->rsn_ie.length,
-				&dot11f_ie_rsn, 0);
+	ret = dot11f_unpack_ie_rsn(mac_ctx,
+				   &rx_auth_frm_body->rsn_ie.info[0],
+				   rx_auth_frm_body->rsn_ie.length,
+				   &dot11f_ie_rsn, 0);
 	if (!DOT11F_SUCCEEDED(ret)) {
 		pe_err("unpack failed, ret: %d", ret);
 		return false;
@@ -1136,7 +1130,6 @@ void lim_update_fils_config(tpPESession session,
 
 	fils_config_info = &sme_join_req->fils_con_info;
 	csr_fils_info = session->fils_info;
-
 	if (!csr_fils_info)
 		return;
 
@@ -1238,7 +1231,7 @@ uint32_t lim_create_fils_auth_data(tpAniSirGlobal mac_ctx,
 		qdf_mem_free(session->fils_info->fils_erp_reauth_pkt);
 		session->fils_info->fils_erp_reauth_pkt = NULL;
 	}
-	if (auth_frame->authAlgoNumber == SIR_FILS_SK_WITHOUT_PFS) {
+	if (auth_frame->authAlgoNumber == eSIR_FILS_SK_WITHOUT_PFS) {
 		frame_len += session->fils_info->rsn_ie_len;
 		/* FILS nounce */
 		frame_len += SIR_FILS_NONCE_LENGTH + EXTENDED_IE_HEADER_LEN;
@@ -1261,7 +1254,10 @@ void populate_fils_connect_params(tpAniSirGlobal mac_ctx,
 				  tpSirSmeJoinRsp sme_join_rsp)
 {
 	struct fils_join_rsp_params *fils_join_rsp;
-	struct pe_fils_session *fils_info = session->fils_info;
+	struct pe_fils_session *fils_info = (session->fils_info);
+
+	if (!fils_info)
+		return;
 
 	if (!lim_is_fils_connection(session))
 		return;
@@ -1432,7 +1428,7 @@ bool lim_verify_fils_params_assoc_rsp(tpAniSirGlobal mac_ctx,
 				      tpSirAssocRsp assoc_rsp,
 				      tLimMlmAssocCnf *assoc_cnf)
 {
-	struct pe_fils_session *fils_info = session_entry->fils_info;
+	struct pe_fils_session *fils_info = (session_entry->fils_info);
 	tDot11fIEfils_session fils_session = assoc_rsp->fils_session;
 	tDot11fIEfils_key_confirmation fils_key_auth = assoc_rsp->fils_key_auth;
 	tDot11fIEfils_kde fils_kde = assoc_rsp->fils_kde;
@@ -1483,6 +1479,22 @@ bool lim_verify_fils_params_assoc_rsp(tpAniSirGlobal mac_ctx,
 	if (!QDF_IS_STATUS_SUCCESS(status)) {
 		pe_err("KDE parsing fails");
 		goto verify_fils_params_fails;
+	}
+
+	if (assoc_rsp->hlp_data_len) {
+		fils_info->hlp_data = qdf_mem_malloc(assoc_rsp->hlp_data_len);
+
+		if (!fils_info->hlp_data) {
+			pe_err("FILS session HLP data malloc fails");
+			return true;
+		}
+
+		/* Save the HLP container IE data if present*/
+		cds_copy_hlp_info(&assoc_rsp->dst_mac, &assoc_rsp->src_mac,
+				  assoc_rsp->hlp_data_len, assoc_rsp->hlp_data,
+				  &fils_info->dst_mac, &fils_info->src_mac,
+				  &fils_info->hlp_data_len,
+				  fils_info->hlp_data);
 	}
 	return true;
 
@@ -1641,7 +1653,10 @@ QDF_STATUS aead_encrypt_assoc_req(tpAniSirGlobal mac_ctx,
 	uint8_t *plain_text = NULL, *data;
 	uint32_t plain_text_len = 0, data_len;
 	QDF_STATUS status;
-	struct pe_fils_session *fils_info = pe_session->fils_info;
+	struct pe_fils_session *fils_info = (pe_session->fils_info);
+
+	if (!fils_info)
+		return QDF_STATUS_E_FAILURE;
 
 	/*
 	 * data is the packet data after MAC header till
@@ -1802,7 +1817,7 @@ QDF_STATUS aead_decrypt_assoc_rsp(tpAniSirGlobal mac_ctx,
 	QDF_STATUS status;
 	uint32_t data_len, fils_ies_len;
 	uint8_t *fils_ies;
-	struct pe_fils_session *fils_info = session->fils_info;
+	struct pe_fils_session *fils_info = (session->fils_info);
 
 	status = find_ie_data_after_fils_session_ie(mac_ctx, p_frame +
 					      FIXED_PARAM_OFFSET_ASSOC_RSP,
@@ -1841,6 +1856,9 @@ void lim_update_fils_rik(tpPESession pe_session,
 	struct roam_fils_params *roam_fils_params =
 		&req_buffer->roam_fils_params;
 
+	if (!roam_fils_params)
+		return;
+
 	/*
 	 * If it is first connection, LIM session entries will not be
 	 * set with FILS. However in RSO, CSR filled the RRK, realm
@@ -1850,9 +1868,9 @@ void lim_update_fils_rik(tpPESession pe_session,
 	if ((!lim_is_fils_connection(pe_session) ||
 	     !pe_fils_info) && (req_buffer->is_fils_connection)) {
 		if (roam_fils_params->rrk_length > FILS_MAX_RRK_LENGTH) {
-			pe_debug("FILS rrk len(%d) max (%d)",
-				 roam_fils_params->rrk_length,
-				 FILS_MAX_RRK_LENGTH);
+			pe_err("FILS rrk len(%d) max (%d)",
+					roam_fils_params->rrk_length,
+					FILS_MAX_RRK_LENGTH);
 			return;
 		}
 
@@ -1865,10 +1883,6 @@ void lim_update_fils_rik(tpPESession pe_session,
 		return;
 	}
 
-	if (!pe_fils_info) {
-		pe_debug("No FILS info available in the session");
-		return;
-	}
 	if ((pe_fils_info->fils_rik_len > FILS_MAX_RIK_LENGTH) ||
 	    !pe_fils_info->fils_rik) {
 		pe_err("Fils rik len(%d) max %d", pe_fils_info->fils_rik_len,

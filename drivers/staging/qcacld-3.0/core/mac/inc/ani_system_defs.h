@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2011-2019 The Linux Foundation. All rights reserved.
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -63,10 +63,9 @@ typedef enum eAniAuthType {
 #if defined FEATURE_WLAN_ESE
 	eSIR_LEAP_AUTH = 0x80,
 #endif
-	SIR_FILS_SK_WITHOUT_PFS = 4,
-	SIR_FILS_SK_WITH_PFS = 5,
-	SIR_FILS_PK_AUTH = 6,
-	eSIR_AUTH_TYPE_OWE,
+	eSIR_FILS_SK_WITHOUT_PFS = 4,
+	eSIR_FILS_SK_WITH_PFS = 5,
+	eSIR_FILS_PK_AUTH = 6,
 	eSIR_AUTO_SWITCH,
 	eSIR_DONOT_USE_AUTH_TYPE = SIR_MAX_ENUM_SIZE
 } tAniAuthType;
@@ -92,11 +91,6 @@ typedef enum eAniEdType {
 	eSIR_ED_AES_GMAC_256,
 	eSIR_ED_NOT_IMPLEMENTED = SIR_MAX_ENUM_SIZE
 } tAniEdType;
-
-typedef enum eAniWepType {
-	eSIR_WEP_STATIC,
-	eSIR_WEP_DYNAMIC,
-} tAniWepType;
 
 /* / Enum to specify whether key is used */
 /* / for TX only, RX only or both */

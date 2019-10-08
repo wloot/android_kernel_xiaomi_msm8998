@@ -141,7 +141,7 @@ typedef struct sCsrNeighborRoamControlInfo {
 	uint8_t currentOpportunisticThresholdDiff;
 	uint8_t currentRoamRescanRssiDiff;
 	tDblLinkList roamableAPList;    /* List of current FT candidates */
-	struct csr_roam_profile csrNeighborRoamProfile;
+	tCsrRoamProfile csrNeighborRoamProfile;
 	bool is11rAssoc;
 	tCsr11rAssocNeighborInfo FTRoamInfo;
 #ifdef FEATURE_WLAN_ESE
@@ -179,7 +179,7 @@ QDF_STATUS csrNeighborRoamTransitionToPreauthDone(tpAniSirGlobal pMac);
 QDF_STATUS csr_neighbor_roam_prepare_scan_profile_filter(tpAniSirGlobal pMac,
 		tCsrScanResultFilter *pScanFilter, uint8_t sessionId);
 QDF_STATUS csr_neighbor_roam_preauth_rsp_handler(tpAniSirGlobal pMac,
-		uint8_t sessionId, QDF_STATUS limStatus);
+		uint8_t sessionId, tSirRetStatus limStatus);
 bool csr_neighbor_roam_is11r_assoc(tpAniSirGlobal pMac, uint8_t sessionId);
 #ifdef WLAN_FEATURE_HOST_ROAM
 void csr_neighbor_roam_tranistion_preauth_done_to_disconnected(
@@ -194,7 +194,7 @@ bool csr_neighbor_roam_get_handoff_ap_info(tpAniSirGlobal pMac,
 		tpCsrNeighborRoamBSSInfo pHandoffNode, uint8_t sessionId);
 QDF_STATUS csr_roam_issue_reassociate(tpAniSirGlobal pMac,
 		uint32_t sessionId, tSirBssDescription *pSirBssDesc,
-		tDot11fBeaconIEs *pIes, struct csr_roam_profile *pProfile);
+		tDot11fBeaconIEs *pIes, tCsrRoamProfile *pProfile);
 void csr_neighbor_roam_request_handoff(tpAniSirGlobal pMac, uint8_t sessionId);
 QDF_STATUS csr_neighbor_roam_candidate_found_ind_hdlr(tpAniSirGlobal pMac,
 		void *pMsg);
@@ -218,7 +218,7 @@ static inline QDF_STATUS csr_roam_issue_reassociate_cmd(tpAniSirGlobal pMac,
 }
 static inline QDF_STATUS csr_roam_issue_reassociate(tpAniSirGlobal pMac,
 		uint32_t sessionId, tSirBssDescription *pSirBssDesc,
-		tDot11fBeaconIEs *pIes, struct csr_roam_profile *pProfile)
+		tDot11fBeaconIEs *pIes, tCsrRoamProfile *pProfile)
 {
 	return QDF_STATUS_E_NOSUPPORT;
 }
@@ -363,7 +363,7 @@ uint8_t csr_get_roam_enabled_sta_sessionid(
  * Return: QDF_STATUS
  */
 QDF_STATUS csr_update_fils_config(tpAniSirGlobal mac, uint8_t session_id,
-				  struct csr_roam_profile *src_profile);
+				  tCsrRoamProfile *src_profile);
 #endif
 
 QDF_STATUS csr_neighbor_roam_handoff_req_hdlr(tpAniSirGlobal pMac, void *pMsg);
@@ -417,7 +417,7 @@ static inline void csr_neighbor_roam_send_lfr_metric_event(
 #endif
 QDF_STATUS csr_roam_stop_wait_for_key_timer(tpAniSirGlobal pMac);
 QDF_STATUS csr_roam_copy_connected_profile(tpAniSirGlobal pMac,
-		uint32_t sessionId, struct csr_roam_profile *pDstProfile);
+		uint32_t sessionId, tCsrRoamProfile *pDstProfile);
 
 /**
  * csr_invoke_neighbor_report_request - Send neighbor report invoke command to
