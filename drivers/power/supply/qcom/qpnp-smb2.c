@@ -284,8 +284,8 @@ static int smb2_parse_dt(struct smb2 *chip)
 	if (of_find_property(node, "qcom,thermal-mitigation-dcp", &byte_len)) {
 		chg->thermal_mitigation_dcp = devm_kzalloc(chg->dev, byte_len, GFP_KERNEL);
 
-	if (chg->thermal_mitigation_dcp == NULL)
-		return -ENOMEM;
+		if (chg->thermal_mitigation_dcp == NULL)
+			return -ENOMEM;
 
 		chg->thermal_levels = byte_len / sizeof(u32);
 		rc = of_property_read_u32_array(node,
@@ -295,14 +295,14 @@ static int smb2_parse_dt(struct smb2 *chip)
 		if (rc < 0) {
 			dev_err(chg->dev,
 				"Couldn't read threm limits rc = %d\n", rc);
-		return rc;
+			return rc;
 		}
 	}
 	if (of_find_property(node, "qcom,thermal-mitigation-qc3", &byte_len)) {
 		chg->thermal_mitigation_qc3 = devm_kzalloc(chg->dev, byte_len, GFP_KERNEL);
 
-	if (chg->thermal_mitigation_qc3 == NULL)
-		return -ENOMEM;
+		if (chg->thermal_mitigation_qc3 == NULL)
+			return -ENOMEM;
 
 		chg->thermal_levels = byte_len / sizeof(u32);
 		rc = of_property_read_u32_array(node,
@@ -312,7 +312,7 @@ static int smb2_parse_dt(struct smb2 *chip)
 		if (rc < 0) {
 			dev_err(chg->dev,
 					"Couldn't read threm limits rc = %d\n", rc);
-		return rc;
+			return rc;
 		}
 	}
 	if (of_find_property(node, "qcom,thermal-mitigation-qc2", &byte_len)) {
