@@ -13,8 +13,8 @@
 struct msm_iommu_map {
 	struct device *dev;
 	struct msm_iommu_data *data;
-	struct list_head data_lnode;
-	struct list_head dev_lnode;
+	struct list_head data_node;
+	struct list_head dev_node;
 	struct scatterlist sg;
 	enum dma_data_direction dir;
 	int nents;
@@ -26,7 +26,7 @@ static struct msm_iommu_map *msm_iommu_map_lookup(struct msm_iommu_data *data,
 {
 	struct msm_iommu_map *map;
 
-	list_for_each_entry(map, &data->map_list, data_lnode) {
+	list_for_each_entry(map, &data->map_list, data_node) {
 		if (map->dev == dev)
 			return map;
 	}
@@ -36,8 +36,8 @@ static struct msm_iommu_map *msm_iommu_map_lookup(struct msm_iommu_data *data,
 
 static void msm_iommu_map_free(struct msm_iommu_map *map)
 {
-	list_del(&map->data_lnode);
-	list_del(&map->dev_lnode);
+	list_del(&map->data_node);
+	list_del(&map->dev_node);
 	dma_unmap_sg(map->dev, &map->sg, map->nents, map->dir);
 	kfree(map);
 }
@@ -50,8 +50,8 @@ int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
 	struct msm_iommu_data *data = dmabuf->priv;
 	struct msm_iommu_map *map;
 
-	mutex_lock(&data->lock);
 	mutex_lock(&dev->iommu_map_lock);
+	mutex_lock(&data->lock);
 	map = msm_iommu_map_lookup(data, dev);
 	if (map) {
 		map->refcount++;
@@ -70,12 +70,12 @@ int msm_dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
 			map->refcount = 2 - not_lazy;
 			map->sg.dma_address = sg->dma_address;
 			map->sg.dma_length = sg->dma_length;
-			list_add(&map->data_lnode, &data->map_list);
-			list_add(&map->dev_lnode, &dev->iommu_map_list);
+			list_add(&map->data_node, &data->map_list);
+			list_add(&map->dev_node, &dev->iommu_map_list);
 		}
 	}
-	mutex_unlock(&dev->iommu_map_lock);
 	mutex_unlock(&data->lock);
+	mutex_unlock(&dev->iommu_map_lock);
 
 	return nents;
 }
@@ -86,22 +86,21 @@ void msm_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
 	struct msm_iommu_data *data = dmabuf->priv;
 	struct msm_iommu_map *map;
 
-	mutex_lock(&data->lock);
 	mutex_lock(&dev->iommu_map_lock);
+	mutex_lock(&data->lock);
 	map = msm_iommu_map_lookup(data, dev);
 	if (map && !--map->refcount)
 		msm_iommu_map_free(map);
-	mutex_unlock(&dev->iommu_map_lock);
 	mutex_unlock(&data->lock);
+	mutex_unlock(&dev->iommu_map_lock);
 }
 
 void msm_dma_unmap_all_for_dev(struct device *dev)
 {
 	struct msm_iommu_map *map, *tmp;
 
-	/* This function won't race/deadlock with msm_dma_buf_freed() */
 	mutex_lock(&dev->iommu_map_lock);
-	list_for_each_entry_safe(map, tmp, &dev->iommu_map_list, dev_lnode) {
+	list_for_each_entry_safe(map, tmp, &dev->iommu_map_list, dev_node) {
 		struct msm_iommu_data *data = map->data;
 
 		mutex_lock(&data->lock);
@@ -114,15 +113,21 @@ void msm_dma_unmap_all_for_dev(struct device *dev)
 void msm_dma_buf_freed(struct msm_iommu_data *data)
 {
 	struct msm_iommu_map *map, *tmp;
+	int retry = 0;
 
-	/* This function won't race/deadlock with msm_dma_unmap_all_for_dev() */
-	mutex_lock(&data->lock);
-	list_for_each_entry_safe(map, tmp, &data->map_list, data_lnode) {
-		struct device *dev = map->dev;
+	do {
+		mutex_lock(&data->lock);
+		list_for_each_entry_safe(map, tmp, &data->map_list, data_node) {
+			struct device *dev = map->dev;
 
-		mutex_lock(&dev->iommu_map_lock);
-		msm_iommu_map_free(map);
-		mutex_unlock(&dev->iommu_map_lock);
-	}
-	mutex_unlock(&data->lock);
+			if (!mutex_trylock(&dev->iommu_map_lock)) {
+				retry = 1;
+				break;
+			}
+
+			msm_iommu_map_free(map);
+			mutex_unlock(&dev->iommu_map_lock);
+		}
+		mutex_unlock(&data->lock);
+	} while (retry--);
 }
