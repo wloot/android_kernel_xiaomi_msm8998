@@ -371,7 +371,7 @@ static void domain_dirty_limits(struct dirty_throttle_control *dtc)
 	unsigned long bg_bytes = dirty_background_bytes;
 	/* convert ratios to per-PAGE_SIZE for higher precision */
 	unsigned long ratio = (vm_dirty_ratio * PAGE_SIZE) / 100;
-	unsigned long bg_ratio = (dirty_background_ratio * PAGE_SIZE) / 100;
+	unsigned long bg_ratio = (10 * PAGE_SIZE) / 100;
 	unsigned long thresh;
 	unsigned long bg_thresh;
 	struct task_struct *tsk;
