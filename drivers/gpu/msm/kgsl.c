@@ -2563,7 +2563,7 @@ static int kgsl_setup_dma_buf(struct kgsl_device *device,
 				struct kgsl_mem_entry *entry,
 				struct dma_buf *dmabuf)
 {
-	int ret = 0;
+	int i, ret = 0;
 	struct scatterlist *s;
 	struct sg_table *sg_table;
 	struct dma_buf_attachment *attach = NULL;
@@ -2603,7 +2603,7 @@ static int kgsl_setup_dma_buf(struct kgsl_device *device,
 	entry->memdesc.sgt = sg_table;
 
 	/* Calculate the size of the memdesc from the sglist */
-	for (s = entry->memdesc.sgt->sgl; s != NULL; s = sg_next(s)) {
+	for_each_sg(sg_table->sgl, s, sg_table->nents, i) {
 		int priv = (entry->memdesc.priv & KGSL_MEMDESC_SECURE) ? 1 : 0;
 
 		/*
