@@ -146,7 +146,10 @@ static inline void sg_set_buf(struct scatterlist *sg, const void *buf,
  * Loop over each sg element, following the pointer to a new list if necessary
  */
 #define for_each_sg(sglist, sg, nr, __i)	\
-	for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+	for (__i = 0, sg = (sglist); __i < (nr);		\
+	     likely(++__i % (SG_MAX_SINGLE_ALLOC - 1) ||	\
+		    (__i + 1) >= (nr)) ? sg++ :			\
+		    (sg = sg_chain_ptr(sg + 1)))
 
 /**
  * sg_chain - Chain two sglists together
