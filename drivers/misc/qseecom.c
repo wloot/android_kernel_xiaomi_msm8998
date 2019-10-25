@@ -3403,7 +3403,7 @@ static int __qseecom_update_cmd_buf(void *msg, bool cleanup,
 				data->client.app_arch == ELFCLASS64)) ||
 				(data->type == QSEECOM_LISTENER_SERVICE)) {
 				update = (struct qseecom_sg_entry *)field;
-				for (j = 0; j < sg_ptr->nents; j++) {
+				for_each_sg(sg, sg, sg_ptr->nents, j) {
 					/*
 					* Check if sg list PA is under 4GB
 					*/
@@ -3423,7 +3423,6 @@ static int __qseecom_update_cmd_buf(void *msg, bool cleanup,
 					update->len = cleanup ? 0 : sg->length;
 					update++;
 					len += sg->length;
-					sg = sg_next(sg);
 				}
 			} else {
 				pr_err("QSEE app arch %u is not supported\n",
@@ -3513,11 +3512,10 @@ static int __qseecom_allocate_sg_list_buffer(struct qseecom_dev_handle *data,
 	buf_hdr->nents_total = sg_ptr->nents;
 	/* save the left sg entries into new allocated buf */
 	sg_entry = (struct qseecom_sg_entry_64bit *)buf;
-	for (i = 0; i < sg_ptr->nents; i++) {
+	for_each_sg(sg, sg, sg_ptr->nents, i) {
 		sg_entry->phys_addr = (uint64_t)sg_dma_address(sg);
 		sg_entry->len = sg->length;
 		sg_entry++;
-		sg = sg_next(sg);
 	}
 
 	data->client.sec_buf_fd[fd_idx].is_sec_buf_fd = true;
@@ -3659,14 +3657,13 @@ static int __qseecom_update_cmd_buf_64(void *msg, bool cleanup,
 			}
 			/* 64bit app uses 64bit address */
 			update_64bit = (struct qseecom_sg_entry_64bit *)field;
-			for (j = 0; j < sg_ptr->nents; j++) {
+			for_each_sg(sg, sg, sg_ptr->nents, j) {
 				update_64bit->phys_addr = cleanup ? 0 :
 					(uint64_t)sg_dma_address(sg);
 				update_64bit->len = cleanup ? 0 :
 						(uint32_t)sg->length;
 				update_64bit++;
 				len += sg->length;
-				sg = sg_next(sg);
 			}
 		}
 cleanup:
@@ -6386,11 +6383,10 @@ static int __qseecom_qteec_handle_pre_alc_fd(struct qseecom_dev_handle *data,
 	}
 	*(uint32_t *)buf = sg_ptr->nents;
 	sg_entry = (struct qseecom_sg_entry *) (buf + sizeof(uint32_t));
-	for (i = 0; i < sg_ptr->nents; i++) {
+	for_each_sg(sg, sg, sg_ptr->nents, i) {
 		sg_entry->phys_addr = (uint32_t)sg_dma_address(sg);
 		sg_entry->len = sg->length;
 		sg_entry++;
-		sg = sg_next(sg);
 	}
 	data->client.sec_buf_fd[fd_idx].is_sec_buf_fd = true;
 	data->client.sec_buf_fd[fd_idx].vbase = buf;
