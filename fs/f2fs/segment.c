@@ -2129,12 +2129,6 @@ static int create_discard_cmd_control(struct f2fs_sb_info *sbi)
 
 	init_waitqueue_head(&dcc->discard_wait_queue);
 	SM_I(sbi)->dcc_info = dcc;
-
-	if (!strcmp(sbi->sb->s_id, "sda17")) {
-		struct request_queue *q = bdev_get_queue(f2fs_target_device(sbi,
-				START_BLOCK(sbi, 0), NULL));
-		q->limits.max_discard_sectors = SZ_128M >> 9;
-	}
 init_thread:
 	dcc->f2fs_issue_discard = kthread_run(issue_discard_thread, sbi,
 				"f2fs_discard-%u:%u", MAJOR(dev), MINOR(dev));
