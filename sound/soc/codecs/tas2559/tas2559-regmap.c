@@ -537,7 +537,7 @@ void tas2559_enableIRQ(struct tas2559_priv *pTAS2559, enum channel chl, bool ena
 
 		if (bDevAEnable || bDevBEnable) {
 			/* check after 10 ms */
-			schedule_delayed_work(&pTAS2559->irq_work, msecs_to_jiffies(10));
+			queue_delayed_work(system_power_efficient_wq, &pTAS2559->irq_work, msecs_to_jiffies(10));
 		}
 		pTAS2559->mbIRQEnable = true;
 	} else {
@@ -858,7 +858,7 @@ static irqreturn_t tas2559_irq_handler(int irq, void *dev_id)
 
 	/* get IRQ status after 100 ms */
 	if (!delayed_work_pending(&pTAS2559->irq_work))
-		schedule_delayed_work(&pTAS2559->irq_work, msecs_to_jiffies(100));
+		queue_delayed_work(system_power_efficient_wq, &pTAS2559->irq_work, msecs_to_jiffies(100));
 
 	return IRQ_HANDLED;
 }
@@ -964,7 +964,7 @@ static enum hrtimer_restart temperature_timer_func(struct hrtimer *timer)
 		schedule_work(&pTAS2559->mtimerwork);
 
 		if (!delayed_work_pending(&pTAS2559->irq_work))
-			schedule_delayed_work(&pTAS2559->irq_work, msecs_to_jiffies(20));
+			queue_delayed_work(system_power_efficient_wq, &pTAS2559->irq_work, msecs_to_jiffies(20));
 	}
 
 	return HRTIMER_NORESTART;
