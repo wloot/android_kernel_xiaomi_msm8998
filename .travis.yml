@@ -4,6 +4,8 @@ dist: bionic
 cache: ccache
 git:
   depth: 1
+before_script:
+  - ccache -M 500M
 script:
   - cd ${HOME}
   - git clone https://github.com/wloot/scripts 
