@@ -37,7 +37,7 @@ ifeq ($(KERNEL_BUILD),1)
 endif
 
 # Make WLAN as open-source driver by default
-WLAN_OPEN_SOURCE := 1
+WLAN_OPEN_SOURCE := 0
 
 ifeq ($(KERNEL_BUILD), 0)
 	ifneq ($(DEVELOPER_DISABLE_BUILD_TIMESTAMP),y)
