@@ -18,26 +18,6 @@
 #include <uapi/linux/sched/types.h>
 #endif
 
-/* MIN_NICE isn't present and MAX_RT_PRIO is elsewhere in older kernels */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 14, 0)
-#include <linux/sched/rt.h>
-#define MIN_NICE -20
-#endif
-
-/* SEND_SIG_FORCED isn't present in newer kernels */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
-#define SIG_INFO_TYPE SEND_SIG_FORCED
-#else
-#define SIG_INFO_TYPE SEND_SIG_PRIV
-#endif
-
-/* The group argument to do_send_sig_info is different in newer kernels */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 18, 0)
-#define KILL_GROUP_TYPE true
-#else
-#define KILL_GROUP_TYPE PIDTYPE_TGID
-#endif
-
 /* The minimum number of pages to free per reclaim */
 #define MIN_FREE_PAGES (CONFIG_ANDROID_SIMPLE_LMK_MINFREE * SZ_1M / PAGE_SIZE)
 
@@ -221,26 +201,10 @@ static void scan_and_kill(unsigned long pages_needed)
 			vtsk->signal->oom_score_adj,
 			victim->size << (PAGE_SHIFT - 10));
 
-		/* Accelerate the victim's death by forcing the kill signal */
-		do_send_sig_info(SIGKILL, SIG_INFO_TYPE, vtsk, KILL_GROUP_TYPE);
+		/* Send kill signal to the victim */
+		send_sig(SIGKILL, vtsk, 0);
 
-		/* Grab a reference to the victim for later before unlocking */
-		get_task_struct(vtsk);
 		task_unlock(vtsk);
-	}
-
-	/* Try to speed up the death process now that we can schedule again */
-	for (i = 0; i < nr_to_kill; i++) {
-		struct task_struct *vtsk = victims[i].tsk;
-
-		/* Increase the victim's priority to make it die faster */
-		set_user_nice(vtsk, MIN_NICE);
-
-		/* Allow the victim to run on any CPU */
-		set_cpus_allowed_ptr(vtsk, cpu_all_mask);
-
-		/* Finally release the victim reference acquired earlier */
-		put_task_struct(vtsk);
 	}
 
 	/* Wait until all the victims die */
