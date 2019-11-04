@@ -938,73 +938,73 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0x1:		/*warm*/
 		if (ctrl->dispparam_warm_cmds.cmd_cnt) {
-			pr_info("warm\n");
+			pr_debug("warm\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_warm_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x2:		/*normal*/
 		if (ctrl->dispparam_default_cmds.cmd_cnt) {
-			pr_info("normal\n");
+			pr_debug("normal\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_default_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x3:		/*cold*/
 		if (ctrl->dispparam_cold_cmds.cmd_cnt) {
-			pr_info("cold\n");
+			pr_debug("cold\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cold_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x4:		/*gamma reload*/
 		if (ctrl->dispparam_gammareload_cmds.cmd_cnt) {
-			pr_info("gammare load\n");
+			pr_debug("gammare load\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_gammareload_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x5:
 		if (ctrl->dispparam_papermode_cmds.cmd_cnt) {
-			pr_info("paper mode\n");
+			pr_debug("paper mode\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x6:
 		if (ctrl->dispparam_papermode1_cmds.cmd_cnt) {
-			pr_info("paper mode 1\n");
+			pr_debug("paper mode 1\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode1_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x7:
 		if (ctrl->dispparam_papermode2_cmds.cmd_cnt) {
-			pr_info("paper mode 2\n");
+			pr_debug("paper mode 2\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode2_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x8:
 		if (ctrl->dispparam_papermode3_cmds.cmd_cnt) {
-			pr_info("paper mode 3\n");
+			pr_debug("paper mode 3\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode3_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x9:
 		if (ctrl->dispparam_papermode4_cmds.cmd_cnt) {
-			pr_info("paper mode 4\n");
+			pr_debug("paper mode 4\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode4_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xa:
 		if (ctrl->dispparam_papermode5_cmds.cmd_cnt) {
-			pr_info("paper mode 5\n");
+			pr_debug("paper mode 5\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode5_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xb:
 		if (ctrl->dispparam_papermode6_cmds.cmd_cnt) {
-			pr_info("paper mode 6\n");
+			pr_debug("paper mode 6\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode6_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xc:
 		if (ctrl->dispparam_papermode7_cmds.cmd_cnt) {
-			pr_info("paper mode 7\n");
+			pr_debug("paper mode 7\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_papermode7_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1028,73 +1028,73 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0xF000:		/*level 0*/
 		if (ctrl->dispparam_level0_cmds.cmd_cnt) {
-			pr_info("level 0\n");
+			pr_debug("level 0\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level0_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x1000:		/*level 1*/
 		if (ctrl->dispparam_level1_cmds.cmd_cnt) {
-			pr_info("level 1\n");
+			pr_debug("level 1\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level1_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x2000:		/*level 2*/
 		if (ctrl->dispparam_level2_cmds.cmd_cnt) {
-			pr_info("level 2\n");
+			pr_debug("level 2\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level2_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x3000:		/*level 3*/
 		if (ctrl->dispparam_level3_cmds.cmd_cnt) {
-			pr_info("level 3\n");
+			pr_debug("level 3\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level3_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x4000:		/*level 4*/
 		if (ctrl->dispparam_level4_cmds.cmd_cnt) {
-			pr_info("level4\n");
+			pr_debug("level4\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level4_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x5000:		/*level 5*/
 		if (ctrl->dispparam_level5_cmds.cmd_cnt) {
-			pr_info("level 5\n");
+			pr_debug("level 5\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level5_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x6000:		/*level 6*/
 		if (ctrl->dispparam_level6_cmds.cmd_cnt) {
-			pr_info("level6\n");
+			pr_debug("level6\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_level6_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xA000:		/*night mode 1*/
 		if (ctrl->dispparam_nightmode1_cmds.cmd_cnt) {
-			pr_info("night mode 1\n");
+			pr_debug("night mode 1\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_nightmode1_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xB000:		/*night mode 2*/
 		if (ctrl->dispparam_nightmode2_cmds.cmd_cnt) {
-			pr_info("night mode 2\n");
+			pr_debug("night mode 2\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_nightmode2_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xC000:		/*night mode 3*/
 		if (ctrl->dispparam_nightmode3_cmds.cmd_cnt) {
-			pr_info("night mode 3\n");
+			pr_debug("night mode 3\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_nightmode3_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xD000:		/*night mode 4*/
 		if (ctrl->dispparam_nightmode4_cmds.cmd_cnt) {
-			pr_info("night mode 4\n");
+			pr_debug("night mode 4\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_nightmode4_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xE000:		/*night mode 5*/
 		if (ctrl->dispparam_nightmode5_cmds.cmd_cnt) {
-			pr_info("night mode5\n");
+			pr_debug("night mode5\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_nightmode5_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1107,34 +1107,34 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 		break;
 	case 0x20000:
 		if (ctrl->dispparam_test_cmds.cmd_cnt) {
-			pr_info("test\n");
+			pr_debug("test\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_test_cmds, CMD_REQ_COMMIT);
 		}
-		pr_info("NT 1-cut2 3-cut4: %d\n",
+		pr_debug("NT 1-cut2 3-cut4: %d\n",
 				mdss_dsi_panel_cmd_read(ctrl, 0x3A, 0x00, (void *)mdss_dsi_dcs_read_cb, rbuf, 8));
 
 		break;
 	case DISPLAY_OFF_MODE:
 		 if (ctrl->displayoff_cmds.cmd_cnt) {
-			pr_info("display off mode\n");
+			pr_debug("display off mode\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->displayoff_cmds, CMD_REQ_COMMIT);
 		 }
 		 break;
 	case DISPLAY_ON_MODE:
 		 if (ctrl->displayon_cmds.cmd_cnt) {
-			pr_info("display on mode\n");
+			pr_debug("display on mode\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->displayon_cmds, CMD_REQ_COMMIT);
 		 }
 		 break;
 	case 0xA0000:
 		if (ctrl->dispparam_idleon_cmds.cmd_cnt) {
-			pr_info("idleon\n");
+			pr_debug("idleon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_idleon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xF0000:
 		if (ctrl->dispparam_idleoff_cmds.cmd_cnt) {
-			pr_info("idleoff\n");
+			pr_debug("idleoff\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_idleoff_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1146,25 +1146,25 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0x100000:
 		if (ctrl->dispparam_normal1_cmds.cmd_cnt) {
-			pr_info("normal mode1\n");
+			pr_debug("normal mode1\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_normal1_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x200000:
 		if (ctrl->dispparam_normal2_cmds.cmd_cnt) {
-			pr_info("normal mode2\n");
+			pr_debug("normal mode2\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_normal2_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x300000:
 		if (ctrl->dispparam_srgb_cmds.cmd_cnt) {
-			pr_info("sRGB\n");
+			pr_debug("sRGB\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_srgb_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case DISPLAY_SKINCE_MODE:
 		if (ctrl->dispparam_skin_ce_cmds.cmd_cnt) {
-			pr_info("skin ce\n");
+			pr_debug("skin ce\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_skin_ce_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1176,47 +1176,47 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0x10:		/*ce on default*/
 		if (ctrl->dispparam_ceon_cmds.cmd_cnt) {
-			pr_info("ceon\n");
+			pr_debug("ceon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_ceon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xA0:		/*vivid weak*/
 		if (ctrl->dispparam_vividweak_cmds.cmd_cnt) {
-			pr_info("vividweak\n");
+			pr_debug("vividweak\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_vividweak_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xB0:		/*vidid strong*/
 		if (ctrl->dispparam_vividstrong_cmds.cmd_cnt) {
-			pr_info("vividstrong\n");
+			pr_debug("vividstrong\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_vividstrong_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xC0:		/*smart weak*/
 		if (ctrl->dispparam_smartweak_cmds.cmd_cnt) {
-			pr_info("smartweak\n");
+			pr_debug("smartweak\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_smartweak_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xD0:		/*smart strong*/
 		if (ctrl->dispparam_smartstrong_cmds.cmd_cnt) {
-			pr_info("smartstrong\n");
+			pr_debug("smartstrong\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_smartstrong_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xE0:		/*vidid off and smart off*/
 		if (ctrl->dispparam_vividoff_cmds.cmd_cnt) {
-			pr_info("vivid off\n");
+			pr_debug("vivid off\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_vividoff_cmds, CMD_REQ_COMMIT);
 		}
 		if (ctrl->dispparam_smartoff_cmds.cmd_cnt) {
-			pr_info("smart off\n");
+			pr_debug("smart off\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_smartoff_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xF0:		/*ce off*/
 		if (ctrl->dispparam_ceoff_cmds.cmd_cnt) {
-			pr_info("ceoff\n");
+			pr_debug("ceoff\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_ceoff_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1228,55 +1228,55 @@ static inline void mdss_panel_disparam_set(struct mdss_dsi_ctrl_pdata *ctrl, uin
 	switch (temp) {
 	case 0x100:		/*cabc on*/
 		if (ctrl->dispparam_cabcon_cmds.cmd_cnt) {
-			pr_info("cabcon\n");
+			pr_debug("cabcon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x200:		/*cabc gui on*/
 		if (ctrl->dispparam_cabcguion_cmds.cmd_cnt) {
-			pr_info("cabcguion\n");
+			pr_debug("cabcguion\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcguion_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x300:		/*cabc still on*/
 		if (ctrl->dispparam_cabcstillon_cmds.cmd_cnt) {
-			pr_info("cabcstillon\n");
+			pr_debug("cabcstillon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcstillon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x400:		/*cabc movie on*/
 		if (ctrl->dispparam_cabcmovieon_cmds.cmd_cnt) {
-			pr_info("cabcmovieon\n");
+			pr_debug("cabcmovieon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcmovieon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0x500:
 		if (ctrl->dispparam_dimmingon_cmds.cmd_cnt) {
-			pr_info("dimmingon\n");
+			pr_debug("dimmingon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_dimmingon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xA00:		/*smart contrast on*/
 		if (ctrl->dispparam_scon_cmds.cmd_cnt) {
-			pr_info("smart contrast\n");
+			pr_debug("smart contrast\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_scon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xB00:		/*sre on*/
 		if (ctrl->dispparam_sreon_cmds.cmd_cnt) {
-			pr_info("sreon\n");
+			pr_debug("sreon\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_sreon_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xC00:		/*sre off*/
 		if (ctrl->dispparam_sreoff_cmds.cmd_cnt) {
-			pr_info("sreoff\n");
+			pr_debug("sreoff\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_sreoff_cmds, CMD_REQ_COMMIT);
 		}
 		break;
 	case 0xF00:		/*cabc off*/
 		if (ctrl->dispparam_cabcoff_cmds.cmd_cnt) {
-			pr_info("cabcoff\n");
+			pr_debug("cabcoff\n");
 			mdss_dsi_panel_cmds_send(ctrl, &ctrl->dispparam_cabcoff_cmds, CMD_REQ_COMMIT);
 		}
 		break;
@@ -1317,7 +1317,7 @@ static int mdss_dsi_panel_dispparam(struct mdss_panel_data *pdata)
 	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	param = pdata->panel_info.panel_paramstatus;
-	pr_info("param 0x%x\n", param);
+	pr_debug("param 0x%x\n", param);
 	/* support oled hbm mode */
 	switch (param) {
 	case 0xD00:
