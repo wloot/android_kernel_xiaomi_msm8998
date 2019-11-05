@@ -56,8 +56,8 @@ if ANDROID_SIMPLE_LMK
 
 config ANDROID_SIMPLE_LMK_AGGRESSION
 	int "Reclaim frequency selection"
-	range 1 3
-	default 1
+	range 1 5
+	default 2
 	help
 	  This value determines how frequently Simple LMK will perform memory
 	  reclaims. A lower value corresponds to less frequent reclaims, which
@@ -72,14 +72,14 @@ config ANDROID_SIMPLE_LMK_AGGRESSION
 	  factor of 2 with 8 GiB of memory; the more memory a system has, the
 	  more expensive it is to use a lower value.
 
-	  Choosing a value of 1 here works well with systems that have 4 GiB of
+	  Choosing a value of 2 here works well with systems that have 4 GiB of
 	  memory. If the default doesn't work well, then this value should be
 	  tweaked based on empirical results using different values.
 
 config ANDROID_SIMPLE_LMK_MINFREE
 	int "Minimum MiB of memory to free per reclaim"
 	range 8 512
-	default 100
+	default 50
 	help
 	  Simple LMK will try to free at least this much memory per reclaim.
 
